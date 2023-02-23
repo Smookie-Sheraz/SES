@@ -1,0 +1,139 @@
+﻿@model myWebApp.ViewModels.AcademicCalendar.TermVM
+@{
+}
+<div class="main-panel">        
+    <div class="content-wrapper">
+        <div class="row">
+            <div class="col-12 grid-margin stretch-card">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Add New Adacmic-Calendar Term for @ViewBag.Year</h4>
+                        @*<p class="card-description">
+                        Please Add The New Adacmic-Calendar Term and Press the Add Button.
+                        </p>*@
+                        <form class="forms-sample" method="post"
+                        asp-controller="AcademicCalendar" asp-action="Term">
+                                <h3>Term</h3>
+                                    <input type="hidden" asp-for="YearId"/>
+                            @if(User.HasClaim("Permission", "Term.Create"))
+                            {
+                            <div class="row">
+                            <div class="col-4">
+                                <div class="form-group">
+                                    <label asp-for="TermName">Term Name</label>
+                                    <input type="text" class="form-control" asp-for="TermName" placeholder="Enter Term Name">
+                                    <span asp-validation-for="TermName" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="form-group">
+                                    <label asp-for="TermStartDate">Start Date</label>
+                                    <input type="date" class="form-control" asp-for="TermStartDate" placeholder="Enter Term Start Date" min="@Convert.ToDateTime(Model.MinDate).ToString("yyyy-MM-dd")" max="@Convert.ToDateTime(Model.MaxDate).ToString("yyyy-MM-dd")">
+                                    <span asp-validation-for="TermStartDate" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="form-group">
+                                    <label asp-for="TermEndDate">End Date</label>
+                                    <input type="date" class="form-control" asp-for="TermEndDate" placeholder="Enter End Start Date" min="@Convert.ToDateTime(Model.MinDate).ToString("yyyy-MM-dd")" max="@Convert.ToDateTime(Model.MaxDate).ToString("yyyy-MM-dd")">
+                                    <span asp-validation-for="TermEndDate" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                            <div class="row">
+                                <div class="col-4">
+                                    <div class="form-group">
+                                      <label asp-for="AssessmentDays">Assessment Days</label>
+                                      <input type="text" class="form-control" asp-for="AssessmentDays" placeholder="Enter Assessment Days">
+                                      <span asp-validation-for="AssessmentDays" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="float-right mt-5">
+                            <button type="submit" class="btn btn-primary mr-2">Add</button>
+                            </div> 
+                            }
+
+                        <div class="col-12 grid-margin stretch-card">
+                            <div class="card">
+                            <div class="card-body">
+                                <h4 class="card-title">All-Terms for @ViewBag.Year</h4>
+                                @*<p class="card-description">
+                                The Created Terms!
+                                </p>*@
+                                <div class="table-responsive">
+                                    <table class="table table-hover table-bordered">
+                                        <thead class="bg-primary text-white">
+                                            <tr>
+                                                @if(User.HasClaim("Permission","Term.Update") || User.HasClaim("Permission","Term.Delete") || User.HasClaim("Permission","Holidays.Read")){
+                                                            <th>Actions</th>
+                                                        }
+                                                <th>Status</th>
+                                                <th>Year Name</th>
+                                                <th>Term Name</th>
+                                                <th>Term Start Date</th>
+                                                <th>Term End Date</th>
+                                                <th>Total Days</th>
+                                                <th>Total Sat &amp; Sun</th>
+                                                <th>Holidays</th>
+                                                <th>Assesment Days</th>
+                                                <th>Total School Days</th>
+                                                <th>Asses Wise School Days</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="term-data">
+                                                    @foreach (var term in Model.Terms)
+                                                    {
+                                                        <tr>
+                                                            @if(User.HasClaim("Permission","Term.Update") || User.HasClaim("Permission","Term.Delete") || User.HasClaim("Permission","Holidays.Read")){
+                                                            <td class="actions">
+                                                                @if(User.HasClaim("Permission","Holidays.Read")){
+                                                                 <a class="fa fa-book mr-3" title="Add Events/Holidays" asp-route-Id="@term.TermId" asp-route-YearId="@Model.YearId" asp-controller="AcademicCalendar" asp-action="Holidays" role="button"></a>
+                                                                }
+                                                                <a class="fa fa-book mr-3" title="Plan Units" asp-route-Id="@term.TermId" asp-route-YearId="@Model.YearId" asp-controller="AcademicCalendar" asp-action="UnitAllocation" role="button"></a>
+                                                                <a class="fa fa-file mr-3" title="Plan Chapter" asp-route-Id="@term.TermId" asp-route-YearId="@Model.YearId" asp-controller="AcademicCalendar" asp-action="ChapterAllocation" role="button"></a>
+                                                                <a class="fa fa-align-justify mr-3" title="Plan Topics" asp-route-Id="@term.TermId" asp-route-YearId="@Model.YearId" asp-controller="AcademicCalendar" asp-action="TopicAllocation" role="button"></a>
+                                                                <a class="fa fa-align-left mr-3" title="Plan Sub-Topics" asp-route-Id="@term.TermId" asp-route-YearId="@Model.YearId" asp-controller="AcademicCalendar" asp-action="SubTopicAllocation" role="button"></a>
+                                                                @if(User.HasClaim("Permission","Term.Update")){
+                                                                <a class="fa fa-edit mr-3" asp-route-id="@term.TermId" title="Edit Term" asp-controller="AcademicCalendar" asp-action="UpdateTerm" role="button"></a>
+                                                                }
+                                                                @if(User.HasClaim("Permission","Term.Delete")){
+                                                                <a class="fa fa-trash text-danger" title="Delete Term" onclick="return confirm('Are you sure you want to delete?');" asp-route-id="@term.TermId" asp-route-YearId="@Model.YearId" asp-controller="AcademicCalendar" asp-action="DeleteTerm" role="button"></a>
+                                                                }
+                                                            </td>
+                                                            }
+                                                            <td>
+                                                                @if ((bool)term.IsActive)
+                                                                {
+                                                                    <label class="badge badge-success">Active</label>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <label class="badge badge-danger">InActive</label>
+                                                                }
+                                                            </td>
+                                                            <td>@term.YearName</td>
+                                                            <td>@term.TermName</td>
+                                                            <td>@Convert.ToDateTime(term.StartDate).ToString("dd-MMM-yyyy")</td>
+                                                            <td>@Convert.ToDateTime(term.EndDate).ToString("dd-MMM-yyyy")</td>
+                                                            <td>@term.TotalDays</td>
+                                                            <td>@term.TotalSatSundays</td>
+                                                            <td>@term.Holidays</td>
+                                                            <td>@term.AssesmentDays</td>
+                                                            <td>@term.TotalSchoolDays</td>
+                                                            <td>@term.AssessmentWiseSchoolDays</td>
+                                                        </tr>   
+                                                    }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,47 @@
+﻿@model myWebApp.ViewModels.Grade.ResourceNoteBookVm
+<div class="main-panel">        
+    <div class="content-wrapper">
+        <div class="row">
+            <div class="col-12 grid-margin stretch-card">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Update NoteBook</h4>
+                        @*<p class="card-description">
+                        Please Update The New NoteBook and Press the Add Button.
+                        </p>*@
+                        <form class="forms-sample" method="post"
+                        asp-controller="Grade" asp-action="UpdateResourceNoteBook">
+                            <div class="row">
+                                <input type="hidden" asp-for="ResourceNoteBookId"/>
+                                <div class="col-4">
+                                    <div class="form-group">
+                                        <label asp-for="ResourceNoteBookName">NoteBook Name</label>
+                                        <input type="text" class="form-control" asp-for="ResourceNoteBookName" placeholder="Enter NoteBook Name" />
+                                        <span asp-validation-for="ResourceNoteBookName" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="form-group mt-2">
+                                        <select asp-for="IsActive" class="form-select" aria-label="Default select example">
+                                          <option selected>Is Notebook Active</option>
+                                              <option value="@true">Yes</option>
+                                              <option value="@false">No</option>
+                                        </select>
+                                          <span asp-validation-for="IsActive" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-4">
+                                    <div class="float-right">
+                                        <button type="submit" class="btn btn-primary mr-2">Update</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

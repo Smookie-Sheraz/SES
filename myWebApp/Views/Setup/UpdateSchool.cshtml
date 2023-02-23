@@ -1,0 +1,76 @@
+﻿@model myWebApp.ViewModels.Setups.School.SchoolVM
+@{
+}
+       <div class="main-panel">        
+        <div class="content-wrapper">
+        <div class="row">
+            <div class="col-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Update School</h4>
+                  @*<p class="card-description">
+                    Please Update School and Press the Update Button.
+                  </p>*@
+                  <form class="forms-sample" method="post"
+                  asp-controller="Setup" asp-action="UpdateSchool">
+                      <div class="row">
+                      <input type="hidden" asp-for="SchoolId"/>
+                      <div class="col-4">
+                         <div class="form-group">
+                      <label asp-for="SchoolName">School Name</label>
+                      <input type="text" class="form-control" asp-for="SchoolName" placeholder="Enter School Name" />
+                      <span asp-validation-for="SchoolName" class="text-danger"></span>
+                    </div>
+                    </div>
+                    <div class="col-4">
+                         <div class="form-group">
+                      <label asp-for="CEOName">CEO Name</label>
+                      <input type="text" class="form-control" asp-for="CEOName" placeholder="Enter CEO Name" />
+                      <span asp-validation-for="CEOName" class="text-danger"></span>
+                    </div>
+                    </div>
+                    <div class="col-4">
+                            <div class="form-group">
+                      <label asp-for="RegistrationNo">Registration No</label>
+                      <input type="text" class="form-control" asp-for="RegistrationNo" placeholder="Enter Registration No">
+                      <span asp-validation-for="RegistrationNo" class="text-danger"></span>
+                    </div>
+                    </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-4">
+                            <div class="form-group">
+                      <label asp-for="Email">Email Address</label>
+                      <input type="email" class="form-control" asp-for="Email" placeholder="Enter Email Please" />
+                      <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+                        </div>
+                        <div class="col-4">
+                         <div class="form-group">
+                      <label asp-for="PhoneNo">Phone No</label>
+                      <input type="text" class="form-control" asp-for="PhoneNo" placeholder="Enter Phone No" />
+                      <span asp-validation-for="PhoneNo" class="text-danger"></span>
+                    </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="form-group mt-2">
+                    <select asp-for="IsActive" class="form-select" aria-label="Default select example">
+                      <option selected value="@null">Is School Active</option>
+                          <option value="@true">Yes</option>
+                          <option value="@false">No</option>
+                    </select>
+                      <span asp-validation-for="IsActive" class="text-danger"></span>
+                    </div>
+                    </div>
+                    </div>
+                    <div class="float-right mt-4">
+                    <a class="btn btn-light" asp-controller="Setup" asp-action="School">Cancel</a>
+                        <button type="submit" class="btn btn-primary mr-2">Update</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+           </div>
+          </div>
+         </div>

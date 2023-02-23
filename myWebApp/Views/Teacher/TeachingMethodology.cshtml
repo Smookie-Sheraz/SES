@@ -1,0 +1,78 @@
+﻿@model myWebApp.ViewModels.Teacher.TeachingMethodologyVM
+@{
+}
+<div class="main-panel">
+    <div class="content-wrapper">
+        <div class="row">
+            <div class="col-12 grid-margin stretch-card">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Add New Teaching Methodology</h4>
+                        <p class="card-description">
+                            Please Add The New Teaching Methodology and Press the Add Button.
+                        </p>
+                        <form class="forms-sample" method="post"
+                              asp-controller="Teacher" asp-action="TeachingMethodology">
+                            <h4>Chapter</h4>
+                            <div class="row">
+                                <div class="col-4">
+                                    <div class="form-group">
+                                        <label asp-for="TMethodName">Teaching Methodology</label>
+                                        <input type="text" class="form-control" asp-for="TMethodName" placeholder="Enter Teaching Methodology"/>
+                                        <span asp-validation-for="TMethodName" class="text-danger"></span>
+                                    </div>
+                                    <div class="mt-2 float-right">
+                                    <button type="submit" class="btn btn-primary mr-2">Add</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 grid-margin stretch-card">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h4 class="card-title">Teaching Methods</h4>
+                                        <p class="card-description">
+                                            All Teaching Methods are listed below!
+                                        </p>
+                                        <div class="table-responsive">
+                                            <table class="table table-hover">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Actions</th>
+                                                        <th>Methodology Name</th>
+                                                        <th>Status</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody class="term-data">
+                                                    @foreach (var TMethod in ViewBag.TMethods)
+                                                    {
+                                                        <tr>
+                                                            <td class="actions">
+                                                                    <a class="fa fa-edit mr-3" asp-route-id="@TMethod.TeachingMethodologyId" asp-controller="Teacher" asp-action="UpdateTeachingMethodology" role="button"></a>
+                                                                <a class="fa fa-trash text-danger" onclick="return confirm('Are you sure you want to delete?');" asp-route-id="@TMethod.TeachingMethodologyId" asp-controller="Teacher" asp-action="DeleteTeachingMethodology" role="button"></a>
+                                                            </td>
+                                                            <td>@TMethod.TMethodologyName</td>
+                                                            <td>
+                                                            @if(TMethod.IsActive == true)
+                                                            {
+                                                                <label class="badge badge-success">Active</label>
+                                                            }
+                                                            else
+                                                            {
+                                                                <label class="badge badge-danger">InActive</label>
+                                                            }
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,191 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Entities.Models.Employee">
+    <Position X="7.75" Y="1.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAACBAADCAAABCAAAAEEEoEAAEBAGCCAABAQAACAIA=</HashCode>
+      <FileName>Models\Employee_Master.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Placement" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="Entities.Models.Placement">
+    <Position X="8.5" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAoAAAIAAIAhAiAAAIICAAAHgEAAkAAUAEAgIEQAAI=</HashCode>
+      <FileName>Models\Employee_Placement.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Campus" />
+      <Property Name="Department" />
+      <Property Name="Designation" />
+      <Property Name="Grade" />
+      <Property Name="Location" />
+      <Property Name="Project" />
+      <Property Name="School" />
+      <Property Name="Section" />
+      <Property Name="Shift" />
+      <Property Name="EmployeeType" />
+    </ShowAsAssociation>
+    <ShowAsCollectionAssociation>
+      <Property Name="Employees" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="Entities.Models.Campus">
+    <Position X="19.5" Y="5.25" Width="1.5" />
+    <AssociationLine Name="Placements" Type="Entities.Models.Placement" ManuallyRouted="true">
+      <Path>
+        <Point X="20.961" Y="7.315" />
+        <Point X="20.961" Y="10.199" />
+        <Point X="20.943" Y="10.199" Type="JumpStart" />
+        <Point X="20.37" Y="10.199" Type="JumpEnd" />
+        <Point X="20.156" Y="10.199" Type="JumpStart" />
+        <Point X="19.989" Y="10.199" Type="JumpEnd" />
+        <Point X="19.841" Y="10.199" Type="JumpStart" />
+        <Point X="19.538" Y="10.199" Type="JumpEnd" />
+        <Point X="16.783" Y="10.199" Type="JumpStart" />
+        <Point X="16.616" Y="10.199" Type="JumpEnd" />
+        <Point X="10" Y="10.199" />
+      </Path>
+    </AssociationLine>
+    <TypeIdentifier>
+      <HashCode>AAAIAAgAAAAggAgAECIABAAAAAAAAgAAQEEAAAEEAQA=</HashCode>
+      <FileName>Models\Campus.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="School" />
+      <Property Name="Location" />
+    </ShowAsAssociation>
+    <ShowAsCollectionAssociation>
+      <Property Name="Placements" />
+      <Property Name="Departments" />
+      <Property Name="Designations" />
+      <Property Name="Projects" />
+      <Property Name="Sections" />
+      <Property Name="Shifts" />
+      <Property Name="EmployeeTypes" />
+      <Property Name="Grades" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="Entities.Models.Department">
+    <Position X="13.5" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAIAAAggAAAEAAgAAAAAAAAAAAAAAAAAQAEAAI=</HashCode>
+      <FileName>Models\Setup_Department.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Campus" />
+    </ShowAsAssociation>
+    <ShowAsCollectionAssociation>
+      <Property Name="Placements" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="Entities.Models.Designation">
+    <Position X="13.5" Y="8" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAIAAAgAAAAEAAoAAAAAAAAAAAAAAAAAQAEAAI=</HashCode>
+      <FileName>Models\Setup_Designation.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Campus" />
+    </ShowAsAssociation>
+    <ShowAsCollectionAssociation>
+      <Property Name="Placements" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="Entities.Models.Grade">
+    <Position X="13.5" Y="15" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAIAAAgAAAAEAAgAAAAAAAAAAAAEAAAAQAEAAI=</HashCode>
+      <FileName>Models\Setup_Grade.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Campus" />
+    </ShowAsAssociation>
+    <ShowAsCollectionAssociation>
+      <Property Name="Placements" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="Entities.Models.Location">
+    <Position X="16" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ABAIAAAIAAAgAAAAEAAAAAAAAAAAAAAAQAAAAAAEAAI=</HashCode>
+      <FileName>Models\Setup_Location.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Campus" />
+      <Property Name="School" />
+    </ShowAsAssociation>
+    <ShowAsCollectionAssociation>
+      <Property Name="Placements" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="Entities.Models.Project">
+    <Position X="13.5" Y="17.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAIAAAgAAAAEAAgAAAABAAAAAAAAAAAAQAEAAI=</HashCode>
+      <FileName>Models\Setup_Project.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Campus" />
+    </ShowAsAssociation>
+    <ShowAsCollectionAssociation>
+      <Property Name="Placements" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="Entities.Models.School">
+    <Position X="13" Y="0.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAIAAgAAAAggAAgEAIAAAAAAAAAAAAAAAAAAAAEAAA=</HashCode>
+      <FileName>Models\School.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Location" />
+    </ShowAsAssociation>
+    <ShowAsCollectionAssociation>
+      <Property Name="Placements" />
+      <Property Name="Campuses" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="Entities.Models.Section">
+    <Position X="13.5" Y="12.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAIAAAgAAAAEAAgAAAAAAAAAAAAAAAAAQAUAAI=</HashCode>
+      <FileName>Models\Setup_Section.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Campus" />
+    </ShowAsAssociation>
+    <ShowAsCollectionAssociation>
+      <Property Name="Placements" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="Entities.Models.Shift">
+    <Position X="13.5" Y="10.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAIAAAgAAAAEAAgAAAAAgAAAAAAAAAAAQAEAAI=</HashCode>
+      <FileName>Models\Setup_Shift.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Campus" />
+    </ShowAsAssociation>
+    <ShowAsCollectionAssociation>
+      <Property Name="Placements" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Class Name="Entities.Models.EmployeeType">
+    <Position X="13.5" Y="3" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAIAAIgAAAAEAAgAAAAAAAAAAAAAAAAAQAEAAI=</HashCode>
+      <FileName>Models\Setup_Employee_Type.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Campus" />
+    </ShowAsAssociation>
+    <ShowAsCollectionAssociation>
+      <Property Name="Placements" />
+    </ShowAsCollectionAssociation>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

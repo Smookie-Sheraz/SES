@@ -1,0 +1,57 @@
+﻿@model Entities.ViewModels.UpdateSubTopicVM
+@{
+}
+       <div class="main-panel">        
+        <div class="content-wrapper">
+        <div class="row">
+            <div class="col-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Update Sub-Topic of @ViewBag.Topic Between Pages @ViewBag.TStartPage and @ViewBag.TEndPage</h4>
+                  @*<p class="card-description">
+                    Please Update Sub-Topic of @ViewBag.Topic and Press the Update Button.
+                  </p>*@
+                  <form class="forms-sample" method="post"
+                  asp-controller="Grade" asp-action="UpdateSubTopic">
+                  <input type="hidden" asp-for="TopicId"/>
+                  <input type="hidden" asp-for="SubTopicId"/>
+                    <div class="form-group">
+                      <label asp-for="SubTopicName">Sub-Topic Name</label>
+                      <input type="text" class="form-control" asp-for="SubTopicName" placeholder="Enter Sub-Topic Name"/>
+                      <span asp-validation-for="SubTopicName" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                      <label asp-for="StartPage">Start Page</label>
+                      <input type="number" min="@Model.MinPage" max="@Model.MaxPage" class="form-control" asp-for="StartPage" placeholder="Enter Start Page"/>
+                      <span asp-validation-for="StartPage" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                      <label asp-for="EndPage">End Page</label>
+                      <input type="number" min="@Model.MinPage" max="@Model.MaxPage" class="form-control" asp-for="EndPage" placeholder="Enter End Page"/>
+                      <span asp-validation-for="EndPage" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                      <label asp-for="IsActive">Topic Status</label>
+                    <select asp-for="IsActive" class="form-select" aria-label="Default select example">
+                      <option selected value="@null">Choose Sub-Topic Status</option>
+                             <option value="@true">Active</option>
+                             <option value="@false">InActive</option>
+                    </select>
+                      <span asp-validation-for="IsActive" class="text-danger"></span>
+                    </div>
+                    <div class="float-right mt-4">
+                    <a class="btn btn-light" asp-controller="Grade" asp-action="Topic" asp-route-id="@Model.TopicId">Cancel</a>
+                        <button type="submit" class="btn btn-primary mr-2">Update</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+           </div>
+          </div>
+         </div>
+
+@*@section scripts{
+                    <script src="~/lib/jquery-validate/jquery.validate.min.js"></script>
+                    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+}*@

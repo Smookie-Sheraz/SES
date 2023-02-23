@@ -1,0 +1,199 @@
+﻿@model myWebApp.ViewModels.BookAllocation.BookViewList
+@{
+    int i = -1;
+}
+<div class="main-panel">
+   <div class="content-wrapper">
+          <div class="row">
+            <div class="col-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Book Name: @Model.BookName     Author: @Model.Author</h4>
+                  @*<p class="card-description">
+                    Book Details
+                  </p>*@
+                  <div class="table-responsive">
+                            @if (Model.units.Any())
+                            {
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th colspan="3">Unit Name</th>
+                                        <th></th>
+                                        <th></th>
+                                        <th colspan="3">Start Date</th>
+                                        <th></th>
+                                        <th></th>
+                                        <th colspan="3">End Date</th>
+                                        <th></th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                        @foreach (var unit in Model.units)
+                                        {
+                                            <tr>
+                                                <td style="width:20px; margin:0px; padding:0px;"><button onclick="CollapseButton(this.id)" id="Button-Book-@unit.BookId" style="font-size:22px; padding:0px 10px;"class="btn btn-primary" type="button" data-toggle="collapse" data-target=".Chapter-@unit.UnitId" aria-expanded="false" aria-controls="Chapter-@unit.UnitId">+</button></td>
+                                                <td colspan="3">@unit.UnitName</td>
+                                                <td></td>
+                                                <td></td>
+                                                <td colspan="3">@unit.StartPage</td>
+                                                <td></td>
+                                                <td></td>
+                                                <td colspan="3">@unit.EndPage</td>
+                                                <td></td>
+                                                <td></td>
+                                            </tr>
+                                            @if(unit.Chapters.Any()){
+                                                <tr class="collapse Chapter-@unit.UnitId" style="width:95%;">
+                                                @*<th></th>
+                                                <th></th>*@
+                                                <th></th>
+                                                <th colspan="3">Chapter Name</th>
+                                                <th></th>
+                                                <th></th>
+                                                <th colspan="3">Start Date</th>
+                                                <th></th>
+                                                <th></th>
+                                                <th colspan="3">End Date</th>
+                                                <th></th>
+                                                <th></th>
+                                                @*  <th></th>
+                                                <th></th>
+                                                <th></th>
+                                                <th></th>
+                                                <th></th>*@
+                                            </tr>
+                                            @foreach (var chapter in unit.Chapters)
+                                            {
+                                                    <tr class="collapse Chapter-@unit.UnitId" style="width:95%;">
+                                                        <td style="width:20px; margin:0px; padding:0px;"><button onclick="CollapseButton(this.id)" id="Button-Book-@unit.BookId" style="font-size:22px; padding:0px 10px;"class="btn btn-primary" type="button" data-toggle="collapse" data-target=".Topic-@chapter.BookId" aria-expanded="false" aria-controls="Topic-@chapter.BookId">+</button></td>
+                                                        <td colspan="3">@chapter.ChapterName</td>
+                                                        <td></td>
+                                                        <td></td>
+                                                        <td colspan="3">@chapter.StartPage</td>
+                                                        <td></td>
+                                                        <td></td>
+                                                        <td colspan="3">@chapter.EndPage</td>
+                                                        <td></td>
+                                                        <td></td>
+                                                    </tr>
+                                                if (chapter.topics.Any())
+                                                {
+                                                        <tr class="collapse Topic-@chapter.BookId" >
+                                                            <th></th>
+                                                            <th colspan="3">Topic Name</th>
+                                                            <th></th>
+                                                            <th></th>
+                                                            <th colspan="3">Start Page</th>
+                                                            <th></th>
+                                                            <th></th>
+                                                            <th colspan="3">End Page</th>
+                                                            <th></th>
+                                                            <th></th>
+                                                        </tr>
+                                                    foreach (var topic in chapter.topics)
+                                                    {
+                                                            <tr class="collapse Topic-@topic.ChapterId">
+                                                                <td style="width:20px; margin:0px; padding:0px;"><button onclick="CollapseButton(this.id)" id="Button-Book-@unit.BookId" style="font-size:22px; padding:0px 10px;"class="btn btn-primary" type="button" data-toggle="collapse" data-target=".SubTopic-@topic.TopicId" aria-expanded="false" aria-controls="SubTopic-@topic.TopicId">+</button></td>
+                                                                <td colspan="3">@topic.TopicName</td>
+                                                                <td></td>
+                                                                <td></td>
+                                                                <td colspan="3">@topic.StartPage</td>
+                                                                <td></td>
+                                                                <td></td>
+                                                                <td colspan="3">@topic.EndPage</td>
+                                                                <td></td>
+                                                                <td></td>
+                                                            </tr>
+                                                        if (topic.SubTopics.Any())
+                                                        {
+                                                                <tr class="collapse SubTopic-@topic.TopicId">
+                                                                <th></th>
+                                                                <th colspan="3">Sub-Topic Name</th>
+                                                                <th></th>
+                                                                <th></th>
+                                                                <th colspan="3">Start Page</th>
+                                                                <th></th>
+                                                                <th></th>
+                                                                <th colspan="3">End Page</th>
+                                                                <th></th>
+                                                                <th></th>
+                                                                </tr>
+                                                            foreach (var sTopic in topic.SubTopics)
+                                                            {
+                                                                <tr class="collapse SubTopic-@sTopic.TopicId">
+                                                                    <td></td>
+                                                                    <td colspan="3">@sTopic.SubTopicName</td>
+                                                                    <td></td>
+                                                                    <td></td>
+                                                                    <td colspan="3">@sTopic.StartPage</td>
+                                                                    <td></td>
+                                                                    <td></td>
+                                                                    <td colspan="3">@sTopic.EndPage</td>
+                                                                    <td></td>
+                                                                    <td></td>
+                                                                </tr>
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            <tr class="collapse SubTopic-@topic.TopicId">
+                                                                <td>
+                                                                    <h5>No Sub-Topics Added To Chapter @topic.TopicName</h5>
+                                                                </td>
+                                                            </tr>
+                                                        }
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <tr class="collapse Topic-@chapter.BookId">
+                                                        <td>
+                                                            <h5>No Topics Added To Unit @chapter.ChapterName</h5>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            }
+                                            }
+                                            else
+                                            {
+                                                <tr class="collapse Chapter-@unit.UnitId">
+                                                    <td>
+                                                        <h5>No Chapters Added To Book @unit.UnitName</h5>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        }
+                                </tbody>
+                            </table>
+                            }
+                            else
+                            {
+                            <h3>No Books Found!</h3>
+                            }
+                  </div>
+                </div>
+              </div>
+            </div>
+            @*<div class="col-2 offset-10">
+              <a class="btn btn-primary" asp-controller="Grade" asp-action="AddBook" role="button">Add</a>
+            </div>*@
+          </div>
+        </div>
+</div>
+@*
+@Book scripts{
+        <script>
+            var rows = document.querySelector('.table').getElementsByTagName("tr");
+            for(var i = 1; i <= rows.length; i++){
+                var index = i.toString();
+                document.querySelector(`.table tr:nth-child(${index}) td:nth-child(13)`).innerHTML = document.querySelector(`.table tr:nth-child(${index}) td:nth-child(13)`).innerHTML.split(" ")[0];
+                document.querySelector(`.table tr:nth-child(${index}) td:nth-child(14)`).innerHTML = document.querySelector(`.table tr:nth-child(${index}) td:nth-child(14)`).innerHTML.split(" ")[0];
+                document.querySelector(`.table tr:nth-child(${index}) td:nth-child(15)`).innerHTML = document.querySelector(`.table tr:nth-child(${index}) td:nth-child(15)`).innerHTML.split(" ")[0];
+                document.querySelector(`.table tr:nth-child(${index}) td:nth-child(17)`).innerHTML = document.querySelector(`.table tr:nth-child(${index}) td:nth-child(17)`).innerHTML.split(" ")[0];
+                document.querySelector(`.table tr:nth-child(${index}) td:nth-child(18)`).innerHTML = document.querySelector(`.table tr:nth-child(${index}) td:nth-child(18)`).innerHTML.split(" ")[0];
+                }
+        </script>
+}*@

@@ -1,0 +1,115 @@
+﻿@*@model myWebApp.ViewModels.Placement.UpdatePlacement
+@{
+}
+       <div class="main-panel">        
+        <div class="content-wrapper">
+        <div class="row">
+            <div class="col-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Update Placement</h4>
+                  <p class="card-description">
+                    Please Update Placement and Press the Update Button.
+                  </p>
+                  <form class="forms-sample" method="post"
+                  asp-controller="Placement" asp-action="UpdatePlacement">
+                  <div class="row">
+                  <div class="col-12 col-md-6">
+                      <input type="hidden" asp-for="PlacementId"/>
+                       <div class="form-group">
+                      <label asp-for="Period">Period</label>
+                      <input type="text" class="form-control" asp-for="Period" placeholder="Enter Period in Years">
+                      <span asp-validation-for="Period" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                      <label asp-for="PlacementDate">Placement Date</label>
+                      <input type="date" class="form-control" asp-for="PlacementDate" placeholder="Enter Placement Date">
+                      <span asp-validation-for="PlacementDate" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                      <label asp-for="LocationId">Location Id</label>
+                      <input type="text" class="form-control" asp-for="LocationId" placeholder="Enter Location Id">
+                      <span asp-validation-for="LocationId" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                      <label asp-for="DepartmentId">Department Id</label>
+                      <input type="text" class="form-control" asp-for="DepartmentId" placeholder="Enter Department Id">
+                      <span asp-validation-for="DepartmentId" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                      <label asp-for="DesignationId">Designation Id</label>
+                      <input type="text" class="form-control" asp-for="DesignationId" placeholder="Enter Designation Id">
+                      <span asp-validation-for="DesignationId" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                      <label asp-for="GradeId">Grade Id</label>
+                      <input type="text" class="form-control" asp-for="GradeId" placeholder="Enter Grade Id">
+                      <span asp-validation-for="GradeId" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                      <label asp-for="EmployeeTypeId">Grade Id</label>
+                      <input type="text" class="form-control" asp-for="EmployeeTypeId" placeholder="Enter EmployeeType Id">
+                      <span asp-validation-for="EmployeeTypeId" class="text-danger"></span>
+                    </div>
+                  </div>
+                   <div class="col-12 col-md-6">
+                       <div class="form-group">
+                      <label asp-for="ShiftId">Shift Id</label>
+                      <input type="text" class="form-control" asp-for="ShiftId" placeholder="Enter Shift Id">
+                      <span asp-validation-for="ShiftId" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                      <label asp-for="SectionId">Section Id</label>
+                      <input type="text" class="form-control" asp-for="SectionId" placeholder="Enter Section Id">
+                      <span asp-validation-for="SectionId" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                      <label asp-for="ProjectId">Project Id</label>
+                      <input type="text" class="form-control" asp-for="ProjectId" placeholder="Enter Project Id">
+                      <span asp-validation-for="ProjectId" class="text-danger"></span>
+                    </div>
+                        <div class="form-group">
+                      <label asp-for="SchoolId">School Id</label>
+                      <input type="text" class="form-control" asp-for="SchoolId" placeholder="Enter School Id">
+                      <span asp-validation-for="SchoolId" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                      <label asp-for="CampusId">Campus Id</label>
+                      <input type="text" class="form-control" asp-for="CampusId" placeholder="Enter Campus Id">
+                      <span asp-validation-for="CampusId" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                      <label asp-for="ContractStartDate">Contract Start Date</label>
+                      <input type="date" class="form-control" asp-for="ContractStartDate" placeholder="Enter Contract Start Date">
+                      <span asp-validation-for="ContractStartDate" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                      <label asp-for="ContractEndDate">Contract End Date</label>
+                      <input type="date" class="form-control" asp-for="ContractEndDate" placeholder="Enter Contract End Date">
+                      <span asp-validation-for="ContractEndDate" class="text-danger"></span>
+                    </div>
+                    <div class="form-check">
+                      <label class="form-check-label" asp-for="IsContractRenewable">
+                      <input class="form-check-input" type="checkbox" value="" asp-for="IsContractRenewable">
+                      <span asp-validation-for="IsContractRenewable" class="text-danger"></span>
+                        Renewable
+                      </label>
+                    </div>
+                    <div class="float-right">
+                    <a class="btn btn-light" asp-controller="Placement" asp-action="Index">Cancel</a>
+                        <button type="submit" class="btn btn-primary mr-2">Update</button>
+                    </div>
+                   </div>
+                   </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+           </div>
+          </div>
+         </div>
+
+@section scripts{
+            <script src="~/lib/jquery-validate/jquery.validate.min.js"></script>
+            <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+}*@

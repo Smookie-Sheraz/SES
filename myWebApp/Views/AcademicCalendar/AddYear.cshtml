@@ -1,0 +1,52 @@
+﻿@model myWebApp.ViewModels.AcademicCalendar.YearVM
+@{
+}
+       <div class="main-panel">        
+        <div class="content-wrapper">
+        <div class="row">
+            <div class="col-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Add New Academic Year</h4>
+                  <p class="card-description">
+                    Please Add The New Academic Year and Press the Add Button.
+                  </p>
+                  <form class="forms-sample" method="post"
+                  asp-controller="AcademicCalendar" asp-action="AddYear">
+                  <div class="row">
+                      <div class="col-12 col-md-6">
+                          <div class="form-group">
+                      <label asp-for="YearName">Year Name</label>
+                      <input type="text" class="form-control" asp-for="YearName" placeholder="Enter Start Date">
+                      <span asp-validation-for="YearName" class="text-danger"></span>
+                    </div>    
+                  <div class="form-group">
+                      <label asp-for="StartDate">Start Date</label>
+                      <input type="date" class="form-control" asp-for="StartDate" placeholder="Enter Start Date">
+                      <span asp-validation-for="StartDate" class="text-danger"></span>
+                    </div>
+                      </div>
+                      <div class="col-12 col-md-6">
+                          <div class="form-group">
+                      <label asp-for="EndDate">End Date</label>
+                      <input type="date" class="form-control" asp-for="EndDate" placeholder="Enter End Date">
+                      <span asp-validation-for="EndDate" class="text-danger"></span>
+                    </div>
+                    <div class="float-right mt-4">
+                    <a class="btn btn-light" asp-controller="AcademicCalendar" asp-action="Year">Cancel</a>
+                        <button type="submit" class="btn btn-primary mr-2">Add</button>
+                    </div>
+                      </div>
+                  </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+           </div>
+          </div>
+         </div>
+
+@*@section scripts{
+                    <script src="~/lib/jquery-validate/jquery.validate.min.js"></script>
+                    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+}*@

@@ -1,0 +1,117 @@
+﻿@model myWebApp.ViewModels.Grade.BookVM
+@{
+    int i = -1;
+}
+<div class="main-panel">
+   <div class="content-wrapper">
+          <div class="row">
+            <div class="col-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Books</h4>
+                  @*<p class="card-description">
+                   The User Id is @User.FindFirst("Sid").Value.ToString()  @User.Identity.AuthenticationType
+                  </p>*@
+                  <div class="table-responsive">
+                            @if (Model.books.Any())
+                            {
+                            <table class="table table-bordered table-hover" id="BooksTable">
+                                <thead class="bg-primary text-light">
+                                    <tr>
+                                        @if(User.HasClaim("Permission", "Book.Update") || User.HasClaim("Permission", "Book.Delete") || User.HasClaim("Permission", "Chapter.Read")){
+                                        <th>Actions</th>
+                                        }
+                                        <th>Book Details</th>
+                                        <th>Status</th>
+                                        <th>Book Type</th>
+                                        <th>Book Name</th>
+                                        <th>Subject</th>
+                                        <th>Grade Name</th>
+                                        <th>Publisher</th>
+                                        <th>Publishing Date</th>
+                                        <th>Note Book</th>
+                                        <th>Resource Book</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                        @foreach (var Book in Model.books)
+                                        {
+                                            i++;
+                                            <tr>
+                                                @if (User.HasClaim("Permission", "Book.Update") || User.HasClaim("Permission", "Book.Delete") || User.HasClaim("Permission", "Chapter.Read") || User.HasClaim("Permission", "Chapter.Create") || User.HasClaim("Permission", "Chapter.Delete")){
+                                                <td class="actions">
+                                                    @if(User.HasClaim("Permission", "Chapter.Read") || User.HasClaim("Permission", "Chapter.Create") || User.HasClaim("Permission", "Chapter.Delete")){
+                                                    <a class="fa fa-file mr-3" title="Add Units" asp-route-id="@Book.BookId" asp-controller="Grade" asp-action="Unit" role="button"></a>
+                                                    }
+                                                    @if(User.HasClaim("Permission", "Book.Update")){
+                                                    <a class="fa fa-edit mr-3" title="Edit Book" asp-route-id="@Book.BookId" asp-controller="Grade" asp-action="UpdateBook" role="button"></a>
+                                                    }
+                                                    @if(User.HasClaim("Permission", "Book.Delete")){
+                                                    <a class="fa fa-trash text-danger" title="Delete Book" onclick="return confirm('Are you sure you want to delete?');" asp-route-id="@Book.BookId" asp-controller="Grade" asp-action="DeleteBook" role="button"></a>
+                                                    }
+                                                </td>
+                                                }
+                                                @if (User.HasClaim("Permission", "BookDetails.Read"))
+                                                {
+                                                    <td><a target="_blank" asp-controller="Grade" asp-action="BookDetails" asp-route-BookId="@Book.BookId" class="btn btn-outline-info btn-sm">Details</a></td>
+                                                }
+                                                <td>
+                                                    @if ((bool)Book.IsActive)
+                                                    {
+                                                                <label class="badge badge-success">Active</label>
+                                                    }
+                                                    else
+                                                    {
+                                                                <label class="badge badge-danger">InActive</label>
+                                                    }
+                                                </td>
+                                                <td>
+                                                    @if ((bool)Book.IsWorkBook)
+                                                    {
+                                                                <label class="badge badge-warning">Workbook</label>
+                                                    }
+                                                    else
+                                                    {
+                                                                <label class="badge badge-primary">Textbook</label>
+                                                    }
+                                                </td>
+                                                <td>@Book.BookName</td>
+                                                <td>@Book.SubjectName</td>
+                                                <td>@Book.GardeName</td>
+                                                <td>@Book.Publisher</td>
+                                                @if(Book.PublishDate == null){
+                                                    <td></td>
+                                                }
+                                                else{
+                                                    <td>@Convert.ToDateTime(Book.PublishDate).ToString("dd-MMM-yyyy")</td>
+                                                }
+                                                <td>@Book.ResourceNoteBook</td>
+                                                <td><a target="_blank" asp-route-path="@Url.Content(Book.ResourceBookURL)" asp-controller="Grade" asp-action="ViewResourceBook">@Book.ResourceBook</a></td>
+                                            </tr>
+                                        }
+                                </tbody>
+                            </table>
+                            }
+                            else
+                            {
+                            <h3>No Books Found!</h3>
+                            }
+                  </div>
+                </div>
+              </div>
+            </div>
+            @if (User.HasClaim("Permission", "Book.Create")){
+            <div class="col-2 offset-10">
+              <a class="btn btn-primary" asp-controller="Grade" asp-action="AddBook" role="button">Add</a>
+            </div>
+            }
+          </div>
+        </div>
+</div>
+@section scripts{
+        <script>
+        $(document).ready(function () {
+            $('#BooksTable').DataTable();
+        });
+        </script>
+}

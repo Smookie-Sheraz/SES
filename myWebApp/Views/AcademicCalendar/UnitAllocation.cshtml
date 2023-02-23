@@ -1,0 +1,144 @@
+﻿@model myWebApp.ViewModels.AcademicCalendar.UnitAllocationVM
+<div class="main-panel">
+   <div class="content-wrapper">
+       <form method="post"
+       asp-controller="AcademicCalendar" asp-action="UnitAllocation">
+          <div class="row">
+            <div class="col-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Units for Term @ViewBag.Month</h4>
+                  @*<p class="card-description">
+                    The Units allocated to the @ViewBag.Month !
+                  </p>*@
+                  <div class="table-responsive">
+                      @if (Model.Units.Any())
+                        {
+                           <table class="table table-hover" id="UnitsTable">
+                             <thead>
+                               <tr>
+                                 <th>Unit Name</th>
+                                 <th>Start Date</th>
+                                 <th>End Date</th>
+                                 <th>Workbook</th>
+                                 <th>WB Star Page</th>
+                                 <th>WB End Page</th>
+                                 <th>Selection</th>
+                               </tr>
+                             </thead>
+                           <tbody>
+                            <input type="hidden" asp-for="YearId"/>
+                            <input type="hidden" asp-for="TermId"/>
+                              @for(var i =0;i<Model.Units.Count(); i++) 
+                              {
+                                  <tr>
+                                    <td>(Book:@Model.Units[i].BookName) @Model.Units[i].UnitName</td>
+                                    <td>
+                                        <div class="form-group">
+                                                    <input type="date" class="form-control text-center" oninput="check(this.id)" asp-for="@Model.Units[i].StartDate" placeholder="Enter Start Date" min="@Convert.ToDateTime(Model.MinDate).ToString("yyyy-MM-dd")" max="@Convert.ToDateTime(Model.MaxDate).ToString("yyyy-MM-dd")">
+                                            <span asp-validation-for="@Model.Units[i].StartDate" class="text-danger"></span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-group">
+                                                    <input type="date" class="form-control text-center" asp-for="@Model.Units[i].EndDate" placeholder="Enter End Date" min="@Convert.ToDateTime(Model.MinDate).ToString("yyyy-MM-dd")" max="@Convert.ToDateTime(Model.MaxDate).ToString("yyyy-MM-dd")">
+                                            <span asp-validation-for="@Model.Units[i].EndDate" class="text-danger"></span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-group">
+                                              @*<label asp-for="@Model.Units[i].WorkBookId">Grade</label>*@
+                                              <select asp-for="@Model.Units[i].WorkBookId" class="form-select" aria-label="Default select example">
+                                              <option value="@null" selected>Select WorkBook Please</option>
+                                                    @foreach (var grade in ViewBag.WorkBooks)
+                                                    {
+                                                        <option value="@grade.BookId">@grade.BookName</option>          
+                                                    }
+                                            </select>
+                                          <span asp-validation-for="@Model.Units[i].WorkBookId" class="text-danger"></span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                       <div class="form-group">
+                                            <input type="number" class="form-control text-center" asp-for="@Model.Units[i].WorkBookStartPage" placeholder="Enter Start Page" />
+                                            <span asp-validation-for="@Model.Units[i].WorkBookStartPage" class="text-danger"></span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-group">
+                                            <input type="number" class="form-control text-center" asp-for="@Model.Units[i].WorkBookEndPage" placeholder="Enter Start End" />
+                                            <span asp-validation-for="@Model.Units[i].WorkBookEndPage" class="text-danger"></span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-check">
+                                        <label class="form-check-label">
+                                        <input type="hidden" asp-for="@Model.Units[i].UnitId"/>
+                                        @if((bool)Model.Units[i].preAllocation)
+                                        {
+                                        <input type="checkbox" class="form-check-input" checked asp-for="@Model.Units[i].IsSelected" />
+                                        }
+                                        else
+                                        {
+                                        <input type="checkbox" class="form-check-input" asp-for="@Model.Units[i].IsSelected" />
+                                        }
+                                        Select </label>
+                                        </div>
+                                    </td>
+                                  </tr> 
+                              }
+                           </tbody>
+                          </table>
+                      }
+                      else
+                      {
+                         <h3>No Data Found!</h3>
+                      }
+                  </div>
+                </div>
+              </div>
+            </div>
+            @if(Model.Units.Count != 0){
+            <div class="col-2 offset-10">
+                <button type="submit" asp-for="UnitAllocation(@Model.Units)" class="btn btn-primary mr-2">Allocate</button>
+            </div>
+                }
+          </div>
+       </form>
+   </div>
+</div>
+@*@section scripts{
+    <script>
+        function check(id){
+            console.log(id);
+            var IdParts = id.split("_");
+            var trNow = parseInt(IdParts[1]);
+            if(trNow > 0){
+                trNow -= 1;
+                var startDateString = document.getElementById(id);
+                var startDate = new Date(startDateString.value.split("-")[0],startDateString.value.split("-")[1] - 1,startDateString.value.split("-")[2]);
+                var endDateId = IdParts[0] +"_"+ trNow.toString() +"__"+ "EndDate";
+                var endDateString = document.getElementById(endDateId);
+                var endDate = new Date(endDateString.value.split("-")[0],endDateString.value.split("-")[1] - 1,endDateString.value.split("-")[2]);
+                if(startDate <= endDate){
+                    alert("The Topic should start after the end of the previos chapter " + endDateString.value);
+                    startDateString.value = endDateString.value;
+                }
+            }
+            }
+    </script>
+}*@
+
+@section scripts{
+            <script>
+            $(document).ready(function () {
+                $('#UnitsTable').DataTable({
+                    serverSide: true,
+                    //processing: true
+                    ajax: function(){
+
+                    },
+                });
+            });
+            </script>
+}

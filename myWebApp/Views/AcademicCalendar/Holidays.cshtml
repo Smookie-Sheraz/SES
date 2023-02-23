@@ -1,0 +1,218 @@
+﻿@model myWebApp.ViewModels.AcademicCalendar.HolidaysVM
+       <div class="main-panel">        
+        <div class="content-wrapper">
+        <div class="row">
+            <div class="col-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Add Holidays of @ViewBag.TermName</h4>
+                  @*<p class="card-description">
+                    Please Add The Holida @ViewBag.TermName and Press the Add Button.
+                  </p>*@
+                  <form class="forms-sample" method="post"
+                  asp-controller="AcademicCalendar" asp-action="Holidays">
+                  @if(User.HasClaim("Permission","Holiday.Create")){
+                  <div class="row">
+                      <input type="hidden" asp-for="TermId"/>
+                      <input type="hidden" asp-for="YearId"/>
+                      <div class="col-4">
+                         <div class="form-group">
+                      <label asp-for="HolidayName">Event Name</label>
+                      <input type="text" class="form-control" asp-for="HolidayName" placeholder="Enter Event Name" />
+                      <span asp-validation-for="HolidayName" class="text-danger"></span>
+                    </div>
+                    </div>
+                      <div class="col-4">
+                         <div class="form-group">
+                      <label asp-for="StartDate">From</label>
+                      <input type="date" class="form-control" asp-for="StartDate" placeholder="Enter Start Date" min="@Convert.ToDateTime(Model.MinDate).ToString("yyyy-MM-dd")" max="@Convert.ToDateTime(Model.MaxDate).ToString("yyyy-MM-dd")">
+                      <span asp-validation-for="StartDate" class="text-danger"></span>
+                    </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="form-group">
+                      <label asp-for="EndDate">To</label>
+                      <input type="date" class="form-control" asp-for="EndDate" placeholder="Enter End Date" min="@Convert.ToDateTime(Model.MinDate).ToString("yyyy-MM-dd")" max="@Convert.ToDateTime(Model.MaxDate).ToString("yyyy-MM-dd")">
+                      <span asp-validation-for="EndDate" class="text-danger"></span>
+                    </div>
+                    </div>
+                    </div>
+                  <div class="float-right">
+                        <button type="submit" class="btn btn-primary mr-2" onclick="SubmitButton()">Add</button>
+                    </div>}
+                    <div class="col-12 grid-margin stretch-card">
+                      <div class="card">
+                        <div class="card-body">
+                          <h4 class="card-title">All-Holidays of @ViewBag.TermName</h4>
+                          <p class="card-description">
+                          </p>
+                          <div class="table-responsive">
+                            <table class="table table-hover table-bordered">
+                                <thead class="bg-primary text-white">
+                                    <tr>
+                                    @if(User.HasClaim("Permission","Holiday.Delete")){
+                                    <th>Actions</th>
+                                    }
+                                    <th>Status</th>
+                                    <th>Event Name</th>
+                                    <th>Start Date</th>
+                                    <th>End Date</th>
+                                    <th>Total Days</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="term-data">
+                                @foreach (var holiday in Model.Holidays)
+                                {
+                                    <tr>
+                                        @if(User.HasClaim("Permission","Holiday.Delete")){
+                                        <td class="actions">
+                                            <a class="fa fa-trash text-danger" title="Delete Event" onclick="return confirm('Are you sure you want to delete this Event?');" asp-route-id="@holiday.HolidayId" asp-route-YearId="@Model.YearId"  asp-controller="AcademicCalendar" asp-action="DeleteHoliday" role="button"></a>
+                                        </td>
+                                        }
+                                        <td>
+                                            @if ((bool)holiday.IsActive)
+                                            {
+                                                <label class="badge badge-success">Active</label>
+                                            }
+                                            else
+                                            {
+                                                <label class="badge badge-danger">InActive</label>
+                                            }
+                                        </td>
+                                        <td>@holiday.HolidayName</td>
+                                        <td>@Convert.ToDateTime(holiday.StartDate).ToString("dd-MMM-yyyy")</td>
+                                        <td>@Convert.ToDateTime(holiday.EndDate).ToString("dd-MMM-yyyy")</td>
+                                        <td>@holiday.NoOfHolidays</td>
+                                    </tr> 
+                                }
+                                </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+           </div>
+          </div>
+         </div>
+@section scripts{
+    @*<script src="~/js/dashboard.js"></script>*@
+        <script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
+        <script src="~/lib/jquery/dist/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js" integrity="sha512-T/tUfKSV1bihCnd+MxKD0Hm1uBBroVYBOYSk1knyvQ9VyZJpc/ALb4P0r6ubwVPSGB2GvjeoMAJJImBG12TiaQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <script>
+                var dates;
+                $(document).ready(function() {
+                 //console.log("I'm Ready");
+                        $.ajax({
+                            type: "GET",
+                            url: "@Url.Action("MonthFreeDates","AcademicCalendar",new {TermId = @Model.TermId})",
+                            success: function(data){
+                                data = JSON.parse(data);
+                                dates = new Array(data.length);
+                                for(var i = 0; i < data.length; i++){
+                                    var formatedDate = data[i].split("T")[0].split("-");
+                                        formatedDate[1]= formatedDate[1].replace('0','');
+                                    if(formatedDate[1][0] == "0"){
+                                    }
+                                    dates[i] = formatedDate[2]+ "/" + formatedDate[1] + "/" + formatedDate[0];
+                                    console.log(dates[i]);
+                                }
+                            },
+                            error: function(err){
+                                console.log(err);
+                            }
+                        });
+                        $('.bs-datepicker').datepicker({
+                            autoclose: true,
+                            startDate: "@Convert.ToDateTime(Model.MinDate).ToString("MM/dd/yyyy")",
+                            endDate: "@Convert.ToDateTime(Model.MaxDate).ToString("MM/dd/yyyy")",
+                            datesDisabled: "03/03/2023"
+                        });
+                    });
+
+        </script>
+    <script>
+        var eventDate = document.getElementsByClassName("event-date");
+        for(var prop in eventDate){
+            var DateArray = eventDate[prop].innerHTML.split("-");
+            if(DateArray[2] == "0001"){
+                //console.log(DateArray[2]);
+                    var holidays = document.getElementById("Holidays");
+                    console.log(holidays.innerHTML);
+                eventDate[prop].innerHTML = "";
+            }
+        };
+    </script>
+}
+@*@section scripts{
+    <script src="~/js/dashboard.js"></script>
+                    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+                            <script>
+    //                                   $(function() {
+    //    $("#example").dataTable();
+    //});
+                //$(document).ready(function(){
+                //       $('#term-btn').on('click', function () {
+
+                          // alert("fdfdf");
+
+                           //var term = {};
+                           //    term.url = 
+                           //term.type = "POST";
+                           //term.dataType = "json";
+                           //term.data = JSON.stringify({YearId: $('#YearId').val(), 
+                           //    TermName: `$('#TermName').val()`,
+                           //    TermStartDate: `$('#TermStartDate').val()`,
+                           //    TermEndDate: `$('#TermEndDate').val()`});
+                           //term.contentType = "application/json";
+                           //term.success = function(){
+                           
+                           //    console.log("Saved Successfully")
+                           //};
+                           //term.error = function(){
+                           //    console.log("Error Occured While Saving")
+                           //};
+                           //$.ajax(term);
+                    //var termSDate = new Date(`${$('#YearStartDate').val()}`);
+                    //var termEDate = new Date(`${$('#YearEndDate').val()}`);
+                    //console.log(termSDate);
+                    //var termEDate = new Date(`${$('#YearEndDate').val()}`);
+                    //console.log(termEDate);
+                    //var noOfMonths = $("#NoOfMonths").val();
+                    //termSDate.setMonth(termSDate.getMonth() + (noOfMonths - 1));
+                    //    console.log("I am x",termSDate);
+                    //        var termEDate = new Date(termSDate);
+                    //        endDate = new Date(termEDate.getFullYear(),termEDate.getMonth(),termEDate.getDate());
+                    //        console.log("I am New termEDate",endDate);
+                    //        $("#YearEndDate").val(endDate);
+                    //months = (termEDate.getFullYear() - termSDate.getFullYear()) * 12;
+                    //months -= termSDate.getMonth();
+                    //months += termEDate.getMonth();
+                    //months +=1;
+                    //console.log(months);
+                    // var months = (termEDate - termSDate);
+
+                    //if((termEDate - 3) > 0 ){
+                    //    alert("Term Can't be less than 3 months");
+                    //    console.log("Term Can't be less than 3 months");
+                    //}
+                    //else{
+                    //         Adding a row inside the tbody.
+                    //$('.term-data').append(`<tr>{}
+                    //          <td>${$('#YearId').find(":selected").text()}</td>
+                    //      <td>${$('#TermName').val()}</td>
+                    //      <td>${$('#TermStartDate').val()}</td>
+                    //      <td>${$('#TermEndDate').val()}</td>
+                    //       </tr>`);
+                    //}
+        //                });
+        //});
+            </script>
+    }*@
+
+
+

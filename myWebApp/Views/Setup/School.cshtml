@@ -1,0 +1,136 @@
+﻿@model myWebApp.ViewModels.Setups.School.SchoolVM
+@section styles{
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" integrity="sha512-mSYUmp1HYZDFaVKK//63EcZq4iFWFjxSL+Z3T/aCt4IO9Cejm03q3NKKYN6pFQzY0SBOr8h+eCIAZHPXcpZaNw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+}
+       <div class="main-panel">        
+        <div class="content-wrapper">
+        <div class="row">
+            <div class="col-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Add New School</h4>
+                  @*<p class="card-description">
+                    Please Add The New School and Press the Add Button.
+                  </p>*@
+                  <form class="forms-sample" method="post"
+                  asp-controller="Setup" asp-action="AddSchool">
+                @if (User.HasClaim("Permission", "School.Create")){
+                  <div class="row">
+                      <div class="col-4">
+                         <div class="form-group">
+                      <label asp-for="SchoolName">School Name</label>
+                      <input type="text" class="form-control" asp-for="SchoolName" placeholder="Enter School Name" />
+                      <span asp-validation-for="SchoolName" class="text-danger"></span>
+                    </div>
+                    </div>
+                    <div class="col-4">
+                         <div class="form-group">
+                      <label asp-for="CEOName">CEO Name</label>
+                      <input type="text" class="form-control" asp-for="CEOName" placeholder="Enter CEO Name" />
+                      <span asp-validation-for="CEOName" class="text-danger"></span>
+                    </div>
+                    </div>
+                    <div class="col-4">
+                            <div class="form-group">
+                      <label asp-for="RegistrationNo">Registration No</label>
+                      <input type="text" class="form-control" asp-for="RegistrationNo" placeholder="Enter Registration No">
+                      <span asp-validation-for="RegistrationNo" class="text-danger"></span>
+                    </div>
+                    </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-4">
+                            <div class="form-group">
+                      <label asp-for="Email">Email Address</label>
+                      <input type="email" class="form-control" asp-for="Email" placeholder="Enter Email Please" />
+                      <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="form-group">
+                      <label asp-for="Abbrevation">Abbrevation</label>
+                      <input type="text" class="form-control" asp-for="Abbrevation" placeholder="Enter Abbrevation Please" />
+                      <span asp-validation-for="Abbrevation" class="text-danger"></span>
+                    </div>
+                        </div>
+                        <div class="col-4">
+                         <div class="form-group">
+                      <label asp-for="PhoneNo">Phone No</label>
+                      <input type="text" class="form-control" asp-for="PhoneNo" placeholder="Enter Phone No" />
+                      <span asp-validation-for="PhoneNo" class="text-danger"></span>
+                    </div>
+                    </div>
+                    </div>
+                        <div class="float-right">
+                        <button type="submit" class="btn btn-primary mr-2">Add</button>
+                    </div>
+                    }
+                    <div class="col-12 grid-margin stretch-card">
+                      <div class="card">
+                        <div class="card-body">
+                          <h4 class="card-title">All-Schools</h4>
+                          @*<p class="card-description">
+                            The Created Schools!
+                          </p>*@
+                          <div class="table-responsive">
+                            <table class="table table-hover table-bordered">
+                                <thead class="bg-primary text-white">
+                                    <tr>
+                                    @if (User.HasClaim("Permission", "School.Update") || User.HasClaim("Permission", "School.Delete")){
+                                    <th>Actions</th>
+                                    }
+                                    <th>Status</th>
+                                    <th>School Name</th>
+                                    <th>Registration No</th>
+                                    <th>Abbrevation</th>
+                                    <th>CEO Name</th>
+                                    <th>Email Address</th>
+                                    <th>Phone No</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="term-data">
+                                @foreach (var School in ViewBag.Schools)
+                                {
+                                    <tr>
+                                        @if (User.HasClaim("Permission", "School.Update") || User.HasClaim("Permission", "School.Delete"))
+                                        {
+                                        <td class="actions">
+                                            @if (User.HasClaim("Permission", "School.Update")){
+                                            <a class="fa fa-edit mr-3" asp-route-Id="@School.SchoolId"  asp-controller="Setup" asp-action="UpdateSchool" role="button"></a>
+                                            }
+                                            @if (User.HasClaim("Permission", "School.Delete")){
+                                            <a class="fa fa-trash text-danger mr-3" onclick="return confirm('Are you sure you want to delete this School?');" asp-route-id="@School.SchoolId" asp-controller="Setup" asp-action="DeleteSchool" onclick="return confirm('Are you sure you want to delete this School?');" role="button"></a>
+                                            }
+                                        </td>
+                                        }
+                                        <td>
+                                        @if ((bool)School.IsActive)
+                                        {
+                                            <label class="badge badge-success">Active</label>
+                                        }
+                                        else
+                                        {
+                                            <label class="badge badge-danger">InActive</label>
+                                        }
+                                        </td>
+                                        <td>@School.SchoolName</td>
+                                        <td>@School.RegistrationNo</td>
+                                        <td>@School.Abbrevation</td>
+                                        <td>@School.CEOName</td>
+                                        <td>@School.Email</td>
+                                        <td>@School.PhoneNo</td>
+                                    </tr> 
+                                }
+                                </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+           </div>
+          </div>
+         </div>

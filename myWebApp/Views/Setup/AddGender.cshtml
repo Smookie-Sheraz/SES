@@ -1,0 +1,40 @@
+﻿@model myWebApp.ViewModels.Setups.GenderVM
+@{
+}
+       <div class="main-panel">        
+        <div class="content-wrapper">
+        <div class="row">
+            <div class="col-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Add New Gender</h4>
+                  @*<p class="card-description">
+                    Please Add The New Gender and Press the Add Button.
+                  </p>*@
+                  <form class="forms-sample" method="post"
+                  asp-controller="Setup" asp-action="AddGender">
+                  <div class="row justify-content-between">
+                  <div class="col-12 col-md-6">
+                      <div class="form-group">
+                      <label asp-for="Gender">Gender</label>
+                      <input type="text" class="form-control" asp-for="Gender" placeholder="Enter Gender">
+                      <span asp-validation-for="Gender" class="text-danger"></span>
+                    </div>
+                      <div class="float-right">
+                    <a class="btn btn-light" asp-controller="Setup" asp-action="Gender">Cancel</a>
+                        <button type="submit" class="btn btn-primary mr-2">Add</button>
+                    </div>
+                  </div>
+                  </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+           </div>
+          </div>
+         </div>
+
+@section scripts{
+                <script src="~/lib/jquery-validate/jquery.validate.min.js"></script>
+                <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+}

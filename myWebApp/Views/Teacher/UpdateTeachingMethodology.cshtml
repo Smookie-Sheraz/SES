@@ -1,0 +1,40 @@
+﻿@model myWebApp.ViewModels.Teacher.TeachingMethodologyVM
+@{
+}
+       <div class="main-panel">        
+        <div class="content-wrapper">
+        <div class="row">
+            <div class="col-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Update Teaching Methodology</h4>
+                  <p class="card-description">
+                    Please Update Teaching Methodology and Press the Update Button.
+                  </p>
+                  <form class="forms-sample" method="post"
+                  asp-controller="Teacher" asp-action="UpdateTeachingMethodology">
+                  <input type="hidden" asp-for="TeachingMethodologyId"/>
+                    <div class="form-group">
+                        <label asp-for="TMethodName">Teaching Methodology</label>
+                        <input type="text" class="form-control" asp-for="TMethodName" placeholder="Enter Teaching Methodology"/>
+                        <span asp-validation-for="TMethodName" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                      <label asp-for="IsActive">Teaching Method Status</label>
+                    <select asp-for="IsActive" class="form-select" aria-label="Default select example">
+                      <option selected>Choose Teaching Method Status</option>
+                             <option value="@true">Active</option>
+                             <option value="@false">InActive</option>
+                    </select>
+                    </div>
+                    <div class="float-right mt-4">
+                    <a class="btn btn-light" asp-controller="Teacher" asp-action="TeachingMethodology">Cancel</a>
+                    <input type="submit" class="btn btn-primary"/>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+           </div>
+          </div>
+         </div>

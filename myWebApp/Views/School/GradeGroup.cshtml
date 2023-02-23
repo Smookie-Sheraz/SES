@@ -1,0 +1,67 @@
+﻿@*@model IEnumerable<Entities.Models.GradeGroup>*@
+@*<div class="main-panel">
+   <div class="content-wrapper">
+          <div class="row">
+
+            <div class="col-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Add Grade Group</h4>
+                  <p class="card-description">
+                    The Grade Group can be added here!
+                  </p>
+                  <div class="table-responsive">
+                            @if (Model.Any())
+                            {
+                                       <table class="table table-hover">
+                                       <thead>
+                                        <tr>
+                                          <th>Actions</th>
+                                          <th>Id</th>
+                                          <th>Campus Id</th>
+                                          <th>Code</th>
+                                          <th>Description</th>
+                                          <th>Active</th>
+                                        </tr>
+                                      </thead>
+                                      <tbody>
+                                        @foreach (var gradeGroup in Model)
+                                        {
+                                                             <tr>
+                                                                         <td class="actions">
+                                                           <a class="fa fa-edit mr-3" asp-route-id="@gradeGroup.GradeGroupId" asp-controller="School" asp-action="UpdateGradeGroup" role="button"></a>
+                                                           <a class="fa fa-trash text-danger" onclick="return confirm('Are you sure you want to delete?');" asp-route-id="@gradeGroup.GradeGroupId" asp-controller="School" asp-action="DeleteGradeGroup" role="button"></a>
+                                                    </td>
+                                                              <td>@gradeGroup.GradeGroupId</td>
+                                                              <td>@gradeGroup.CampusId</td>
+                                                              <td>@gradeGroup.GradeGroupCode</td>
+                                                              <td>@gradeGroup.Description</td>
+                                                              <td>
+                                                    @if (gradeGroup.IsActive)
+                                                    {
+                                                                                  <label class="badge badge-success">Active</label>
+                                                    }
+                                                    else
+                                                    {
+                                                                                 <label class="badge badge-danger">InActive</label>
+                                                    }
+                                                              </td>
+                                                            </tr> 
+                                        }
+                                      </tbody>
+                                    </table>
+                            }
+                            else
+                            {
+                                      <h3 class="text-warning">No Data Found!</h3>
+                            }
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-2 offset-10">
+              <a class="btn btn-primary" asp-controller="School" asp-action="AddGradeGroup" role="button">Add</a>
+            </div>
+          </div>
+        </div>
+</div>*@

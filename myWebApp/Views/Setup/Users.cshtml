@@ -1,0 +1,87 @@
+﻿@model IEnumerable<Entities.Models.User>
+<div class="main-panel">
+   <div class="content-wrapper">
+          <div class="row">
+
+            <div class="col-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Users</h4>
+                  @*<p class="card-description">
+                    The Users can be added here!
+                  </p>*@
+                  <div class="table-responsive">
+                            @if (Model.Any())
+                            {
+                                <table class="table table-hover table-bordered">
+                                    <thead class="bg-primary text-white">
+                                        <tr>
+                                            @if (User.HasClaim("Permission", "Roles.Update") || User.HasClaim("Permission", "Roles.Delete"))
+                                            {
+                                                <th>Actions</th>
+                                            }
+                                            <th>Status</th>
+                                            <th>First Name</th>
+                                            <th>Last Name</th>
+                                            <th>Father's Name</th>
+                                            <th>Email</th>
+                                            <th>Username</th>
+                                            <th>Password</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var user in Model)
+                                        {
+                                            <tr>
+                                                @if (User.HasClaim("Permission", "Roles.Update") || User.HasClaim("Permission", "Roles.Delete")){
+                                                <td class="actions">
+                                                @if (User.HasClaim("Permission", "Roles.Update")){
+                                                <a class="fa fa-edit mr-3" asp-route-id="@user.UserId" asp-controller="Setup" asp-action="UpdateUser" role="button"></a>
+                                                }
+                                                @if (User.HasClaim("Permission", "Roles.Delete")){
+                                                <a class="fa fa-trash text-danger" onclick="return confirm('Are you sure you want to delete?');" asp-route-id="@user.UserId" asp-controller="Setup" asp-action="DeleteUser" role="button"></a>
+                                                }    
+                                                </td>
+                                                }
+                                            <td>
+                                                @if (user.IsActive)
+                                                {
+                                                        <label class="badge badge-success">Active</label>
+                                                }
+                                                else
+                                                {
+                                                        <label class="badge badge-danger">InActive</label>
+                                                }
+                                            </td>
+                                                <td>@user.FName</td>
+                                                <td>@user.LName</td>
+                                                <td>@user.FatherName</td>
+                                                <td>@user.Email</td>
+                                                <td>@user.UserName</td>
+                                                <td>@user.Password</td>
+                                            </tr> 
+                                        }
+                                    </tbody>
+                                </table>
+                            }
+                            else
+                            {
+                                    <h3>No Data Found!</h3>
+                            }
+                  </div>
+                </div>
+              </div>
+            </div>
+            @if (User.HasClaim("Permission", "Roles.Create"))
+            {
+                <div class="col-2 offset-10">
+                    <a class="btn btn-primary" asp-controller="Setup" asp-action="AddUser" role="button">Add</a>
+            </div>
+            }
+          </div>
+        </div>
+</div>
+@section scripts{
+                <script src="~/lib/jquery-validate/jquery.validate.min.js"></script>
+                <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+}

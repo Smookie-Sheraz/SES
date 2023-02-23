@@ -1,0 +1,101 @@
+﻿@model IEnumerable<Entities.Models.Section>
+@{
+    int i = -1;
+}
+<div class="main-panel">
+   <div class="content-wrapper">
+          <div class="row">
+            <div class="col-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Classes</h4>
+                  @*<p class="card-description">
+                    The Classes can be added here!
+                  </p>*@
+                  <div class="table-responsive">
+                            @if (Model.Any())
+                            {
+                                <table class="table table-hover table-bordered">
+                                    <thead class="bg-primary text-white">
+                                        <tr>
+                                            @if (User.HasClaim("Permission", "Section.Update") || User.HasClaim("Permission", "Section.Delete")){
+                                            <th>Actions</th>
+                                            }
+                                            <th>Status</th>
+                                            <th>Grade</th>
+                                            <th>Section Name</th>
+                                            @*<th>Section Code</th>*@
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var Sections in Model)
+                                        {
+                                            i++;
+                                            <tr>
+                                                @if (User.HasClaim("Permission", "Section.Update") || User.HasClaim("Permission", "Section.Delete"))
+                                                {
+                                                    <td class="actions">
+                                                        @*<a class="fa fa-pen mr-3" asp-route-id="@Sections.SectionId" asp-controller="Grade" asp-action="SubjectAllocation" role="button"></a>*@
+                                                        @*<a class="fa fa-book mr-3" asp-route-id="@Sections.SectionId" asp-controller="Grade" asp-action="BookAllocation" role="button"></a>*@
+                                                        @if (User.HasClaim("Permission", "SubjectTeacherAllocation.Create"))
+                                                        {
+                                                        <a class="fa fa-person mr-3" title="Allocate Teacher(s) to This Class Book(s)" asp-route-id="@Sections.SectionId" asp-controller="Director" asp-action="SubjectTeacherAllocation" role="button"></a>
+                                                        }
+                                                        @if (User.HasClaim("Permission", "Section.Update"))
+                                                        {
+                                                        <a class="fa fa-edit mr-3" title="Edit Class" asp-route-id="@Sections.SectionId" asp-controller="Grade" asp-action="UpdateSection" role="button"></a>
+                                                        }
+                                                        @if (User.HasClaim("Permission", "Section.Delete")){
+                                                        <a class="fa fa-trash text-danger" title="Delete Class" onclick="return confirm('Are you sure you want to delete?');" asp-route-id="@Sections.SectionId" asp-controller="Grade" asp-action="DeleteSection" role="button"></a>
+                                                        }
+                                                    </td>
+                                                }
+                                                <td>
+                                                    @if ((bool)Sections.IsActive)
+                                                    {
+                                                        <label class="badge badge-success">Active</label>
+                                                    }
+                                                    else
+                                                    {
+                                                        <label class="badge badge-danger">InActive</label>
+                                                    }
+                                                </td>
+                                                <td>@ViewBag.GradeNames[i]</td>
+                                                <td>@Sections.SectionName</td>
+                                                @*<td>@Sections.SectionCode</td>*@
+                                            </tr> 
+                                        }
+                                    </tbody>
+                                </table>
+                            }
+                            else
+                            {
+                                <h3>No Data Found!</h3>
+                            }
+                  </div>
+                </div>
+              </div>
+            </div>
+            @if (User.HasClaim("Permission", "Section.Create"))
+            {
+            <div class="col-2 offset-10">
+                <a class="btn btn-primary" asp-controller="Grade" asp-action="AddSection" role="button">Add</a>
+            </div>
+            }
+          </div>
+        </div>
+</div>
+@*
+@section scripts{
+        <script>
+            var rows = document.querySelector('.table').getElementsByTagName("tr");
+            for(var i = 1; i <= rows.length; i++){
+                var index = i.toString();
+                document.querySelector(`.table tr:nth-child(${index}) td:nth-child(13)`).innerHTML = document.querySelector(`.table tr:nth-child(${index}) td:nth-child(13)`).innerHTML.split(" ")[0];
+                document.querySelector(`.table tr:nth-child(${index}) td:nth-child(14)`).innerHTML = document.querySelector(`.table tr:nth-child(${index}) td:nth-child(14)`).innerHTML.split(" ")[0];
+                document.querySelector(`.table tr:nth-child(${index}) td:nth-child(15)`).innerHTML = document.querySelector(`.table tr:nth-child(${index}) td:nth-child(15)`).innerHTML.split(" ")[0];
+                document.querySelector(`.table tr:nth-child(${index}) td:nth-child(17)`).innerHTML = document.querySelector(`.table tr:nth-child(${index}) td:nth-child(17)`).innerHTML.split(" ")[0];
+                document.querySelector(`.table tr:nth-child(${index}) td:nth-child(18)`).innerHTML = document.querySelector(`.table tr:nth-child(${index}) td:nth-child(18)`).innerHTML.split(" ")[0];
+                }
+        </script>
+}*@

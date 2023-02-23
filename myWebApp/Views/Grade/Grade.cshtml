@@ -1,0 +1,86 @@
+﻿@*@model IEnumerable<Entities.Models.Grade>*@
+<div class="main-panel">
+   <div class="content-wrapper">
+    <div class="row">
+        <div class="col-12 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Gardes</h4>
+                    @*<p class="card-description">
+                    The Gardes can be added here!
+                    </p>*@
+                    <div class="table-responsive">
+                    @if (ViewBag.Grade == null)
+                    {
+                        <table class="table table-hover table-bordered">
+                            <thead class="bg-primary text-white">
+                                <tr>
+                                    @if (User.HasClaim("Permission", "Grade.Update") || User.HasClaim("Permission", "Grade.Delete")){
+                                        <th>Actions</th>
+                                    }
+                                    <th>Active</th>
+                                    <th>Grade Name</th>
+                                    <th>Shool Section</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                        @foreach (var Garde in ViewBag.Grades)
+                        {
+                            <tr>
+                                @if (User.HasClaim("Permission", "Grade.Update") || User.HasClaim("Permission", "Grade.Delete")){
+                                <td class="actions">
+                                    @if(User.HasClaim("Permission", "Grade.Update")){
+                                        <a class="fa fa-edit mr-3" asp-route-id="@Garde.GradeId" asp-controller="Grade" asp-action="UpdateGrade" role="button"></a>
+                                    }
+                                    @if(User.HasClaim("Permission", "Grade.Delete")){
+                                        <a class="fa fa-trash text-danger" onclick="return confirm('Are you sure you want to delete?');" asp-route-id="@Garde.GradeId" asp-controller="Grade" asp-action="DeleteGrade" role="button"></a>
+                                    }
+                                </td>
+                                }
+                                <td>
+                                    @if ((bool)Garde.IsActive)
+                                    {
+                                        <label class="badge badge-success">Active</label>
+                                    }
+                                    else
+                                    {
+                                        <label class="badge badge-danger">InActive</label>
+                                    }
+                                </td>
+                                <td>@Garde.GradeName</td>
+                                <td>@Garde.SchoolSection</td>
+                            </tr> 
+                        }
+                            </tbody>
+                        </table>
+                    }
+                    else
+                    {
+                                    <h3>No Data Found!</h3>
+                    }
+                    </div>
+                </div>
+            </div>
+        </div>
+        @if(User.HasClaim("Permission", "Grade.Create")){
+        <div class="col-2 offset-10">
+            <a class="btn btn-primary" asp-controller="Grade" asp-action="AddGrade" role="button">Add</a>
+        </div>
+        }
+    </div>
+</div>
+</div>
+@*
+@section scripts{
+        <script>
+            var rows = document.querySelector('.table').getElementsByTagName("tr");
+            for(var i = 1; i <= rows.length; i++){
+                var index = i.toString();
+                document.querySelector(`.table tr:nth-child(${index}) td:nth-child(13)`).innerHTML = document.querySelector(`.table tr:nth-child(${index}) td:nth-child(13)`).innerHTML.split(" ")[0];
+                document.querySelector(`.table tr:nth-child(${index}) td:nth-child(14)`).innerHTML = document.querySelector(`.table tr:nth-child(${index}) td:nth-child(14)`).innerHTML.split(" ")[0];
+                document.querySelector(`.table tr:nth-child(${index}) td:nth-child(15)`).innerHTML = document.querySelector(`.table tr:nth-child(${index}) td:nth-child(15)`).innerHTML.split(" ")[0];
+                document.querySelector(`.table tr:nth-child(${index}) td:nth-child(17)`).innerHTML = document.querySelector(`.table tr:nth-child(${index}) td:nth-child(17)`).innerHTML.split(" ")[0];
+                document.querySelector(`.table tr:nth-child(${index}) td:nth-child(18)`).innerHTML = document.querySelector(`.table tr:nth-child(${index}) td:nth-child(18)`).innerHTML.split(" ")[0];
+                }
+        </script>
+}*@

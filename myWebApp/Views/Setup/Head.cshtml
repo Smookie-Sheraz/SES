@@ -1,0 +1,85 @@
+﻿@model IEnumerable<myWebApp.ViewModels.Setups.HeadViewList>
+<div class="main-panel">
+   <div class="content-wrapper">
+          <div class="row">
+
+            <div class="col-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Heads</h4>
+                  @*<p class="card-description">
+                    The Heads can be added here!
+                  </p>*@
+                  <div class="table-responsive">
+                    <table class="table table-hover table-bordered">
+                        <thead class="bg-primary text-white">
+                            <tr>
+                                @if (User.HasClaim("Permission", "Heads.Update") || User.HasClaim("Permission", "Heads.Delete")){
+                                <th>Actions</th>
+                                }
+                                <th>Status</th>
+                                <th>Name</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var head in Model)
+                            {
+                            <tr>
+                                @if (User.HasClaim("Permission", "Heads.Update") || User.HasClaim("Permission", "Heads.Delete")){
+                                <td class="actions">
+                                    @if (User.HasClaim("Permission", "Heads.Update")){
+                                    <a class="fa fa-edit mr-3" asp-route-id="@head.HeadId" asp-controller="Setup" asp-action="UpdateHead" role="button"></a>
+                                    }
+                                    @if (User.HasClaim("Permission", "Heads.Delete")){
+                                    <a class="fa fa-trash text-danger" onclick="return confirm('Are you sure you want to delete?');" asp-route-id="@head.HeadId" asp-controller="Setup" asp-action="DeleteHead" role="button"></a>
+                                    }
+                                <td>
+                                }
+                                @if ((bool)head.IsActive)
+                                {
+                                    <label class="badge badge-success">Active</label>
+                                }
+                                else
+                                {
+                                    <label class="badge badge-danger">InActive</label>
+                                }
+                                </td>
+                                </td>
+                                @if(head.EmployeeName == null)
+                                {       
+                                    <td>@head.ShooraName - Shoora</td>
+                                }
+                                else
+                                {
+                                  <td>@head.EmployeeName - Employee</td>
+                                }
+                            </tr> 
+                            }
+                        </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+            @if (User.HasClaim("Permission", "Heads.Create")){
+            <div class="col-2 offset-10">
+              <a class="btn btn-primary" asp-controller="Setup" asp-action="AddHead" role="button">Add</a>
+            </div>
+            }
+          </div>
+        </div>
+</div>
+@*
+@section scripts{
+        <script>
+            var rows = document.querySelector('.table').getElementsByTagName("tr");
+            for(var i = 1; i <= rows.length; i++){
+                var index = i.toString();
+                document.querySelector(`.table tr:nth-child(${index}) td:nth-child(13)`).innerHTML = document.querySelector(`.table tr:nth-child(${index}) td:nth-child(13)`).innerHTML.split(" ")[0];
+                document.querySelector(`.table tr:nth-child(${index}) td:nth-child(14)`).innerHTML = document.querySelector(`.table tr:nth-child(${index}) td:nth-child(14)`).innerHTML.split(" ")[0];
+                document.querySelector(`.table tr:nth-child(${index}) td:nth-child(15)`).innerHTML = document.querySelector(`.table tr:nth-child(${index}) td:nth-child(15)`).innerHTML.split(" ")[0];
+                document.querySelector(`.table tr:nth-child(${index}) td:nth-child(17)`).innerHTML = document.querySelector(`.table tr:nth-child(${index}) td:nth-child(17)`).innerHTML.split(" ")[0];
+                document.querySelector(`.table tr:nth-child(${index}) td:nth-child(18)`).innerHTML = document.querySelector(`.table tr:nth-child(${index}) td:nth-child(18)`).innerHTML.split(" ")[0];
+                }
+        </script>
+}*@

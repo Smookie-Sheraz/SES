@@ -1,0 +1,129 @@
+﻿@model IEnumerable<myWebApp.ViewModels.HumanResource.UpdateShooraVM>
+<div class="main-panel">
+   <div class="content-wrapper">
+          <div class="row">
+
+            <div class="col-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Shoora Members</h4>
+                  @*<p class="card-description">
+                    The Shoora Members can be added here!
+                  </p>*@
+                  <div class="table-responsive">
+                    @if (Model.Any())
+                    {
+                    <table class="table table-hover table-bordered">
+                        <thead class="bg-primary text-white">
+                            <tr>
+                                @if (User.HasClaim("Permission", "Shoora.Update") || User.HasClaim("Permission", "Shoora.Delete"))
+                                {
+                                <th>Actions</th>
+                                }
+                                <th>Status</th>
+                                <th>First Name</th>
+                                <th>Last Name</th>
+                                <th>Father's Name</th>
+                                <th>Spouse Name</th>
+                                <th>Gender</th>
+                                <th>School</th>
+                                <th>Campus</th>
+                                <th>Marital Status</th>
+                                <th>Mobile</th>
+                                <th>Date of Birth</th>
+                                <th>CNIC No</th>
+                                <th>CNIC Issue Date</th>
+                                <th>CNIC Expiry Date</th>
+                                <th>Email Address</th>
+                                <th>Address</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        @foreach (var shoora in Model)
+                        {
+                            <tr>
+                                @if (User.HasClaim("Permission", "Shoora.Update") || User.HasClaim("Permission", "Shoora.Delete")){
+                                <td class="actions">
+                                @if (User.HasClaim("Permission", "Shoora.Update")){
+                                <a class="fa fa-edit mr-3" asp-route-id="@shoora.ShooraId" asp-controller="HumanResource" asp-action="UpdateShoora" role="button"></a>
+                                }
+                                @if (User.HasClaim("Permission", "Shoora.Delete")){
+                                <a class="fa fa-trash text-danger" onclick="return confirm('Are you sure you want to delete?');" asp-route-id="@shoora.ShooraId" asp-controller="HumanResource" asp-action="DeleteShoora" role="button"></a>
+                                }
+                                </td>
+                                }
+                                <td>
+                                    @if ((bool)shoora.IsActive)
+                                    {
+                                                    <label class="badge badge-success">Active</label>
+                                    }
+                                    else
+                                    {
+                                                    <label class="badge badge-danger">InActive</label>
+                                    }
+                                </td>
+                                <td>@shoora.FName</td>
+                                <td>@shoora.LName</td>
+                                <td>@shoora.FatherName</td>
+                                <td>@shoora.SpouseName</td>
+                                <td>@shoora.GenderName</td>
+                                <td>@shoora.SchoolName</td>
+                                <td>@shoora.CampusName</td> 
+                                <td>@shoora.MaritalStatus</td>
+                                <td>@shoora.Mobile</td>
+                                @if(shoora.DOB == null){
+                                    <td></td>
+                                }
+                                else{
+                                    <td>@Convert.ToDateTime(shoora.DOB).ToString("dd-MMM-yyyy")</td>
+                                }
+                                <td>@shoora.CNICNo</td>
+                                @if(shoora.CNICIssueDate == null){
+                                    <td></td>
+                                }
+                                else{
+                                    <td>@Convert.ToDateTime(shoora.CNICIssueDate).ToString("dd-MMM-yyyy")</td>
+                                }
+                                @if(shoora.CNICExpiryDate == null){
+                                    <td></td>
+                                }
+                                else{
+                                    <td>@Convert.ToDateTime(shoora.CNICExpiryDate).ToString("dd-MMM-yyyy")</td>
+                                }
+                                <td>@shoora.Email</td>
+                                <td>@shoora.Address</td>
+                            </tr> 
+                        }
+                        </tbody>
+                    </table>
+                    }
+                    else
+                    {
+                                <h3>No Data Found!</h3>
+                    }
+                  </div>
+                </div>
+              </div>
+            </div>
+            @if(User.HasClaim("Permission","Shoora.Create")){
+            <div class="col-2 offset-10">
+              <a class="btn btn-primary" asp-controller="HumanResource" asp-action="AddShoora" role="button">Add</a>
+            </div>
+            }
+          </div>
+        </div>
+</div>
+@*
+@section scripts{
+        <script>
+            var rows = document.querySelector('.table').getElementsByTagName("tr");
+            for(var i = 1; i <= rows.length; i++){
+                var index = i.toString();
+                document.querySelector(`.table tr:nth-child(${index}) td:nth-child(13)`).innerHTML = document.querySelector(`.table tr:nth-child(${index}) td:nth-child(13)`).innerHTML.split(" ")[0];
+                document.querySelector(`.table tr:nth-child(${index}) td:nth-child(14)`).innerHTML = document.querySelector(`.table tr:nth-child(${index}) td:nth-child(14)`).innerHTML.split(" ")[0];
+                document.querySelector(`.table tr:nth-child(${index}) td:nth-child(15)`).innerHTML = document.querySelector(`.table tr:nth-child(${index}) td:nth-child(15)`).innerHTML.split(" ")[0];
+                document.querySelector(`.table tr:nth-child(${index}) td:nth-child(17)`).innerHTML = document.querySelector(`.table tr:nth-child(${index}) td:nth-child(17)`).innerHTML.split(" ")[0];
+                document.querySelector(`.table tr:nth-child(${index}) td:nth-child(18)`).innerHTML = document.querySelector(`.table tr:nth-child(${index}) td:nth-child(18)`).innerHTML.split(" ")[0];
+                }
+        </script>
+}*@

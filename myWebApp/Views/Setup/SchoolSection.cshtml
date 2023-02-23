@@ -1,0 +1,142 @@
+﻿@model myWebApp.ViewModels.Setups.SchoolSection.SchoolSectionVM
+<div class="main-panel">        
+    <div class="content-wrapper">
+        <div class="row">
+            <div class="col-12 grid-margin stretch-card">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Add New Section of School</h4>
+                        @*<p class="card-description">
+                        Please Add The New Section of School and Press the Add Button.
+                        </p>*@
+                        <form class="forms-sample" method="post"
+                        asp-controller="Setup" asp-action="AddSchoolSection">
+                        @if (User.HasClaim("Permission", "School.Create")){
+                        <div class="row">
+                        <div class="col-4">
+                        <div class="form-group">
+                            <label asp-for="SchoolId">School Name</label>
+                            <select asp-for="SchoolId" class="form-select" aria-label="Default select example">
+                            <option selected value="@null">Select School Please</option>
+                                @foreach (var school in ViewBag.Schools)
+                                {
+                                    <option value="@school.SchoolId">@school.SchoolName</option>
+                                }
+                            </select>
+                      <span asp-validation-for="SchoolId" class="text-danger"></span>
+                        </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="form-group">
+                        <label asp-for="CampusId">Campus Name</label>
+                        <select asp-for="CampusId" class="form-select" aria-label="Default select example">
+                            <option selected value="@null">Select Campus Please</option>
+                                @foreach (var campus in ViewBag.Campuses)
+                                {
+                                    <option value="@campus.CampusId">@campus.CampusName</option>
+                                }
+                        </select>
+                      <span asp-validation-for="CampusId" class="text-danger"></span>
+                        </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="form-group">
+                                <label asp-for="SectionName">School Section Name</label>
+                                <input type="text" class="form-control" asp-for="SectionName" placeholder="Enter School Section Name" />
+                                <span asp-validation-for="SectionName" class="text-danger"></span>
+                            </div>
+                        </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-4">
+                                <div class="form-group">
+                            <label asp-for="SectionHead">Head Name</label>
+                            <input type="text" class="form-control" asp-for="SectionHead" placeholder="Enter Head Name" />
+                            <span asp-validation-for="SectionHead" class="text-danger"></span>
+                        </div>
+                        </div>
+                            <div class="col-4">
+                                <div class="form-group">
+                            <label asp-for="Email">Email Address</label>
+                            <input type="email" class="form-control" asp-for="Email" placeholder="Enter Email Please" />
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="form-group">
+                            <label asp-for="PhoneNo">Phone No</label>
+                            <input type="text" class="form-control" asp-for="PhoneNo" placeholder="Enter Phone No" />
+                            <span asp-validation-for="PhoneNo" class="text-danger"></span>
+                        </div>
+                        </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-4">
+                                <div class="form-group">
+                            <label asp-for="Abbrevation">Abbrevation</label>
+                            <input type="text" class="form-control" asp-for="Abbrevation" placeholder="Enter Abbrevation No" />
+                            <span asp-validation-for="Abbrevation" class="text-danger"></span>
+                        </div>
+                        </div>
+                        </div>
+                            <div class="float-right">
+                            <button type="submit" class="btn btn-primary mr-2">Add</button>
+                        </div>
+                            }
+                        <div class="col-12 grid-margin stretch-card">
+                            <div class="card">
+                            <div class="card-body">
+                                <h4 class="card-title">All-School Sections</h4>
+                                @*<p class="card-description">
+                                The Created Sections of Schools!
+                                </p>*@
+                                <div class="table-responsive">
+                                <table class="table table-hover table-bordered">
+                                    <thead class="bg-primary text-white">
+                                        <tr>
+                                        @if (User.HasClaim("Permission", "SchoolSection.Update") || User.HasClaim("Permission", "SchoolSection.Delete")){
+                                        <th>Actions</th>
+                                        }
+                                        <th>School Section Name</th>
+                                        <th>Campus Name</th>
+                                        <th>Abbrevation</th>
+                                        <th>CEO Name</th>
+                                        <th>Email Address</th>
+                                        <th>Phone No</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="term-data">
+                                    @foreach (var SchoolSection in Model.SchoolSections)
+                                    {
+                                        <tr>
+                                        @if (User.HasClaim("Permission", "SchoolSection.Update") || User.HasClaim("Permission", "SchoolSection.Delete")){
+                                            <td class="actions">
+                                                @if (User.HasClaim("Permission", "SchoolSection.Update")){
+                                                <a class="fa fa-edit mr-3" asp-route-Id="@SchoolSection.SchoolSectionId"  asp-controller="Setup" asp-action="UpdateSchoolSection" role="button"></a>
+                                                }
+                                                @if (User.HasClaim("Permission", "SchoolSection.Delete")){
+                                                <a class="fa fa-trash text-danger mr-3" onclick="return confirm('Are you sure you want to delete this School?');" asp-route-id="@SchoolSection.SchoolSectionId" asp-controller="Setup" asp-action="DeleteSchoolSection" role="button"></a>
+                                                }
+                                            </td>
+                                            }
+                                            <td>@SchoolSection.SectionName</td>
+                                            <td>@SchoolSection.CampusName</td>
+                                            <td>@SchoolSection.Abbrevation</td>
+                                            <td>@SchoolSection.SectionHead</td>
+                                            <td>@SchoolSection.Email</td>
+                                            <td>@SchoolSection.PhoneNo</td>
+                                        </tr> 
+                                    }
+                                    </tbody>
+                                </table>
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

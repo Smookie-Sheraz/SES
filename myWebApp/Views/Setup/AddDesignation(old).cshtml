@@ -1,0 +1,62 @@
+﻿@*@model myWebApp.ViewModels.Setup.Setup
+@{
+}
+       <div class="main-panel">        
+        <div class="content-wrapper">
+        <div class="row">
+            <div class="col-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Add New Designation</h4>
+                  <p class="card-description">
+                    Please Add The New Designation and Press the Add Button.
+                  </p>
+                  <form class="forms-sample" method="post"
+                  asp-controller="Setup" asp-action="AddDesignation">
+                    <div class="form-group">
+                      <label asp-for="Code">Designation Code</label>
+                      <input type="text" class="form-control" asp-for="Code" placeholder="Enter Designation Code">
+                      <span asp-validation-for="Code" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                      <label asp-for="Description">Designation Description</label>
+                      <input type="text" class="form-control" asp-for="Description" placeholder="Enter Designation Description">
+                      <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                      <label asp-for="ShortDescription">Short Description</label>
+                      <input type="text" class="form-control" asp-for="ShortDescription" placeholder="Enter Short Description">
+                      <span asp-validation-for="ShortDescription" class="text-danger"></span>
+                    </div>
+                    <div class="form-check">
+                      <label class="form-check-label" asp-for="IsActive">
+                      <input class="form-check-input" type="checkbox" value="" asp-for="IsActive">
+                      <span asp-validation-for="IsActive" class="text-danger"></span>
+                        Active
+                      </label>
+                    </div>
+                    <div class="form-group">
+                    <select asp-for="CampusId" class="form-select" aria-label="Default select example">
+                      <option selected>Select Campus Please</option>
+                                    @foreach (var campus in ViewBag.Campuses)
+                                    {
+                                      <option value="@campus.CampusId">@campus.Description</option>
+                                    }
+                    </select>
+                    </div>
+                    <div class="float-right">
+                    <a class="btn btn-light" asp-controller="Setup" asp-action="Department">Cancel</a>
+                        <button type="submit" class="btn btn-primary mr-2">Add</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+           </div>
+          </div>
+         </div>
+
+@section scripts{
+            <script src="~/lib/jquery-validate/jquery.validate.min.js"></script>
+            <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+}*@

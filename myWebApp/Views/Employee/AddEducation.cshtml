@@ -1,0 +1,51 @@
+﻿@*@model myWebApp.ViewModels.Employee.AddEducation
+
+@{
+}
+       <div class="main-panel">        
+        <div class="content-wrapper">
+        <div class="row">
+            <div class="col-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Add New Education</h4>
+                  <p class="card-description">
+                    Please Add The New Education and Press the Add Button.
+                  </p>
+                  <form class="forms-sample" method="post"
+                  asp-controller="School" asp-action="AddEducation">
+                  <div class="form-group">
+                      <label asp-for="Type">Type</label>
+                      <input type="text" class="form-control" asp-for="Type" placeholder="Enter Type">
+                    </div>
+                   <div class="form-group">
+                      <label asp-for="UniversityBoard">UniversityBoard</label>
+                      <input type="text" class="form-control" asp-for="UniversityBoard" placeholder="Enter UniversityBoard">
+                    </div>
+                    <div class="form-group">
+                      <label asp-for="Degree">Degree</label>
+                      <input type="text" class="form-control" asp-for="Degree" placeholder="Enter Degree">
+                    </div>
+                    <div class="form-group">
+                      <label asp-for="Major">Major</label>
+                      <input type="text" class="form-control" asp-for="Major" placeholder="Enter Major">
+                    </div>
+                    <div class="form-group">
+                      <label asp-for="MarksCGPA">MarksCGPA</label>
+                      <input type="text" class="form-control" asp-for="MarksCGPA" placeholder="Enter MarksCGPA">
+                    </div>
+                    <div class="form-group">
+                      <label asp-for="Attachment">Attachment</label>
+                      <input type="text" class="form-control" asp-for="Attachment" placeholder="Enter Attachment">
+                    </div>
+                    <div class="float-right">
+                    <a class="btn btn-light" asp-controller="Employee" asp-action="AddEducation">Cancel</a>
+                        <button type="submit" class="btn btn-primary mr-2">Add</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+           </div>
+          </div>
+         </div>*@

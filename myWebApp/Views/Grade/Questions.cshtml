@@ -1,0 +1,154 @@
+﻿@model myWebApp.ViewModels.Grade.ChapterQuestionsVM
+@{
+}
+<div class="main-panel">
+    <div class="content-wrapper">
+        <div class="row">
+            <div class="col-12 grid-margin stretch-card">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Add New Question of @ViewBag.Chapter</h4>
+                        @*<p class="card-description">
+                            Please Add The New Chapter for Unit @ViewBag.Unit and Press the Add Button.
+                        </p>*@
+                        <form class="forms-sample" method="post"
+                              asp-controller="Grade" asp-action="Question">
+                            <h4>Chapter</h4>
+                            <input type="hidden" asp-for="ChapterId" />
+                            <input type="hidden" asp-for="UnitId" />
+                            <div class="row">
+                                <div class="col-3">
+                                    <div class="form-group">
+                                        <label asp-for="Question">Question</label>
+                                        <input type="text" class="form-control" asp-for="Question" placeholder="Enter Question Please"/>
+                                        <span asp-validation-for="Question" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="form-group">
+                                        <label asp-for="Topic">Topic Name</label>
+                                        <input type="text" class="form-control" asp-for="Topic" placeholder="Enter Topic Name"/>
+                                        <span asp-validation-for="Topic" class="text-danger"></span>
+                                    </div>
+                                </div> 
+                                <div class="col-3">
+                                    <div class="form-group">
+                                      <label asp-for="QuestionType">Question Type</label>
+                                      <select asp-for="QuestionType" class="form-select" aria-label="Default select example" onchange="SelectQuestionType(this.id)">
+                                      <option selected value="@null">Select Question Type</option>
+                                        <option value="True False">True False</option>
+                                        <option value="MCQ">MCQ</option>
+                                    </select>
+                                      <span asp-validation-for="QuestionType" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-3 d-none" id="TrueFalse">
+                                    <div class="form-group">
+                                      <label asp-for="TrueOrFalse">True or False?</label>
+                                      <select asp-for="TrueOrFalse" class="form-select" aria-label="Default select example" onchange="SelectQuestionTyp(this.id)">
+                                      <option selected value="@null">Please Select Answer</option>
+                                        <option value="@true">True</option>
+                                        <option value="@false">False</option>
+                                    </select>
+                                      <span asp-validation-for="QuestionType" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row d-none" id="MCQ">
+                                @*Question Type Todo*@
+                                <div class="table-responsive" id="MCQChoiceTable">
+                                    <table class="table table-hover table-bordered" id="MCQChoiceTable">
+                                        <thead class="bg-primary text-white">
+                                            <tr>
+                                                <th>Choice</th>
+                                                <th>True of False</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                            <td>
+                                                <div class="form-group">
+                                                <label>Topic Name</label>
+                                                <input type="text" class="form-control" placeholder="Enter Choice Please"/>
+                                            </div>
+                                            </td>  
+                                            <td>
+                                                <div class="form-group">
+                                                  <label>True or False?</label>
+                                                  <select class="form-select" aria-label="Default select example">
+                                                  <option selected value="@null">Please Select Answer</option>
+                                                    <option value="@true">True</option>
+                                                    <option value="@false">False</option>
+                                                </select>
+                                                  @*<span asp-validation-for="QuestionType" class="text-danger"></span>*@
+                                                </div>
+                                            </td>  
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="float-right mt-5">
+                                <button type="submit" class="btn btn-primary mr-2">Add</button>
+                            </div>
+
+                            <div class="col-12 grid-margin stretch-card">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h4 class="card-title">Questions of Chapter @ViewBag.Chapter</h4>
+                                        @*<p class="card-description">
+                                            Chapter for the Unit @ViewBag.Unit
+                                        </p>*@
+                                        <div class="table-responsive">
+                                            <table class="table table-hover table-bordered">
+                                                <thead class="bg-primary text-white">
+                                                    <tr>
+                                                        <th>Actions</th>
+                                                        <th>Status</th>
+                                                        <th>Question</th>
+                                                        <th>Topic</th>
+                                                        <th>Question Type</th>
+                                                    </tr>
+                                                </thead>
+                                                @*<tbody class="term-data">
+                                                    @foreach (var Chapter in ViewBag.Chapters)
+                                                    {
+                                                        <tr>
+                                                            <td class="actions">
+                                                                <a class="fa fa-file mr-3" title="Add Topics" asp-route-id="@Chapter.ChapterId" asp-controller="Grade" asp-action="Topic" role="button"></a>
+                                                                <a class="fa fa-edit mr-3" title="Edit Chapter" asp-route-id="@Chapter.ChapterId" asp-controller="Grade" asp-action="UpdateChapter" role="button"></a>
+                                                                <a class="fa fa-trash text-danger" title="Delete Chapter" onclick="return confirm('Are you sure you want to delete?');" asp-route-id="@Chapter.ChapterId" asp-route-UnitId="@Model.BookId" asp-controller="Grade" asp-action="DeleteChapter" role="button"></a>
+                                                            </td>
+                                                            <td>
+                                                            @if(Chapter.IsActive == true)
+                                                            {
+                                                                <label class="badge badge-success">Active</label>
+                                                            }
+                                                            else
+                                                            {
+                                                                <label class="badge badge-danger">InActive</label>
+                                                            }
+                                                            </td>
+                                                            <td>@Chapter.ChapterName</td>
+                                                            <td>@Chapter.SLO</td>
+                                                            <td>@Chapter.StartPage</td>
+                                                            <td>@Chapter.EndPage</td>
+                                                        </tr>
+                                                    }
+                                                </tbody>*@
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script src="~/js/Custom.js"></script>
+}

@@ -1,0 +1,49 @@
+﻿@model Entities.ViewModels.UpdateSubjectVM
+@{
+}
+       <div class="main-panel">        
+        <div class="content-wrapper">
+        <div class="row">
+            <div class="col-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Update Subject</h4>
+                  @*<p class="card-description">
+                    Please Update Subject and Press the Update Button.
+                  </p>*@
+                  <form class="forms-sample" method="post"
+                  asp-controller="Grade" asp-action="UpdateSubject">
+                  <div class="row">
+                      <div class="col-12 col-md-6">
+                  <input type="hidden" asp-for="SubjectId"/>
+                    <div class="form-group">
+                      <label asp-for="SubjectName">Subject Name</label>
+                      <input type="text" class="form-control" asp-for="SubjectName" placeholder="Enter First Name">
+                      <span asp-validation-for="SubjectName" class="text-danger"></span>
+                    </div>
+                    <div class="form-group mt-2">
+                    <select asp-for="IsActive" class="form-select" aria-label="Default select example">
+                      <option selected>Is Subject Active</option>
+                          <option value="@true">Yes</option>
+                          <option value="@false">No</option>
+                    </select>
+                      <span asp-validation-for="IsActive" class="text-danger"></span>
+                    </div>
+                    <div class="float-right mt-2">
+                    <a class="btn btn-light" asp-controller="Grade" asp-action="Subject">Cancel</a>
+                        <button type="submit" class="btn btn-primary mr-2">Update</button>
+                    </div>
+                      </div>
+                  </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+           </div>
+          </div>
+         </div>
+
+@*@section scripts{
+                    <script src="~/lib/jquery-validate/jquery.validate.min.js"></script>
+                    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+}*@

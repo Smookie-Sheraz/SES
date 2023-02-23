@@ -1,0 +1,77 @@
+﻿@*@model myWebApp.ViewModels.Auth.UpdateUserVM
+@{
+}
+       <div class="main-panel">        
+        <div class="content-wrapper">
+        <div class="row">
+            <div class="col-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Update User</h4>
+                  <p class="card-description">
+                    Please Update the User and Press the Update Button.
+                  </p>
+                  <form class="forms-sample" method="post"
+                  asp-controller="Setup" asp-action="UpdateUser">
+                  <div class="row">
+                      <div class="col-12 col-md-6">
+                          <input type="hidden" asp-for="UserId"/>
+                    <div class="form-group">
+                      <label asp-for="FName">First Name</label>
+                      <input type="text" class="form-control" asp-for="FName" placeholder="Enter First Name">
+                      <span asp-validation-for="FName" class="text-danger"></span>
+                    </div>
+                     <div class="form-group">
+                      <label asp-for="LName">Last Name</label>
+                      <input type="text" class="form-control" asp-for="LName" placeholder="Enter Last Name">
+                      <span asp-validation-for="LName" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                      <label asp-for="FatherName">Father Name</label>
+                      <input type="text" class="form-control" asp-for="FatherName" placeholder="Enter Father Name">
+                      <span asp-validation-for="FatherName" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                      <label asp-for="Email">Email</label>
+                      <input type="email" class="form-control" asp-for="Email" placeholder="Enter Email Address">
+                      <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+                      </div>
+                      <div class="col-12 col-md-6">
+                          <div class="form-group">
+                      <label asp-for="UserName">Username</label>
+                      <input type="text" class="form-control" asp-for="UserName" placeholder="Enter Username">
+                      <span asp-validation-for="UserName" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                      <label asp-for="Password">Password</label>
+                      <input type="password" class="form-control" asp-for="Password" placeholder="Enter Password">
+                      <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
+                    <div class="form-group mt-2">
+                    <select asp-for="IsActive" class="form-select" aria-label="Default select example">
+                      <option selected>Is Designation Active</option>
+                          <option value="1">Yes</option>
+                          <option value="0">No</option>
+                    </select>
+                    </div>
+                    <div class="float-right mt-5">
+                    <a class="btn btn-light" asp-controller="Setup" asp-action="User">Cancel</a>
+                        <button type="submit" class="btn btn-primary mr-2">Update</button>
+                    </div>
+                      </div>
+                  </div>
+                  
+                    
+                  </form>
+                </div>
+              </div>
+            </div>
+           </div>
+          </div>
+         </div>
+
+@section scripts{
+                    <script src="~/lib/jquery-validate/jquery.validate.min.js"></script>
+                    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+}*@

@@ -1,0 +1,104 @@
+﻿@model myWebApp.ViewModels.Setups.SchoolSection.SchoolSectionVM
+@{
+}
+       <div class="main-panel">        
+        <div class="content-wrapper">
+        <div class="row">
+            <div class="col-12 grid-margin stretch-card">
+              <div class="card">    
+                <div class="card-body">
+                  <h4 class="card-title">Update School Section</h4>
+                  @*<p class="card-description">
+                    Please Update School&acute;s Section and Press the Update Button.
+                  </p>*@
+                  <form class="forms-sample" method="post"
+                  asp-controller="Setup" asp-action="UpdateSchoolSection">
+                      <div class="row">
+                      <input type="hidden" asp-for="SchoolSectionId"/>
+                      <div class="col-4">
+                        <div class="form-group">
+                            <label asp-for="SchoolId">School Name</label>
+                            <select asp-for="SchoolId" class="form-select" aria-label="Default select example">
+                            <option selected value="@null">Select School Please</option>
+                                @foreach (var school in ViewBag.Schools)
+                                {
+                                    <option value="@school.SchoolId">@school.SchoolName</option>
+                                }
+                            </select>
+                      <span asp-validation-for="SchoolId" class="text-danger"></span>
+                        </div>
+                        </div>
+                     <div class="col-4">
+                        <div class="form-group">
+                    <label asp-for="CampusId">Campus Name</label>
+                    <select asp-for="CampusId" class="form-select" aria-label="Default select example">
+                      <option selected value="@null">Select Campus Please</option>
+                            @foreach (var campus in ViewBag.Campuses)
+                            {
+                                <option value="@campus.CampusId">@campus.CampusName</option>
+                            }
+                    </select>
+                      <span asp-validation-for="CampusId" class="text-danger"></span>
+                    </div>
+                    </div>
+                      <div class="col-4">
+                         <div class="form-group">
+                      <label asp-for="SectionName">Section Name</label>
+                      <input type="text" class="form-control" asp-for="SectionName" placeholder="Enter Section Name" />
+                      <span asp-validation-for="SectionName" class="text-danger"></span>
+                    </div>
+                    </div>
+                    </div>
+                    <div class="row">
+                         <div class="col-4">
+                         <div class="form-group">
+                      <label asp-for="SectionHead">Head Name</label>
+                      <input type="text" class="form-control" asp-for="SectionHead" placeholder="Enter Head Name" />
+                      <span asp-validation-for="SectionHead" class="text-danger"></span>
+                    </div>
+                    </div>
+                        <div class="col-4">
+                            <div class="form-group">
+                      <label asp-for="Email">Email Address</label>
+                      <input type="email" class="form-control" asp-for="Email" placeholder="Enter Email Please" />
+                      <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+                        </div>
+                        <div class="col-4">
+                         <div class="form-group">
+                      <label asp-for="PhoneNo">Phone No</label>
+                      <input type="text" class="form-control" asp-for="PhoneNo" placeholder="Enter Phone No" />
+                      <span asp-validation-for="PhoneNo" class="text-danger"></span>
+                    </div>
+                    </div>
+                    </div>
+                    <div class="row">
+                            <div class="col-4">
+                                <div class="form-group">
+                            <label asp-for="Abbrevation">Abbrevation</label>
+                            <input type="text" class="form-control" asp-for="Abbrevation" placeholder="Enter Abbrevation No" />
+                            <span asp-validation-for="Abbrevation" class="text-danger"></span>
+                        </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="form-group mt-2">
+                    <select asp-for="IsActive" class="form-select" aria-label="Default select example">
+                      <option selected value="@null">Is Section Active</option>
+                          <option value="@true">Yes</option>
+                          <option value="@false">No</option>
+                    </select>
+                      <span asp-validation-for="IsActive" class="text-danger"></span>
+                    </div>
+                        </div>
+                        </div>
+                    <div class="float-right mt-4">
+                    <a class="btn btn-light" asp-controller="Setup" asp-action="SchoolSection">Cancel</a>
+                        <button type="submit" class="btn btn-primary mr-2">Update</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+           </div>
+          </div>
+         </div>

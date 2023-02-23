@@ -1,0 +1,154 @@
+﻿@*@model myWebApp.ViewModels.Placement.AddPlacement
+@{
+}
+       <div class="main-panel">        
+        <div class="content-wrapper">
+        <div class="row">
+            <div class="col-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Add New Placement</h4>
+                  <p class="card-description">
+                    Please Add The New Placement and Press the Add Button.
+                  </p>
+                  <form class="forms-sample" method="post"
+                  asp-controller="Placement" asp-action="AddPlacement">
+                  <div class="row">
+                  <div class="col-12 col-md-6">
+                       <div class="form-group">
+                      <label asp-for="Period">Period</label>
+                      <input type="text" class="form-control" asp-for="Period" placeholder="Enter Period in Years">
+                      <span asp-validation-for="Period" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                      <label asp-for="PlacementDate">Placement Date</label>
+                      <input type="date" class="form-control" asp-for="PlacementDate" placeholder="Enter Placement Date">
+                      <span asp-validation-for="PlacementDate" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                    <select asp-for="LocationId" class="form-select" aria-label="Default select example">
+                      <option selected>Select Location Please</option>
+                                            @foreach (var location in ViewBag.Locations)
+                                            {
+                                          <option value="@location.LocationId">@location.Description</option>
+                                            }
+                    </select>
+                    </div>
+                    <div class="form-group">
+                    <select asp-for="DepartmentId" class="form-select" aria-label="Default select example">
+                      <option selected>Select Department Please</option>
+                                            @foreach (var department in ViewBag.Departments)
+                                            {
+                                          <option value="@department.DepartmentId">@department.Description</option>
+                                            }
+                    </select>
+                    </div>
+                    <div class="form-group">
+                    <select asp-for="DesignationId" class="form-select" aria-label="Default select example">
+                      <option selected>Select Designation Please</option>
+                                            @foreach (var designation in ViewBag.Designations)
+                                            {
+                                          <option value="@designation.DesignationId">@designation.Description</option>
+                                            }
+                    </select>
+                    </div>
+                    <div class="form-group">
+                    <select asp-for="GradeId" class="form-select" aria-label="Default select example">
+                      <option selected>Select Grade Please</option>
+                                            @foreach (var grade in ViewBag.Grades)
+                                            {
+                                          <option value="@grade.GradeId">@grade.Description</option>
+                                            }
+                    </select>
+                    </div>
+                    <div class="form-group">
+                    <select asp-for="EmployeeTypeId" class="form-select" aria-label="Default select example">
+                      <option selected>Select Employee Type Please</option>
+                                            @foreach (var employeeType in ViewBag.EmployeeTypes)
+                                            {
+                                          <option value="@employeeType.EmployeeTypeId">@employeeType.Description</option>
+                                            }
+                    </select>
+                    </div>
+                  </div>
+                  <div class="col-12 col-md-6">
+                  <div class="form-group">
+                    <select asp-for="ShiftId" class="form-select" aria-label="Default select example">
+                      <option selected>Select Shift Please</option>
+                                        @foreach (var shift in ViewBag.Shifts)
+                                        {
+                                          <option value="@shift.ShiftId">@shift.Description</option>
+                                        }
+                    </select>
+                    </div>
+                    <div class="form-group">
+                    <select asp-for="SectionId" class="form-select" aria-label="Default select example">
+                      <option selected>Select Section Please</option>
+                                    @foreach (var sections in ViewBag.Sections)
+                                    {
+                                      <option value="@sections.SectionId">@sections.Description</option>
+                                    }
+                    </select>
+                    </div>
+                    <div class="form-group">
+                    <select asp-for="ProjectId" class="form-select" aria-label="Default select example">
+                      <option selected>Select Project Please</option>
+                                        @foreach (var project in ViewBag.Projects)
+                                        {
+                                          <option value="@project.ProjectId">@project.Description</option>
+                                        }
+                    </select>
+                    </div>
+                    <div class="form-group">
+                    <select asp-for="SchoolId" class="form-select" aria-label="Default select example">
+                      <option selected>Select School Please</option>
+                                            @foreach (var school in ViewBag.Schools)
+                                            {
+                                          <option value="@school.SchoolId">@school.Description</option>
+                                            }
+                    </select>
+                    </div>
+                    <div class="form-group">
+                    <select asp-for="CampusId" class="form-select" aria-label="Default select example">
+                      <option selected>Select Campus Please</option>
+                                            @foreach (var campus in ViewBag.Campuses)
+                                            {
+                                              <option value="@campus.CampusId">@campus.Description</option>
+                                            }
+                    </select>
+                    </div>
+                    <div class="form-group">
+                      <label asp-for="ContractStartDate">Contract Start Date</label>
+                      <input type="date" class="form-control" asp-for="ContractStartDate" placeholder="Enter Contract Start Date">
+                      <span asp-validation-for="ContractStartDate" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                      <label asp-for="ContractEndDate">Contract End Date</label>
+                      <input type="date" class="form-control" asp-for="ContractEndDate" placeholder="Enter Contract End Date">
+                      <span asp-validation-for="ContractEndDate" class="text-danger"></span>
+                    </div>
+                    <div class="form-check">
+                      <label class="form-check-label" asp-for="IsContractRenewable">
+                      <input class="form-check-input" type="checkbox" value="" asp-for="IsContractRenewable">
+                      <span asp-validation-for="IsContractRenewable" class="text-danger"></span>
+                        Renewable
+                      </label>
+                    </div>
+                    <div class="float-right">
+                    <a class="btn btn-light" asp-controller="Placement" asp-action="Index">Cancel</a>
+                        <button type="submit" class="btn btn-primary mr-2">Add</button>
+                    </div>
+                    </div>
+                   </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+           </div>
+          </div>
+         </div>
+
+@section scripts{
+            <script src="~/lib/jquery-validate/jquery.validate.min.js"></script>
+            <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+}*@

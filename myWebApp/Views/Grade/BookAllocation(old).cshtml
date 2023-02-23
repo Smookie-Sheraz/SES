@@ -1,0 +1,67 @@
+﻿@model IEnumerable<Entities.Models.BookAllocation>
+<div class="main-panel">
+   <div class="content-wrapper">
+          <div class="row">
+
+            <div class="col-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Book Allocations</h4>
+                  @*<p class="card-description">
+                    The Books can be Book Allocated to Sections here!
+                  </p>*@
+                  <div class="table-responsive">
+                            @if (Model.Any())
+                            {
+                                        <table class="table table-hover">
+                                            <thead>
+                                                <tr>
+                                                    <th>Actions</th>
+                                                    <th>Grade</th>
+                                                    <th>Section</th>
+                                                    <th>Book</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                        @foreach (var Section in Model)
+                                        {
+                                                 <tr>
+                                                  <td class="actions">
+                                                   <a class="fa fa-edit mr-3" asp-route-id="@Section.BookAllocationId" asp-controller="Grade" asp-action="UpdateBookAllocation" role="button"></a>
+                                                   <a class="fa fa-trash text-danger" onclick="return confirm('Are you sure you want to delete?');" asp-route-id="@Section.BookAllocationId" asp-controller="Grade" asp-action="DeleteBookAllocation" role="button"></a>
+                                                  </td>
+                                                  <td>@Section.SectionId</td>
+                                                  <td>@Section.BookId</td>                                 
+                                                 </tr> 
+                                        }
+                                            </tbody>
+                                            </table>
+                            }
+                            else
+                            {
+                                            <h3>No Data Found!</h3>
+                            }
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-2 offset-10">
+              <a class="btn btn-primary" asp-controller="Grade" asp-action="AddBookAllocation" role="button">Add</a>
+            </div>
+          </div>
+        </div>
+</div>
+@*
+@section scripts{
+        <script>
+            var rows = document.querySelector('.table').getElementsByTagName("tr");
+            for(var i = 1; i <= rows.length; i++){
+                var index = i.toString();
+                document.querySelector(`.table tr:nth-child(${index}) td:nth-child(13)`).innerHTML = document.querySelector(`.table tr:nth-child(${index}) td:nth-child(13)`).innerHTML.split(" ")[0];
+                document.querySelector(`.table tr:nth-child(${index}) td:nth-child(14)`).innerHTML = document.querySelector(`.table tr:nth-child(${index}) td:nth-child(14)`).innerHTML.split(" ")[0];
+                document.querySelector(`.table tr:nth-child(${index}) td:nth-child(15)`).innerHTML = document.querySelector(`.table tr:nth-child(${index}) td:nth-child(15)`).innerHTML.split(" ")[0];
+                document.querySelector(`.table tr:nth-child(${index}) td:nth-child(17)`).innerHTML = document.querySelector(`.table tr:nth-child(${index}) td:nth-child(17)`).innerHTML.split(" ")[0];
+                document.querySelector(`.table tr:nth-child(${index}) td:nth-child(18)`).innerHTML = document.querySelector(`.table tr:nth-child(${index}) td:nth-child(18)`).innerHTML.split(" ")[0];
+                }
+        </script>
+}*@

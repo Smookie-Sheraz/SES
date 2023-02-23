@@ -1,0 +1,250 @@
+﻿@model myWebApp.ViewModels.HumanResource.EmployeeVM
+@{
+}
+       <div class="main-panel">        
+        <div class="content-wrapper">
+        <div class="row">
+            <div class="col-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Add New Employee</h4>
+                  @*<p class="card-description">
+                    Please Add New Employee and Press the Add Button.
+                  </p>*@
+                  <form class="forms-sample" method="post"
+                  asp-controller="HumanResource" asp-action="AddEmployee" enctype="multipart/form-data">
+                  <div class="row">
+                      <div class="col-12 col-md-6">
+                    <div class="form-group">
+                      <label asp-for="FName">First Name</label>
+                      <input type="text" class="form-control" asp-for="FName" placeholder="Enter First Name">
+                      <span asp-validation-for="FName" class="text-danger"></span>
+                    </div>
+                     <div class="form-group">
+                      <label asp-for="LName">Last Name</label>
+                      <input type="text" class="form-control" asp-for="LName" placeholder="Enter Last Name">
+                      <span asp-validation-for="LName" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                      <label asp-for="FatherName">Father Name</label>
+                      <input type="text" class="form-control" asp-for="FatherName" placeholder="Enter Father Name">
+                      <span asp-validation-for="FatherName" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                      <label asp-for="SpouseName">Spouse Name</label>
+                      <input type="text" class="form-control" asp-for="SpouseName" placeholder="Enter Spouse Name">
+                      <span asp-validation-for="SpouseName" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="GenderId">Gender</label>
+                    <select asp-for="GenderId" class="form-select" aria-label="Default select example">
+                      <option selected value="@null">Select Gender Please</option>
+                            @foreach (var gender in ViewBag.Gender)
+                            {
+                                <option value="@gender.GenderId">@gender.WGender</option>
+                            }
+                    </select>
+                      <span asp-validation-for="GenderId" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                            <label asp-for="SchoolId">School Name</label>
+                            <select asp-for="SchoolId" class="form-select" aria-label="Default select example">
+                            <option selected value="@null">Select School Please</option>
+                                            @foreach (var school in ViewBag.Schools)
+                                            {
+                                            <option value="@school.SchoolId">@school.SchoolName</option>
+                                            }
+                            </select>
+                      <span asp-validation-for="SchoolId" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                    <label asp-for="CampusId">Campus Name</label>
+                    <select asp-for="CampusId" class="form-select" aria-label="Default select example">
+                      <option selected value="@null">Select Campus Please</option>
+                                            @foreach (var campus in ViewBag.Campuses)
+                                            {
+                                        <option value="@campus.CampusId">@campus.CampusName</option>
+                                            }
+                    </select>
+                      <span asp-validation-for="CampusId" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                    <label asp-for=SchoolSectionId>School Section</label>
+                    <select asp-for="SchoolSectionId" class="form-select" aria-label="Default select example">
+                      <option selected value="@null">Select School Section Please</option>
+                                            @foreach (var Ssection in ViewBag.SchoolSections)
+                                            {
+                                            <option value="@Ssection.SchoolSectionId">@Ssection.SectionName</option>
+                                            }
+                    </select>
+                      <span asp-validation-for="SchoolSectionId" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                      <label asp-for="MaritalStatus">Marital Status</label>
+                      <select asp-for="MaritalStatus" class="form-select" aria-label="Default select example">
+                      <option selected value="@null">Select Marital Status</option>
+                        <option value="Single">Single</option>
+                        <option value="Married">Married</option>
+                        <option value="Divorced">Divorced</option>
+                        <option value="Widow">Widow</option>
+                    </select>
+                      <span asp-validation-for="MaritalStatus" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                      <label asp-for="Mobile">Mobile</label>
+                      <input type="text" class="form-control" asp-for="Mobile" placeholder="Enter Mobile No">
+                      <span asp-validation-for="Mobile" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                      <label asp-for="DepartmentId">Department</label>
+                    <select asp-for="DepartmentId" class="form-select" aria-label="Default select example">
+                      <option selected value="@null">Select Department Please</option>
+                            @foreach (var department in ViewBag.Departments)
+                            {
+                                <option value="@department.DepartmentId">@department.DepartmentName</option>
+                            }
+                    </select>
+                      <span asp-validation-for="DepartmentId" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                      <label asp-for="SubDepartmentId">Sub-Department</label>
+                    <select asp-for="SubDepartmentId" class="form-select" aria-label="Default select example">
+                      <option selected value="@null">Select Sub-Department Please</option>
+                            @foreach (var department in ViewBag.SubDepartments)
+                            {
+                               <option value="@department.SubDepartmentId">@department.DepartmentName</option>
+                            }
+                    </select>
+                      <span asp-validation-for="SubDepartmentId" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                      <label asp-for="DesignationId">Designation</label>
+                    <select asp-for="DesignationId" class="form-select" aria-label="Default select example">
+                      <option selected value="@null">Select Designation Please</option>
+                            @foreach (var designation in ViewBag.Designations)
+                            {
+                                <option value="@designation.DesignationId">@designation.Name</option>
+                            }
+                    </select>
+                      <span asp-validation-for="DesignationId" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                            <label asp-for="RoleId">Role</label>
+                            <select asp-for="RoleId" class="form-select" aria-label="Default select example">
+                            <option selected value="@null">Select Role Please</option>
+                                    @foreach (var role in ViewBag.Roles)
+                                    {
+                                        <option value="@role.RoleId">@role.RollName</option>
+                                    }
+                            </select>
+                      <span asp-validation-for="RoleId" class="text-danger"></span>
+                        </div>
+                      </div>
+                      <div class="col-12 col-md-6">
+                        <div class="form-group">
+                            <label>Choose User Image</label>
+                            <input type="file" class="form-control" asp-for="UserImage"/>
+                            <span asp-validation-for="UserImage" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                      <label asp-for="DOB">Date of Birth</label>
+                      <input type="date" class="form-control" asp-for="DOB" placeholder="Enter Date of Birth">
+                      <span asp-validation-for="DOB" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                      <label asp-for="CNICNo">CNIC No</label>
+                      <input type="text" class="form-control" asp-for="CNICNo" placeholder="Enter CNIC No">
+                      <span asp-validation-for="CNICNo" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                      <label asp-for="CNICIssueDate">CNIC Issue Date</label>
+                      <input type="date" class="form-control" asp-for="CNICIssueDate" placeholder="Enter CNIC Issue Date">
+                      <span asp-validation-for="CNICIssueDate" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                      <label asp-for="CNICExpiryDate">CNIC Expiry Date</label>
+                      <input type="date" class="form-control" asp-for="CNICExpiryDate" placeholder="Enter CNIC Expiry Date">
+                      <span asp-validation-for="CNICExpiryDate" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                      <label asp-for="Email">Email</label>
+                      <input type="text" class="form-control" asp-for="Email" placeholder="Enter Email Address">
+                      <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                      <label asp-for="Address">Address</label>
+                      <input type="text" class="form-control" asp-for="Address" placeholder="Enter Address">
+                      <span asp-validation-for="Address" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                      <label asp-for="FieldOfSpecialization">Field of Specialization</label>
+                      <input type="text" class="form-control" asp-for="FieldOfSpecialization" placeholder="Enter Field of Specialization">
+                      <span asp-validation-for="FieldOfSpecialization" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                      <label asp-for="JoiningDate">Date of Joining</label>
+                      <input type="date" class="form-control" asp-for="JoiningDate" placeholder="Enter Date of Joining">
+                      <span asp-validation-for="JoiningDate" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                      <label asp-for="EmployeeType">Employee Type</label>
+                    <select asp-for="EmployeeType" class="form-select" aria-label="Default select example" onchange="SelectEmployeeType(this.id)">
+                      <option selected value="@null">Select Employee Type Please</option>
+                              <option value="1">Permanent</option>
+                              <option value="2">Temporary</option>
+                    </select>
+                    </div>
+                    <div class="form-group permanent d-none">
+                      <label asp-for="ProbationPeriod">Probation Period</label>
+                      <input type="text" class="form-control" asp-for="ProbationPeriod" placeholder="Enter Probation Period">
+                      <span asp-validation-for="ProbationPeriod" class="text-danger"></span>
+                    </div>
+                    <div class="form-group permanent d-none">
+                      <label asp-for="StartofProbationDate">Probation Start Date</label>
+                      <input type="date" class="form-control" asp-for="StartofProbationDate" placeholder="Enter Probation Start Date">
+                      <span asp-validation-for="StartofProbationDate" class="text-danger"></span>
+                    </div>
+                    <div class="form-group permanent d-none">
+                      <label asp-for="EndofProbationDate">Probation End Date</label>
+                      <input type="date" class="form-control" asp-for="EndofProbationDate" placeholder="Enter Probation End Date">
+                      <span asp-validation-for="EndofProbationDate" class="text-danger"></span>
+                    </div>
+                    <div class="form-group termporary d-none">
+                      <label asp-for="Period">Employeement Period</label>
+                      <input type="text" class="form-control" asp-for="Period" placeholder="Enter Employeement Period">
+                      <span asp-validation-for="Period" class="text-danger"></span>
+                    </div>
+                    <div class="form-group termporary d-none">
+                      <label asp-for="StartofPeriodDate">Employeement Start Date</label>
+                      <input type="date" class="form-control" asp-for="StartofPeriodDate" placeholder="Enter Employeement Start Date">
+                      <span asp-validation-for="StartofPeriodDate" class="text-danger"></span>
+                    </div>
+                    <div class="form-group termporary d-none">
+                      <label asp-for="EndofPeriodDate">Employeement End Date</label>
+                      <input type="date" class="form-control" asp-for="EndofPeriodDate" placeholder="Enter Employeement End Date">
+                      <span asp-validation-for="EndofPeriodDate" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                      <label asp-for="ConfirmationDate">Confirmation Date</label>
+                      <input type="date" class="form-control" asp-for="ConfirmationDate" placeholder="Enter Confirmation Date">
+                      <span asp-validation-for="ConfirmationDate" class="text-danger"></span>
+                    </div>
+                    <div class="float-right mt-2">
+                    <a class="btn btn-light" asp-controller="HumanResource" asp-action="Employee">Cancel</a>
+                        <button type="submit" class="btn btn-primary mr-2">Add</button>
+                    </div>
+                      </div>
+                  </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+           </div>
+          </div>
+         </div>
+
+@section scripts{
+            <script src="~/lib/jquery-validate/jquery.validate.min.js"></script>
+            <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+                <script src="~/js/custom.js"></script>
+}

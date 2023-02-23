@@ -1,0 +1,93 @@
+﻿@model myWebApp.ViewModels.Setups.DepartmentVM
+<div class="main-panel">
+   <div class="content-wrapper">
+          <div class="row">
+
+            <div class="col-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Departments</h4>
+                  @*<p class="card-description">
+                    The Departments can be added here!
+                  </p>*@
+                  <div class="table-responsive">
+                            @if (Model.departmentLists.Any())
+                            {
+                                        <table class="table table-hover table-bordered">
+                                            <thead class="bg-primary text-white">
+                                                <tr>
+                                                    @if(User.HasClaim("Permission","Department.Update") || User.HasClaim("Permission","Department.Delete")){
+                                                    <th>Actions</th>
+                                                    }
+                                                    <th>Status</th>
+                                                    <th>Department Name</th>
+                                                    <th>Department Head</th>
+                                                    <th>Description</th>
+                                                    <th>Short Description</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                        @foreach (var department in Model.departmentLists)
+                                        {
+                                            <tr>
+                                                @if (User.HasClaim("Permission", "Department.Update") || User.HasClaim("Permission", "Department.Delete"))
+                                                {
+                                                    <td class="actions">
+                                                        @if (User.HasClaim("Permission", "Department.Update")){
+                                                        <a class="fa fa-edit mr-3" asp-route-id="@department.DepartmentId" asp-controller="Setup" asp-action="UpdateDepartment" role="button"></a>
+                                                        }
+                                                        @if (User.HasClaim("Permission", "Department.Delete")){
+                                                        <a class="fa fa-trash text-danger" onclick="return confirm('Are you sure you want to delete?');" asp-route-id="@department.DepartmentId" asp-controller="Setup" asp-action="DeleteDepartment" role="button"></a>
+                                                        }
+                                                    </td>
+                                                }
+                                                <td>
+                                                                        @if ((bool)department.IsActive)
+                                                                        {
+                                                                            <label class="badge badge-success">Active</label>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <label class="badge badge-danger">InActive</label>
+                                                                        }
+                                                                  </td>
+                                                                             <td>@department.DepartmentName</td>
+                                                                             <td>@department.DepartmentHeadName</td>
+                                                                             <td>@department.Description</td>
+                                                                             <td>@department.ShortDescription</td>
+                                                                 </tr> 
+                                        }
+                                                      </tbody>
+                                                    </table>
+                            }
+                            else
+                            {
+                                            <h3>No Data Found!</h3>
+                            }
+                  </div>
+                </div>
+              </div>
+            </div>
+            @if (User.HasClaim("Permission", "Department.Create"))
+            {
+                <div class="col-2 offset-10">
+                    <a class="btn btn-primary" asp-controller="Setup" asp-action="AddDepartment" role="button">Add</a>
+            </div>
+            }
+          </div>
+        </div>
+</div>
+@*
+@section scripts{
+        <script>
+            var rows = document.querySelector('.table').getElementsByTagName("tr");
+            for(var i = 1; i <= rows.length; i++){
+                var index = i.toString();
+                document.querySelector(`.table tr:nth-child(${index}) td:nth-child(13)`).innerHTML = document.querySelector(`.table tr:nth-child(${index}) td:nth-child(13)`).innerHTML.split(" ")[0];
+                document.querySelector(`.table tr:nth-child(${index}) td:nth-child(14)`).innerHTML = document.querySelector(`.table tr:nth-child(${index}) td:nth-child(14)`).innerHTML.split(" ")[0];
+                document.querySelector(`.table tr:nth-child(${index}) td:nth-child(15)`).innerHTML = document.querySelector(`.table tr:nth-child(${index}) td:nth-child(15)`).innerHTML.split(" ")[0];
+                document.querySelector(`.table tr:nth-child(${index}) td:nth-child(17)`).innerHTML = document.querySelector(`.table tr:nth-child(${index}) td:nth-child(17)`).innerHTML.split(" ")[0];
+                document.querySelector(`.table tr:nth-child(${index}) td:nth-child(18)`).innerHTML = document.querySelector(`.table tr:nth-child(${index}) td:nth-child(18)`).innerHTML.split(" ")[0];
+                }
+        </script>
+}*@

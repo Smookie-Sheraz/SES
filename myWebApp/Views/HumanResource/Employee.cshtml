@@ -1,0 +1,187 @@
+﻿@model IEnumerable<myWebApp.ViewModels.HumanResource.UpdateEmployeeVM>
+<div class="main-panel">
+   <div class="content-wrapper">
+          <div class="row">
+
+            <div class="col-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Employees</h4>
+                  @*<p class="card-description">
+                    The Employees can be added here!
+                  </p>*@
+                  <div class="table-responsive">
+                            @if (Model.Any())
+                            {
+                                    <table class="table table-hover table-bordered" id="EmployeeTable">
+                                    <thead class="bg-primary text-white">
+                                        <tr>
+                                            @if (User.HasClaim("Permission", "Employee.Update") || User.HasClaim("Permission", "Employee.Delete"))
+                                            {
+                                            <th>Actions</th>
+                                            }
+                                            <th>Status</th>
+                                            <th>Picture</th>
+                                            <th>First Name</th>
+                                            <th>Last Name</th>
+                                            <th>Father's Name</th>
+                                            <th>Spouse Name</th>
+                                            <th>Gender</th>
+                                            <th>School</th>
+                                            <th>Campus</th>
+                                            <th>School Section</th>
+                                            @*<th>Details</th>*@
+                                            <th>Mobile</th>
+                                            <th>Date of Birth</th>
+                                            <th>CNIC No</th>
+                                            <th>CNIC Issue Date</th>
+                                            <th>CNIC Expiry Date</th>
+                                            <th>Email Address</th>
+                                            <th>Address</th>
+                                            <th>Field Of Specialization</th>
+                                            <th>Department</th>
+                                            <th>Sub Department</th>
+                                            <th>Designation</th>
+                                            <th>Joining Date</th>
+                                            <th>Employee Type</th>
+                                            <th>Probation Period</th>
+                                            <th>Start of Probation Period</th>
+                                            <th>End of Probation Period</th>
+                                            <th>Contract Period</th>
+                                            <th>Start of Contract</th>
+                                            <th>End of Contract</th>
+                                            <th>Confirmation Date</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var employee in Model)
+                                        {
+                                            <tr>
+                                                @if (User.HasClaim("Permission", "Employee.Update") || User.HasClaim("Permission", "Employee.Delete")){
+                                                <td class="actions">
+                                                @if (User.HasClaim("Permission", "Employee.Update")){
+                                                <a class="fa fa-edit mr-3" asp-route-id="@employee.EmployeeId" asp-controller="HumanResource" asp-action="UpdateEmployee" role="button"></a>
+                                                }
+                                                @if (User.HasClaim("Permission", "Employee.Delete")){
+                                                    <a class="fa fa-trash text-danger" onclick="return confirm('Are you sure you want to delete?');" asp-route-id="@employee.EmployeeId" asp-controller="HumanResource" asp-action="DeleteEmployee" role="button"></a>
+                                                }
+                                                </td>
+                                                }
+                                                        <td>
+                                                    @if ((bool)employee.IsActive)
+                                                    {
+                                                        <label class="badge badge-success">Active</label>
+                                                    }
+                                                    else
+                                                    {
+                                                        <label class="badge badge-danger">InActive</label>
+                                                    }
+                                                        </td>
+                                                <td><img src="~/usersimages/@employee.UserImageUrl" height=100 width=100/></td>
+                                                <td>@employee.FName</td>
+                                                <td>@employee.LName</td>
+                                                <td>@employee.FatherName</td>
+                                                <td>@employee.SpouseName</td>
+                                                <td>@employee.GenderName</td>
+                                                <td>@employee.SchoolName</td>
+                                                <td>@employee.CampusName</td>
+                                                @*<td><a class="fa fa-edit mr-3" asp-route-Id="@employee.EmployeeId" asp-controller="HumanResource" asp-action="EmployeeDetails" role="button"></a></td>*@
+                                             <td>@employee.MaritalStatus</td>
+                                                <td>@employee.Mobile</td>
+                                                @if(employee.DOB == null){
+                                                <td></td>
+                                                }
+                                                else{
+                                                <td class="dates">@Convert.ToDateTime(employee.DOB).ToString("dd-MMM-yyyy")</td>
+                                                }
+                                                <td>@employee.CNICNo</td>
+                                                @if(employee.CNICIssueDate == null){
+                                                <td></td>
+                                                }
+                                                else{
+                                                <td class="dates">@Convert.ToDateTime(employee.CNICIssueDate).ToString("dd-MMM-yyyy")</td>
+                                                }
+                                                @if(employee.CNICExpiryDate == null){
+                                                <td></td>
+                                                }
+                                                else{
+                                                <td class="dates">@Convert.ToDateTime(employee.CNICExpiryDate).ToString("dd-MMM-yyyy")</td>
+                                                }
+                                                <td>@employee.Email</td>
+                                                <td>@employee.Address</td>
+                                                <td>@employee.FieldOfSpecialization</td>
+                                                <td>@employee.DepartmentName</td>
+                                                <td>@employee.SubDepartmentName</td>
+                                                <td>@employee.DesignationName</td>
+                                                @if(employee.JoiningDate == null){
+                                                <td></td>
+                                                }
+                                                else{
+                                                <td class="dates">@Convert.ToDateTime(employee.JoiningDate).ToString("dd-MMM-yyyy")</td>
+                                                }
+                                                @if(employee.EmployeeType == 1){
+                                                    <td>Permanent</td>
+                                                }
+                                                else{
+                                                    <td>Contractual</td>
+                                                }
+                                                <td>@employee.ProbationPeriod</td>
+                                                @if(employee.StartofProbationDate == null){
+                                                <td></td>
+                                                }
+                                                else{
+                                                <td class="dates">@Convert.ToDateTime(employee.StartofProbationDate).ToString("dd-MMM-yyyy")</td>
+                                                }
+                                                @if(employee.EndofProbationDate == null){
+                                                <td></td>
+                                                }
+                                                else{
+                                                <td class="dates">@Convert.ToDateTime(employee.EndofProbationDate).ToString("dd-MMM-yyyy")</td>
+                                                }
+                                                <td>@employee.Period</td>
+                                                @if(employee.StartofPeriodDate == null){
+                                                <td></td>
+                                                }
+                                                else{
+                                                <td class="dates">@Convert.ToDateTime(employee.StartofPeriodDate).ToString("dd-MMM-yyyy")</td>
+                                                }
+                                                @if(employee.EndofPeriodDate == null){
+                                                <td></td>
+                                                }
+                                                else{
+                                                <td class="dates">@Convert.ToDateTime(employee.EndofPeriodDate).ToString("dd-MMM-yyyy")</td>
+                                                }
+                                                @if(employee.ConfirmationDate == null){
+                                                <td></td>
+                                                }
+                                                else{
+                                                <td class="dates">@Convert.ToDateTime(employee.ConfirmationDate).ToString("dd-MMM-yyyy")</td>
+                                                }
+                                            </tr> 
+                                        }
+                                              </tbody>
+                                            </table>
+                            }
+                            else
+                            {
+                                    <h3>No Data Found!</h3>
+                            }
+                  </div>
+                </div>
+              </div>
+            </div>
+            @if(User.HasClaim("Permission","Employee.Create")){
+            <div class="col-2 offset-10">
+              <a class="btn btn-primary" asp-controller="HumanResource" asp-action="AddEmployee" role="button">Add</a>
+            </div>
+            }
+          </div>
+        </div>
+</div>
+@section scripts{
+    <script>
+    $(document).ready(function () {
+        $('#EmployeeTable').DataTable();
+    });
+    </script>
+}

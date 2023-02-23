@@ -1,0 +1,70 @@
+﻿@model myWebApp.ViewModels.BookAllocation.ClassList
+<div class="main-panel">        
+    <div class="content-wrapper">
+        <form method="post"
+       asp-controller="Director" asp-action="SubjectTeacherAllocation">
+        <div class="row">
+            <input type="hidden" asp-for="@Model.SectionId"/>
+            <div class="col-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Allocate Teacher to Books for the Class @Model.ClassName</h4>
+                  <h5 class="card-description">
+                    @*The Teachers will find these books in their academic planner!*@
+                  </h5>
+                    <div class="table-responsive">
+                        <table class="table table-hover table-bordered" id="books-table">
+                            <tbody>
+                                @if (Model.books.Any())
+                                {
+                                    <tr>
+                                        <th>Book Name</th>
+                                        <th>Subject Name</th>
+                                        <th>Teachers</th>
+                                    </tr>
+                                    @for(int j = 0; j < @Model.books.Count; j++)
+                                    {
+                                    <tr>
+                                        <td style="font-size:16px">@Model.books[j].BookName
+                                            <input type="hidden" asp-for="@Model.books[j].BookName"/>
+                                            <input type="hidden" asp-for="@Model.books[j].BookId"/>
+                                        </td>
+                                        <td style="font-size:16px">@Model.books[j].SubjectName
+                                            <input type="hidden" asp-for="@Model.books[j].SubjectName"/>
+                                        </td>
+                                        <td>
+                                            <div class="form-group">
+                                            <select asp-for="@Model.books[j].EmployeeId" class="form-select text-center" style="font-size:16px" aria-label="Default select example">
+                                                <option selected value="@null">Select Teacher Please</option>
+                                                    @foreach (var emp in ViewBag.Employees)
+                                                    {
+                                                            <option value="@emp.EmployeeId">@emp.FName @emp.LName</option>
+                                                    }
+                                            </select>
+                                                <span asp-validation-for="@Model.books[j].EmployeeId" class="text-danger"></span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="2">
+                                            <h5>Class Has No Books!</h5>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    <div style="float:right;" class="mt-2">
+                        <button type="submit" asp-for="SubjectTeacherAllocation(@Model.books)" class="btn btn-primary mr-2">Submit</button>
+                    </div>
+                    </div>
+                </div>
+              </div>
+            </div>
+        </div>
+        </form>
+    </div>
+</div>

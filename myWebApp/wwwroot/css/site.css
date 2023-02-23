@@ -1,0 +1,36 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+.text-end{
+    text-align: end;
+}
+.table th, td{
+    text-align: center;
+}
+.actions{
+    width: 10%;
+}
+.fa{
+    font-size: 17px;
+}
+.term{
+    display:none;
+}
+.month{
+    display: none;
+}

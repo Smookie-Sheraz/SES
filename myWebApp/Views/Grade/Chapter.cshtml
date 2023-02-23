@@ -1,0 +1,122 @@
+﻿@model Entities.ViewModels.ChapterVM
+@{
+}
+<div class="main-panel">
+    <div class="content-wrapper">
+        <div class="row">
+            <div class="col-12 grid-margin stretch-card">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Add New Chapter for Unit @ViewBag.Unit Between pages @ViewBag.UStartPage and @ViewBag.UEndPage</h4>
+                        @*<p class="card-description">
+                            Please Add The New Chapter for Unit @ViewBag.Unit and Press the Add Button.
+                        </p>*@
+                        <form class="forms-sample" method="post" asp-controller="Grade" asp-action="Chapter">
+                            <input type="hidden" asp-for="BookId" />
+                            @if (User.HasClaim("Permission", "Chapter.Create"))
+                            {
+                            <h4>Chapter</h4>
+                            <div class="row">
+                                <div class="col-3">
+                                    <div class="form-group">
+                                        <label asp-for="ChapterName">Chapter Name</label>
+                                        <input type="text" class="form-control" asp-for="ChapterName" placeholder="Enter Chapter Name"/>
+                                        <span asp-validation-for="ChapterName" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="form-group">
+                                        <label asp-for="StartPage">Start Page</label>
+                                        <input type="number" min="@Model.MinPage" max="@Model.MaxPage" class="form-control" asp-for="StartPage" placeholder="Enter Start Page"/>
+                                        <span asp-validation-for="StartPage" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="form-group">
+                                        <label asp-for="EndPage">End Page</label>
+                                        <input type="number" min="@Model.MinPage" max="@Model.MaxPage" class="form-control" asp-for="EndPage" placeholder="Enter End Page"/>
+                                        <span asp-validation-for="EndPage" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-3">
+                                    <div class="form-group">
+                                        <label asp-for="SLO">SLO</label>
+                                        <input type="text" class="form-control" asp-for="SLO" placeholder="Enter Chapter SLOs"/>
+                                        <span asp-validation-for="SLO" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="float-right mt-5">
+                                <button type="submit" class="btn btn-primary mr-2">Add</button>
+                            </div>
+                            }
+                            <div class="col-12 grid-margin stretch-card">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h4 class="card-title">Chapters of Unit @ViewBag.Unit</h4>
+                                        @*<p class="card-description">
+                                            Chapter for the Unit @ViewBag.Unit
+                                        </p>*@
+                                        <div class="table-responsive">
+                                            <table class="table table-hover table-bordered">
+                                                <thead class="bg-primary text-white">
+                                                    <tr>
+                                                        @if (User.HasClaim("Permission", "Chapter.Update") || User.HasClaim("Permission", "Chapter.Delete") || User.HasClaim("Permission", "Topic.Read") || User.HasClaim("Permission", "Topic.Create") || User.HasClaim("Permission", "Topic.Delete"))
+                                                        {
+                                                            <th>Actions</th>
+                                                        }
+                                                        <th>Status</th>
+                                                        <th>Chapter Name</th>
+                                                        <th>SLOs</th>
+                                                        <th>Start Page</th>
+                                                        <th>End Page</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody class="term-data">
+                                                    @foreach (var Chapter in ViewBag.Chapters)
+                                                    {
+                                                        <tr>
+                                                            @if (User.HasClaim("Permission", "Chapter.Update") || User.HasClaim("Permission", "Chapter.Delete") || User.HasClaim("Permission", "Topic.Read") || User.HasClaim("Permission", "Topic.Create") || User.HasClaim("Permission", "Topic.Delete"))
+                                                            {
+                                                            <td class="actions">
+                                                                <a class="fa fa-file-pen mr-3" title="Add Questions" asp-route-ChapterId="@Chapter.ChapterId" asp-route-UnitId="@Model.BookId" asp-controller="Grade" asp-action="Questions" role="button"></a>
+                                                                @if(User.HasClaim("Permission", "Topic.Read") || User.HasClaim("Permission", "Topic.Create") || User.HasClaim("Permission", "Topic.Delete")){
+                                                                <a class="fa fa-book-copy mr-3" title="Add Topics" asp-route-id="@Chapter.ChapterId" asp-controller="Grade" asp-action="Topic" role="button"></a>
+                                                                }
+                                                                @if(User.HasClaim("Permission", "Chapter.Update")){
+                                                                <a class="fa fa-edit mr-3" title="Edit Chapter" asp-route-id="@Chapter.ChapterId" asp-controller="Grade" asp-action="UpdateChapter" role="button"></a>
+                                                                }
+                                                                @if(User.HasClaim("Permission", "Chapter.Delete")){
+                                                                <a class="fa fa-trash text-danger" title="Delete Chapter" onclick="return confirm('Are you sure you want to delete?');" asp-route-id="@Chapter.ChapterId" asp-route-UnitId="@Model.BookId" asp-controller="Grade" asp-action="DeleteChapter" role="button"></a>
+                                                                }
+                                                            </td>    
+                                                            }
+                                                            <td>
+                                                            @if(Chapter.IsActive == true)
+                                                            {
+                                                                <label class="badge badge-success">Active</label>
+                                                            }
+                                                            else
+                                                            {
+                                                                <label class="badge badge-danger">InActive</label>
+                                                            }
+                                                            </td>
+                                                            <td>@Chapter.ChapterName</td>
+                                                            <td>@Chapter.SLO</td>
+                                                            <td>@Chapter.StartPage</td>
+                                                            <td>@Chapter.EndPage</td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,71 @@
+﻿@*@model IEnumerable<Entities.Models.Section>*@
+@*<div class="main-panel">
+   <div class="content-wrapper">
+          <div class="row">
+
+            <div class="col-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Add Section</h4>
+                  <p class="card-description">
+                    The Section can be added here!
+                  </p>
+                  <div class="table-responsive">
+                            @if (Model.Any())
+                            {
+                                           <table class="table table-hover">
+                                           <thead>
+                                            <tr>
+                                              <th class="actions">Actions</th>
+                                              <th>Id</th>
+                                              <th>Code</th>
+                                              <th>Description</th>
+                                              <th>Short Description</th>
+                                                  <th>Campus Id</th>
+                                              <th>Active</th> 
+                                            </tr>
+                                          </thead>
+                                          <tbody>
+                                        @foreach (var Section in Model)
+                                        {
+                                           <tr>
+                                                     <td class="actions">
+                                                   <a class="fa fa-edit mr-3" asp-route-id="@Section.SectionId" asp-controller="Setup" asp-action="UpdateSection" role="button"></a>
+                                                                           <a class="fa fa-trash text-danger" onclick="return confirm('Are you sure you want to delete?');" asp-route-id="@Section.SectionId" asp-controller="Setup" asp-action="DeleteSection" role="button"></a>
+
+                                                    </td>
+                                             <td>@Section.SectionId</td>
+                                             <td>@Section.Code</td>
+                                             <td>@Section.Description</td>
+                                             <td>@Section.ShortDescripiton</td>
+                                             <td>@Section.CampusID</td>
+                                             <td>
+                                                    @if (Section.IsActive)
+                                               {
+                                                <label class="badge badge-success">Active</label>
+                                               }
+                                               else
+                                               {
+                                                 <label class="badge badge-danger">InActive</label>
+                                               }
+                                               </td>
+                                               
+                                          </tr> 
+                                        }
+                                          </tbody>
+                                        </table>
+                            }
+                            else
+                            {
+                             <h3>No Data Found!</h3>
+                            }
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-2 offset-10">
+              <a class="btn btn-primary" asp-controller="Setup" asp-action="AddSection" role="button">Add</a>
+            </div>
+          </div>
+        </div>
+</div>*@

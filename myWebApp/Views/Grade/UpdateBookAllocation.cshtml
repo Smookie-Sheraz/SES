@@ -1,0 +1,66 @@
+﻿@model Entities.ViewModels.UpdateBookAllocationVM
+@{
+}
+       <div class="main-panel">        
+        <div class="content-wrapper">
+        <div class="row">
+            <div class="col-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Update Book Allocation</h4>
+                  @*<p class="card-description">
+                    Please Update Book Allocate and Press the Update Button.
+                  </p>*@
+                  <form class="forms-sample" method="post"
+                  asp-controller="Grade" asp-action="UpdateBookAllocation">
+                  <div class="row">
+                      <div class="col-12 col-md-6">
+                          <input type="hidden" asp-for="BookAllocationId"/>
+                          <div class="form-group">
+                      <label asp-for="GradeId">Grade</label>
+                      <select asp-for="GradeId" class="form-select" aria-label="Default select example">
+                      <option selected>Select Grade Please</option>
+                                            @foreach (var grade in ViewBag.Grades)
+                                            {
+                                                  <option value="@grade.GradeId">@grade.GradeName</option>
+                                            }
+                    </select>
+                    </div>
+                    <div class="form-group">
+                      <label asp-for="SectionId">Section</label>
+                      <select asp-for="SectionId" class="form-select" aria-label="Default select example">
+                      <option selected>Select Section Please</option>
+                                            @foreach (var eachSection in ViewBag.Sections)
+                                            {
+                                                  <option value="@eachSection.SectionId">@eachSection.SectionName</option>
+                                            }
+                    </select>
+                    </div>
+                    <div class="form-group">
+                      <label asp-for="BookId">Book</label>
+                      <select asp-for="BookId" class="form-select" aria-label="Default select example">
+                      <option selected>Select Book Please</option>
+                                            @foreach (var book in ViewBag.Books)
+                                            {
+                                                      <option value="@book.BookId">@book.BookName</option>
+                                            }
+                    </select>
+                    </div>
+                    <div class="float-right mt-2">
+                    <a class="btn btn-light" asp-controller="Grade" asp-action="Book">Cancel</a>
+                        <button type="submit" class="btn btn-primary mr-2">Update</button>
+                    </div>
+                      </div>
+                  </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+           </div>
+          </div>
+         </div>
+
+@*@section scripts{
+                    <script src="~/lib/jquery-validate/jquery.validate.min.js"></script>
+                    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+}*@

@@ -1,0 +1,42 @@
+﻿<div class="main-panel">
+   <div class="content-wrapper">
+          <div class="row">
+
+            <div class="col-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Add TaskPriority</h4>
+                  <p class="card-description">
+                    The TaskPriority can be added here!
+                  </p>
+                  <div class="table-responsive">
+                    <table class="table table-hover">
+                       <thead>
+                        <tr>
+                            <th>Id</th>
+                          <th>Code</th>
+                          <th>Description</th>
+                          <th>Active</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>1</td>
+                          <td>0001</td>
+                          <td>Night Shift has been assigned for this weekend.</td>
+                          <td>
+                              <input type="checkbox" class="form-check-input" id="IsActive">
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-2 offset-10">
+              <a class="btn btn-primary" asp-controller="Task" asp-action="AddTaskPriority" role="button">Add TaskPriority</a>
+            </div>
+          </div>
+        </div>
+</div>

@@ -1,0 +1,173 @@
+﻿@model myWebApp.ViewModels.AcademicCalendar.TopicAllocationVM
+<div class="main-panel">
+   <div class="content-wrapper">
+       <form method="post"
+       asp-controller="AcademicCalendar" asp-action="TopicAllocation">
+          <div class="row">
+            <div class="col-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Topics for the Term @ViewBag.Month</h4>
+                  @*<p class="card-description">
+                    The Books allocated to the @ViewBag.Month !
+                  </p>*@
+                  <div class="table-responsive">
+                                @if (Model.Topics.Any())
+                                {
+                               <table class="table table-hover" id="TopicsTable">
+                                 <thead>
+                                   <tr>
+                                     <th>Topic Name</th>
+                                     <th>Start Date</th>
+                                     <th>End Date</th>
+                                     <th>Teaching Method</th>
+                                     <th>Teaching Method Description</th>
+                                     <th>WB Start Page</th>
+                                     <th>WB End Page</th>
+                                     <th>Selection</th>
+                                   </tr>
+                                 </thead>
+                               <tbody>
+                                   <tr class="d-none">
+                                       <td>
+                                <input type="hidden" asp-for="YearId"/>
+                                       </td>
+                                       <td>
+                                <input type="hidden" asp-for="TermId"/>
+
+                                       </td>
+                                   </tr>
+                                            @for (var i = 0; i < Model.Topics.Count(); i++)
+                                            {
+                                          <tr class="tb-data">
+                                            <td>@Model.Topics[i].TopicName</td>
+                                                     <td>
+                                                <div class="form-group">
+                                                            <input type="date" class="form-control text-center start-date" oninput="check(this.id)" asp-for="@Model.Topics[i].StartDate" placeholder="Enter Start Date" min="@Convert.ToDateTime(@Model.Topics[i].ChapterStartDate).ToString("yyyy-MM-dd")" max="@Convert.ToDateTime(Model.Topics[i].ChapterEndDate).ToString("yyyy-MM-dd")">
+                                                    <span asp-validation-for="@Model.Topics[i].StartDate" class="text-danger"></span>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="form-group">
+                                                            <input type="date" class="form-control text-center end-date" asp-for="@Model.Topics[i].EndDate" placeholder="Enter End Date" min="@Convert.ToDateTime(Model.Topics[i].ChapterStartDate).ToString("yyyy-MM-dd")" max="@Convert.ToDateTime(Model.Topics[i].ChapterEndDate).ToString("yyyy-MM-dd")">
+                                                    <span asp-validation-for="@Model.Topics[i].EndDate" class="text-danger"></span>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="form-group">
+                                                    <select asp-for="@Model.Topics[i].TeachingMethodologyId" class="form-select" aria-label="Default select example">
+                                                        <option selected>Choose Teaching Methodology Please</option>
+                                                            @foreach (var TMethod in ViewBag.TMethods)
+                                                            {
+                                                                <option value="@TMethod.TeachingMethodologyId">@TMethod.TMethodologyName</option>
+                                                            }
+                                                    </select>
+
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="form-group">
+                                                    <input type="text" class="form-control" asp-for="@Model.Topics[i].TeachingMethodologyDesc" placeholder="Enter Teaching Method Description"/>
+                                                    <span asp-validation-for="@Model.Topics[i].TeachingMethodologyDesc" class="text-danger"></span>
+                                                </div>
+                                            </td>
+                                            @*<td>
+                                        <div class="form-group">
+                                              <label asp-for="@Model.Topics[i].WorkBookId">Grade</label>
+                                              <select asp-for="@Model.Topics[i].WorkBookId" class="form-select" aria-label="Default select example">
+                                              <option value="@null" selected>Select Grade Please</option>
+                                                    @foreach (var grade in ViewBag.WorkBooks)
+                                                    {
+                                                        <option value="@grade.BookId">@grade.BookName</option>          
+                                                    }
+                                            </select>
+                                          <span asp-validation-for="@Model.Topics[i].WorkBookId" class="text-danger"></span>
+                                        </div>
+                                    </td>*@
+                                    <td>
+                                       <div class="form-group">
+                                            <input type="number" min="@Model.Topics[i].WBMinPage" max="@Model.Topics[i].WBMaxPage" class="form-control text-center" asp-for="@Model.Topics[i].WorkBookStartPage" placeholder="Enter Start Page" />
+                                            <span asp-validation-for="@Model.Topics[i].WorkBookStartPage" class="text-danger"></span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-group">
+                                            <input type="number" min="@Model.Topics[i].WBMinPage" max="@Model.Topics[i].WBMaxPage" class="form-control text-center" asp-for="@Model.Topics[i].WorkBookEndPage" placeholder="Enter Start End" />
+                                            <span asp-validation-for="@Model.Topics[i].WorkBookEndPage" class="text-danger"></span>
+                                        </div>
+                                    </td>
+                                            <td>
+                                                <div>
+                                                    <label class="form-check-label">
+                                                        <input type="hidden" asp-for="@Model.Topics[i].TopicId"/>
+                                                            @if ((bool)Model.Topics[i].preAllocation)
+                                                            {
+                                                                <input type="checkbox" class="form-check-input" checked asp-for="@Model.Topics[i].IsSelected" />
+                                                            }
+                                                            else
+                                                            {
+                                                                <input type="checkbox" class="form-check-input" asp-for="@Model.Topics[i].IsSelected" />
+                                                            }
+                                                Select </label>
+                                                </div>
+                                            </td>
+                                          </tr> 
+                                            }
+                               </tbody>
+                              </table>
+                                }
+                                else
+                                {
+                             <h3>Please Allocate Chapter(s) to The month First!</h3>
+                                }
+                  </div>
+                </div>
+              </div>
+            </div>
+            @if(Model.Topics.Count() > 0){
+            <div class="col-2 offset-10">
+                <button type="submit" asp-for="TopicAllocation(@Model.Topics)" class="btn btn-primary mr-2">Allocate</button>
+            </div>
+                }
+          </div>
+       </form>
+   </div>
+</div>
+
+@*@section scripts{
+    <script>
+        function check(id){
+            console.log(id);
+            var IdParts = id.split("_");
+            //console.log(IdParts[1]);
+            var trNow = parseInt(IdParts[1]);
+            //console.log(typeof(trNow));
+            if(trNow > 0){
+                trNow -= 1;
+                var startDateString = document.getElementById(id);
+                var startDate = new Date(startDateString.value.split("-")[0],startDateString.value.split("-")[1] - 1,startDateString.value.split("-")[2]);
+                console.log(startDate);
+                var endDateId = IdParts[0] +"_"+ trNow.toString() +"__"+ "EndDate";
+                var endDateString = document.getElementById(endDateId);
+                var endDate = new Date(endDateString.value.split("-")[0],endDateString.value.split("-")[1] - 1,endDateString.value.split("-")[2]);
+                console.log(endDate);
+                if(startDate <= endDate){
+                    alert("The Topic should start after the end of the previos topic " + endDateString.value);
+                    startDateString.value = endDateString.value;
+                }
+            }
+        }
+    </script>
+}*@
+@section scripts{
+        <script>
+        $(document).ready(function () {
+            $('#TopicsTable').DataTable({
+                    serverSide: true,
+                    ajax: function(){
+
+                    },
+                });
+        });
+        </script>
+}

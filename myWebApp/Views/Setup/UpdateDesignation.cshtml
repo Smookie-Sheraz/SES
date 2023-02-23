@@ -1,0 +1,47 @@
+﻿@model myWebApp.ViewModels.Setups.UpdateDesignationVM
+@{
+}
+       <div class="main-panel">        
+        <div class="content-wrapper">
+        <div class="row">
+            <div class="col-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Update Designation</h4>
+                  @*<p class="card-description">
+                    Please Update The Designation and Press the Update Button.
+                  </p>*@
+                  <form class="forms-sample" method="post"
+                  asp-controller="Setup" asp-action="UpdateDesignation">
+                  <div class="row justify-content-between">
+                      <div class="col-12 col-md-6">
+                          <input type="hidden" asp-for="DesigationId"/>
+                    <div class="form-group">
+                      <label asp-for="DesignationName">Designation Name</label>
+                      <input type="text" class="form-control" asp-for="DesignationName" placeholder="Enter Gender">
+                      <span asp-validation-for="DesignationName" class="text-danger"></span>
+                    <div class="form-group mt-2">
+                    <select asp-for="IsActive" class="form-select" aria-label="Default select example">
+                      <option selected value="@null">Is Designation Active</option>
+                          <option value="@true">Yes</option>
+                          <option value="@false">No</option>
+                    </select>
+                    </div>
+                    <div class="float-right">
+                    <a class="btn btn-light" asp-controller="Setup" asp-action="Designation">Cancel</a>
+                        <button type="submit" class="btn btn-primary mr-2">Update</button>
+                    </div>
+                      </div>
+                  </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+           </div>
+          </div>
+         </div>
+
+@*@section scripts{
+                    <script src="~/lib/jquery-validate/jquery.validate.min.js"></script>
+                    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+}*@

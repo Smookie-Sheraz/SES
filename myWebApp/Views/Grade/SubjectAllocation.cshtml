@@ -1,0 +1,62 @@
+﻿@model myWebApp.ViewModels.Grade.SubjectAllocationVm
+<div class="main-panel">
+   <div class="content-wrapper">
+       <form method="post"
+       asp-controller="Grade" asp-action="SubjectAllocation">
+          <div class="row">
+            <div class="col-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Subect for Class @ViewBag.Section</h4>
+                  @*<p class="card-description">
+                    The Books allocated to Class @ViewBag.Section !
+                  </p>*@
+                  <div class="table-responsive">
+                      @if (Model.Subjects.Any())
+                        {
+                           <table class="table table-hover table-bordered">
+                            <thead class="bg-primary text-white">
+                               <tr>
+                                 <th>Subject Name</th>
+                                 <th>Selected</th>
+                               </tr>
+                             </thead>
+                           <tbody>
+                            <input type="hidden" asp-for="SectionId"/>
+                              @for(var i =0;i<Model.Subjects.Count(); i++) 
+                              {
+                                  <tr>
+                                    <td>@Model.Subjects[i].SubjectName</td>
+                                    <td>
+                                      <label class="form-check-label">
+                                        <input type="hidden" asp-for="@Model.Subjects[i].SubjectId"/>
+                                        @if((bool)Model.Subjects[i].preAllocation)
+                                        {
+                                        <input type="checkbox" checked asp-for="@Model.Subjects[i].IsSelected" />
+                                        }
+                                        else
+                                        {
+                                        <input type="checkbox"  asp-for="@Model.Subjects[i].IsSelected" />
+                                        }
+                                        Select </label>
+                                    </td>
+                                  </tr> 
+                              }
+                           </tbody>
+                          </table>
+                      }
+                      else
+                      {
+                         <h3>No Data Found!</h3>
+                      }
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-2 offset-10">
+                <button type="submit" asp-for="SubjectAllocation(@Model.Subjects)" class="btn btn-primary mr-2">Allocate</button>
+            </div>
+          </div>
+       </form>
+   </div>
+</div>

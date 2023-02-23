@@ -1,0 +1,135 @@
+﻿@model myWebApp.ViewModels.HumanResource.ShooraVM
+@{
+}
+       <div class="main-panel">        
+        <div class="content-wrapper">
+        <div class="row">
+            <div class="col-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Add New Shoora Member</h4>
+                 @* <p class="card-description">
+                    Please Add New Shoora Member and Press the Add Button.
+                  </p>*@
+                  <form class="forms-sample" method="post"
+                  asp-controller="HumanResource" asp-action="AddShoora">
+                  <div class="row">
+                      <div class="col-12 col-md-6">
+                          <div class="form-group">
+                      <label asp-for="FName">First Name</label>
+                      <input type="text" class="form-control" asp-for="FName" placeholder="Enter First Name">
+                      <span asp-validation-for="FName" class="text-danger"></span>
+                    </div>
+                     <div class="form-group">
+                      <label asp-for="LName">Last Name</label>
+                      <input type="text" class="form-control" asp-for="LName" placeholder="Enter Last Name">
+                      <span asp-validation-for="LName" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                      <label asp-for="FatherName">Father Name</label>
+                      <input type="text" class="form-control" asp-for="FatherName" placeholder="Enter Father Name">
+                      <span asp-validation-for="FatherName" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                      <label asp-for="SpouseName">Spouse Name</label>
+                      <input type="text" class="form-control" asp-for="SpouseName" placeholder="Enter Spouse Name">
+                      <span asp-validation-for="SpouseName" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                    <select asp-for="GenderId" class="form-select" aria-label="Default select example">
+                      <option selected value="@null">Select Gender Please</option>
+                                            @foreach (var gender in ViewBag.Gender)
+                                            {
+                                                                             <option value="@gender.GenderId">@gender.WGender</option>
+                                            }
+                    </select>
+                      <span asp-validation-for="GenderId" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                            <label asp-for="SchoolId">School Name</label>
+                            <select asp-for="SchoolId" class="form-select" aria-label="Default select example">
+                            <option selected value="@null">Select School Please</option>
+                                            @foreach (var school in ViewBag.Schools)
+                                            {
+                                                <option value="@school.SchoolId">@school.SchoolName</option>
+                                            }
+                            </select>
+                      <span asp-validation-for="SchoolId" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                    <label asp-for="CampusId">Campus Name</label>
+                    <select asp-for="CampusId" class="form-select" aria-label="Default select example">
+                      <option selected value="@null">Select Campus Please</option>
+                                            @foreach (var campus in ViewBag.Campuses)
+                                            {
+                                            <option value="@campus.CampusId">@campus.CampusName</option>
+                                            }
+                    </select>
+                      <span asp-validation-for="CampusId" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                      <label asp-for="MaritalStatus">Marital Status</label>
+                      <select asp-for="MaritalStatus" class="form-select" aria-label="Default select example">
+                      <option selected value="@null">Select Marital Status</option>
+                        <option value="Single">Single</option>
+                        <option value="Married">Married</option>
+                        <option value="Divorced">Divorced</option>
+                        <option value="Widow">Widow</option>
+                    </select>
+                      <span asp-validation-for="MaritalStatus" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                      <label asp-for="Mobile">Mobile</label>
+                      <input type="text" class="form-control" asp-for="Mobile" placeholder="Enter Mobile No">
+                      <span asp-validation-for="Mobile" class="text-danger"></span>
+                    </div>
+                      </div>
+                      <div class="col-12 col-md-6">
+                          <div class="form-group">
+                      <label asp-for="DOB">Date of Birth</label>
+                      <input type="date" class="form-control" asp-for="DOB" placeholder="Enter Date of Birth">
+                      <span asp-validation-for="DOB" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                      <label asp-for="CNICNo">CNIC No</label>
+                      <input type="text" class="form-control" asp-for="CNICNo" placeholder="Enter CNIC No">
+                      <span asp-validation-for="CNICNo" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                      <label asp-for="CNICIssueDate">CNIC Issue Date</label>
+                      <input type="date" class="form-control" asp-for="CNICIssueDate" placeholder="Enter CNIC Issue Date">
+                      <span asp-validation-for="CNICIssueDate" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                      <label asp-for="CNICExpiryDate">CNIC Expiry Date</label>
+                      <input type="date" class="form-control" asp-for="CNICExpiryDate" placeholder="Enter CNIC Expiry Date">
+                      <span asp-validation-for="CNICExpiryDate" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                      <label asp-for="Email">Email</label>
+                      <input type="text" class="form-control" asp-for="Email" placeholder="Enter Email Address">
+                      <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                      <label asp-for="Address">Address</label>
+                      <input type="text" class="form-control" asp-for="Address" placeholder="Enter Address">
+                      <span asp-validation-for="Address" class="text-danger"></span>
+                    </div>
+                    <div class="float-right mt-2">
+                    <a class="btn btn-light" asp-controller="HumanResource" asp-action="Shoora">Cancel</a>
+                        <button type="submit" class="btn btn-primary mr-2">Add</button>
+                    </div>
+                      </div>
+                  </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+           </div>
+          </div>
+         </div>
+
+@section scripts{
+                <script src="~/lib/jquery-validate/jquery.validate.min.js"></script>
+                <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+}

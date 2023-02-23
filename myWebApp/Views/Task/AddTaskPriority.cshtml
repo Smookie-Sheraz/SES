@@ -1,0 +1,41 @@
+﻿@model myWebApp.ViewModels.Task.AddTaskPriority
+
+@{
+}
+       <div class="main-panel">        
+        <div class="content-wrapper">
+        <div class="row">
+            <div class="col-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Add New TaskPriority</h4>
+                  <p class="card-description">
+                    Please Add The New TaskPriority and Press the Add Button.
+                  </p>
+                  <form class="forms-sample" method="post"
+                  asp-controller="Task" asp-action="AddTaskPriority">
+                    <div class="form-group">
+                        <label asp-for="Code">TaskPriority Code</label>
+                      <input type="text" class="form-control" asp-for="Code" placeholder="TaskPriority Code">
+                    </div>
+                    <div class="form-group">
+                      <label asp-for="Description">TaskPriority Description</label>
+                      <input type="text" class="form-control" asp-for="Description" placeholder="Enter TaskPriority Description">
+                    </div>
+                    <div class="form-check">
+                      <label class="form-check-label" asp-for="IsActive">
+                      <input class="form-check-input" type="checkbox" value="" asp-for="IsActive">
+                        Active
+                      </label>
+                    </div>
+                    <div class="float-right">
+                    <a class="btn btn-light" asp-controller="Task" asp-action="TaskPriority">Cancel</a>
+                        <button type="submit" class="btn btn-primary mr-2">Add</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+           </div>
+          </div>
+         </div>

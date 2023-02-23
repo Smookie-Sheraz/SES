@@ -1,0 +1,106 @@
+﻿@model IEnumerable<Entities.Models.Year>
+@{
+}
+<div class="main-panel">
+   <div class="content-wrapper">
+          <div class="row">
+            <div class="col-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Academic Calendar-Years</h4>
+                  @*<p class="card-description">
+                    The Years can be added here for Academic Calendar!
+                  </p>*@
+                  <div class="table-responsive">
+                            @if (Model.Any())
+                            {
+                                            <table class="table table-hover table-bordered">
+                                                <thead class="bg-primary text-white">
+                                                    <tr>
+                                                        @if(User.HasClaim("Permission","Term.Read") || User.HasClaim("Permission","Term.Add") || User.HasClaim("Permission","Term.Delete") || User.HasClaim("Permission","Year.Read") || User.HasClaim("Permission","Year.Create") || User.HasClaim("Permission","Year.Update") || User.HasClaim("Permission","Year.Delete")){
+                                                            <th>Actions</th>
+                                                        }
+                                                        <th>Status</th>
+                                                        <th>Year Name</th>
+                                                        <th>Start Date</th>
+                                                        <th>End Date</th>
+                                                        <th>Total Days</th>
+                                                        <th>Total Sat &amp Sun</th>
+                                                        <th>Holidays</th>
+                                                        <th>Total School Days</th>
+                                                        <th>Assessment Days</th>
+                                                        <th>Assessment School Days</th>
+                                                        <th>Leap Year</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                        @foreach (var Year in Model)
+                                        {
+                                            <tr>
+                                                @if(User.HasClaim("Permission","Term.Read") || User.HasClaim("Permission","Term.Add") || User.HasClaim("Permission","Term.Delete") || User.HasClaim("Permission","Year.Read") || User.HasClaim("Permission","Year.Create") || User.HasClaim("Permission","Year.Update") || User.HasClaim("Permission","Year.Delete")){
+                                                    <td class="actions">
+                                                        @if (User.HasClaim("Permission", "Term.Create") || User.HasClaim("Permission", "Term.Read"))
+                                                        {
+                                                            <a class="fa fa-calendar-days mr-3" title="Add Terms" asp-route-id="@Year.YearId" asp-controller="AcademicCalendar" asp-action="Term" role="button"></a>
+                                                        }
+                                                        @if(User.HasClaim("Permission", "Year.Update"))
+                                                        {
+                                                            <a class="fa fa-edit mr-3" asp-route-id="@Year.YearId" title="Edit Year" asp-controller="AcademicCalendar" asp-action="UpdateYear" role="button"></a>    
+                                                        }
+                                                        @if(User.HasClaim("Permission", "Year.Delete"))
+                                                        {
+                                                        <a class="fa fa-trash text-danger" title="Delete Year" onclick="return confirm('Are you sure you want to delete?');" asp-route-id="@Year.YearId" asp-controller="AcademicCalendar" asp-action="DeleteYear" role="button"></a>   
+                                                        }
+                                                    </td>
+                                                }
+                                            <td>
+                                                @if ((bool)Year.IsActive)
+                                                {
+                                                    <label class="badge badge-success">Active</label>
+                                                }
+                                                else
+                                                {
+                                                    <label class="badge badge-danger">InActive</label>
+                                                }
+                                            </td>
+                                             <td>@Year.YearName</td>
+                                             <td>@Convert.ToDateTime(Year.StartDate).ToString("dd-MMM-yyyy")</td>
+                                             <td>@Convert.ToDateTime(Year.EndDate).ToString("dd-MMM-yyyy")</td>
+                                             <td>@Year.TotalDays</td>
+                                             <td>@Year.TotalSatSundays</td>
+                                             <td>@Year.Holidays</td>
+                                             <td>@Year.TotalSchoolDays</td>
+                                             <td>@Year.AssesmentDays</td>
+                                             <td>@Year.TotalAssesWiseSchoolDays</td>
+                                             <td>
+                                              @if ((bool)Year.IsLeapYear)
+                                               {
+                                                 <label class="badge badge-success">Yes</label>
+                                               }
+                                              else
+                                               {
+                                                 <label class="badge badge-danger">No</label>
+                                               }
+                                             </td>
+                                            </tr>
+                                        }
+                                                          </tbody>
+                                                        </table>
+                            }
+                            else
+                            {
+                                <h3 class="mb-4">No Years Added!</h3>
+                            }
+                  </div>
+                </div>
+              </div>
+            </div>
+            @if (User.HasClaim("Permission", "Year.Create"))
+            {
+                <div class="col-12 offset-10">
+                    <a class="btn btn-primary" asp-controller="AcademicCalendar" asp-action="AddYear" role="button">Add</a>
+                </div>   
+            }
+          </div>
+    </div>
+</div>

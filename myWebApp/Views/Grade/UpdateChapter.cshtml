@@ -1,0 +1,72 @@
+﻿@model Entities.ViewModels.UpdateChapterVM
+@{
+}
+       <div class="main-panel">        
+        <div class="content-wrapper">
+        <div class="row">
+            <div class="col-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Update Chapter of Unit @ViewBag.Unit Between Pages @ViewBag.UStartPage and @ViewBag.UEndPage</h4>
+                  @*<p class="card-description">
+                    Please Update Chapter of Unit @ViewBag.Unit and Press the Update Button.
+                  </p>*@
+                  <form class="forms-sample" method="post"
+                  asp-controller="Grade" asp-action="UpdateChapter" asp-route-id="@Model.ChapterId" id="my_from">
+                    <div class="form-group">
+                  <input type="hidden" asp-for="ChapterId"/>
+                      <label asp-for="ChapterName">Chapter Name</label>
+                      <input type="text" class="form-control" asp-for="ChapterName" placeholder="Enter Chapter Name"/>
+                      <span asp-validation-for="ChapterName" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                    <label asp-for="UnitId">Unit</label>
+                    <select asp-for="UnitId" class="form-select" aria-label="Default select example">
+                      <option selected>Choose Unit Please</option>
+                      @foreach (var unit in ViewBag.Units)
+                        {
+                            <option value="@unit.UnitId">@unit.UnitName</option>
+                        }
+                    </select>
+                      <span asp-validation-for="UnitId" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                      <label asp-for="SLO">SLO</label>
+                      <input type="text" class="form-control" asp-for="SLO" placeholder="Enter Chapter SLOs"/>
+                      <span asp-validation-for="SLO" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                      <label asp-for="StartPage">Start Page</label>
+                      <input type="number" min="@Model.MinPage" max="@Model.MaxPage" class="form-control" asp-for="StartPage" placeholder="Enter Start Page"/>
+                      <span asp-validation-for="StartPage" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                      <label asp-for="EndPage">End Page</label>
+                      <input type="number" min="@Model.MinPage" max="@Model.MaxPage" class="form-control" asp-for="EndPage" placeholder="Enter End Page"/>
+                      <span asp-validation-for="EndPage" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                      <label asp-for="IsActive">Chapter Status</label>
+                    <select asp-for="IsActive" class="form-select" aria-label="Default select example">
+                      <option selected>Is Chapter Active</option>
+                             <option value="@true">Active</option>
+                             <option value="@false">InActive</option>
+                    </select>
+                      <span asp-validation-for="IsActive" class="text-danger"></span>
+                    </div>
+                    <div class="float-right mt-4">
+                    <a class="btn btn-light" asp-controller="Grade" asp-action="Chapter" asp-route-id="@Model.ChapterId">Cancel</a>
+                    <input type="submit" class="btn btn-primary" id="submit-btn" asp-route-id="@Model.ChapterId"/>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+           </div>
+          </div>
+         </div>
+
+@*@section scripts{
+                    <script src="~/lib/jquery-validate/jquery.validate.min.js"></script>
+                    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+}*@

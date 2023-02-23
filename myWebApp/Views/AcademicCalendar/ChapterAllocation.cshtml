@@ -1,0 +1,142 @@
+﻿@model myWebApp.ViewModels.AcademicCalendar.ChapterAllocationVM
+<div class="main-panel">
+   <div class="content-wrapper">
+       <form method="post"
+       asp-controller="AcademicCalendar" asp-action="ChapterAllocation">
+          <div class="row">
+            <div class="col-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Chapters for Term @ViewBag.Section</h4>
+                  @*<p class="card-description">
+                    The Chapters allocated to the @ViewBag.Section !
+                  </p>*@
+                  <div class="table-responsive">
+                      @if (Model.Chapters.Any())
+                        {
+                           <table class="table table-hover" id="ChaptersTable">
+                             <thead>
+                               <tr>
+                                 <th>Chepter Name</th>
+                                 <th>Start Date</th>
+                                 <th>End Date</th>
+                                 <th>WB Start Page</th>
+                                 <th>WB End Page</th>
+                                 <th>Selection</th>
+                               </tr>
+                             </thead>
+                           <tbody>
+                            <input type="hidden" asp-for="YearId"/>
+                            <input type="hidden" asp-for="TermId"/>
+                              @for(var i =0;i<Model.Chapters.Count(); i++) 
+                              {
+                                  <tr>
+                                    <td>(Unit:@Model.Chapters[i].UnitName) @Model.Chapters[i].ChapterName</td>
+                                    <td>
+                                        <div class="form-group">
+                                                    <input type="date" class="form-control text-center" oninput="check(this.id)" asp-for="@Model.Chapters[i].StartDate" placeholder="Enter Start Date" min="@Convert.ToDateTime(Model.MinDate).ToString("yyyy-MM-dd")" max="@Convert.ToDateTime(Model.MaxDate).ToString("yyyy-MM-dd")">
+                                            <span asp-validation-for="@Model.Chapters[i].StartDate" class="text-danger"></span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-group">
+                                                    <input type="date" class="form-control text-center" asp-for="@Model.Chapters[i].EndDate" placeholder="Enter End Date" min="@Convert.ToDateTime(Model.MinDate).ToString("yyyy-MM-dd")" max="@Convert.ToDateTime(Model.MaxDate).ToString("yyyy-MM-dd")">
+                                            <span asp-validation-for="@Model.Chapters[i].EndDate" class="text-danger"></span>
+                                        </div>
+                                    </td>
+                                    @*<td>
+                                        <div class="form-group">
+                                              <label asp-for="@Model.Chapters[i].WorkBookId">Grade</label>
+                                              <select asp-for="@Model.Chapters[i].WorkBookId" class="form-select" aria-label="Default select example">
+                                              <option value="@null" selected>Select Grade Please</option>
+                                                    @foreach (var grade in ViewBag.WorkBooks)
+                                                    {
+                                                        <option value="@grade.BookId">@grade.BookName</option>          
+                                                    }
+                                            </select>
+                                          <span asp-validation-for="@Model.Chapters[i].WorkBookId" class="text-danger"></span>
+                                        </div>
+                                    </td>*@
+                                    <td>
+                                       <div class="form-group">
+                                            <input type="number" min="@Model.Chapters[i].WBMinPage" max="@Model.Chapters[i].WBMaxPage" class="form-control text-center" asp-for="@Model.Chapters[i].WorkBookStartPage" placeholder="Enter Start Page" />
+                                            <span asp-validation-for="@Model.Chapters[i].WorkBookStartPage" class="text-danger"></span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-group">
+                                            <input type="number" min="@Model.Chapters[i].WBMinPage" max="@Model.Chapters[i].WBMaxPage" class="form-control text-center" asp-for="@Model.Chapters[i].WorkBookEndPage" placeholder="Enter Start End" />
+                                            <span asp-validation-for="@Model.Chapters[i].WorkBookEndPage" class="text-danger"></span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="form-check">
+                                            <label class="form-check-label">
+                                          <input type="hidden" asp-for="@Model.Chapters[i].UnitId"/>
+                                        <input type="hidden" asp-for="@Model.Chapters[i].ChapterId"/>
+                                        @if((bool)Model.Chapters[i].preAllocation)
+                                        {
+                                        <input type="checkbox" class="form-check-input" checked asp-for="@Model.Chapters[i].IsSelected" />
+                                        }
+                                        else
+                                        {
+                                        <input type="checkbox" class="form-check-input" asp-for="@Model.Chapters[i].IsSelected" />
+                                        }
+                                        Select </label>
+                                        </div>
+                                    </td>
+                                  </tr> 
+                              }
+                           </tbody>
+                          </table>
+                      }
+                      else
+                      {
+                         <h3>Please Allocate the Unit(s) first!</h3>
+                      }
+                  </div>
+                </div>
+              </div>
+            </div>
+            @if(Model.Chapters.Count != 0){
+            <div class="col-2 offset-10">
+                <button type="submit" asp-for="ChapterAllocation(@Model.Chapters)" class="btn btn-primary mr-2">Allocate</button>
+            </div>
+                }
+          </div>
+       </form>
+   </div>
+</div>
+@*@section scripts{
+    <script>
+        function check(id){
+            console.log(id);
+            var IdParts = id.split("_");
+            var trNow = parseInt(IdParts[1]);
+            if(trNow > 0){
+                trNow -= 1;
+                var startDateString = document.getElementById(id);
+                var startDate = new Date(startDateString.value.split("-")[0],startDateString.value.split("-")[1] - 1,startDateString.value.split("-")[2]);
+                var endDateId = IdParts[0] +"_"+ trNow.toString() +"__"+ "EndDate";
+                var endDateString = document.getElementById(endDateId);
+                var endDate = new Date(endDateString.value.split("-")[0],endDateString.value.split("-")[1] - 1,endDateString.value.split("-")[2]);
+                if(startDate <= endDate){
+                    alert("The Topic should start after the end of the previos chapter " + endDateString.value);
+                    startDateString.value = endDateString.value;
+                }
+            }
+            }
+    </script>
+}*@
+@section scripts{
+        <script>
+        $(document).ready(function () {
+            $('#ChaptersTable').DataTable({
+                    serverSide: true,
+                    ajax: function(){
+
+                    },
+                });
+        });
+        </script>
+}

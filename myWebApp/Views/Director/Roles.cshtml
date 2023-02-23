@@ -1,0 +1,80 @@
+﻿@model myWebApp.ViewModels.Director.RolesVM
+@{
+}
+<div class="main-panel">        
+    <div class="content-wrapper">
+        <div class="row">
+            <div class="col-12 grid-margin stretch-card">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Add Role</h4>
+                        @*<p class="card-description">
+                        Please Add The New Adacmic-Calendar --Term and Press the Add Button.
+                        </p>*@
+                        <form class="forms-sample" method="post"
+                        asp-controller="Director" asp-action="Role">
+                                <h3>Roles</h3>
+                                    <input type="hidden" asp-for="RoleId"/>
+                                <div class="row">
+                        <div class="col-4">
+                                    <div class="form-group">
+                            <label asp-for="RoleName">Role Name</label>
+                            <input type="text" class="form-control" asp-for="RoleName" placeholder="Enter Role Name">
+                            <span asp-validation-for="RoleName" class="text-danger"></span>
+                        </div>
+                        </div>
+                        </div>
+                            <div class="float-right mt-5">
+                            <button type="submit" class="btn btn-primary mr-2">Add</button>
+                        </div>
+
+                        <div class="col-12 grid-margin stretch-card">
+                            <div class="card">
+                            <div class="card-body">
+                                <h4 class="card-title">All-Roles</h4>
+                                <p class="card-description">
+                                The Created Terms!
+                                </p>
+                                <div class="table-responsive">
+                                    <table class="table table-hover table-bordered">
+                                        <thead class="bg-primary text-white">
+                                            <tr>
+                                                <th>Actions</th>
+                                                <th>Status</th>
+                                                <th>Role Name</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="term-data">
+                                        @foreach (var role in ViewBag.Roles)
+                                        {
+                                            <tr>
+                                                <td class="actions">
+                                                    <a class="fa fa-edit mr-3" asp-route-id="@role.RoleId" asp-controller="Director" asp-action="UpdateRole" role="button"></a>
+                                                    <a class="fa fa-trash text-danger" onclick="return confirm('Are you sure you want to delete?');" asp-route-id="@role.RoleId" asp-controller="Director" asp-action="DeleteRole" role="button"></a>
+                                                </td>
+                                                <td>
+                                                    @if ((bool)role.IsActive)
+                                                    {
+                                                        <label class="badge badge-success">Active</label>
+                                                    }
+                                                    else
+                                                    {
+                                                        <label class="badge badge-danger">InActive</label>
+                                                    }
+                                                </td>
+                                                <td>@role.RollName</td>
+                                            </tr>   
+                                        }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

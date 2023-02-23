@@ -1,0 +1,155 @@
+﻿@model myWebApp.ViewModels.Setups.Campus.CampusVM
+@section styles{
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" integrity="sha512-mSYUmp1HYZDFaVKK//63EcZq4iFWFjxSL+Z3T/aCt4IO9Cejm03q3NKKYN6pFQzY0SBOr8h+eCIAZHPXcpZaNw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+}
+       <div class="main-panel">        
+        <div class="content-wrapper">
+        <div class="row">
+            <div class="col-12 grid-margin stretch-card">
+              <div class="card">
+                <div class="card-body">
+                  <h4 class="card-title">Add New Campus</h4>
+                  @*<p class="card-description">
+                    Please Add The New Campus and Press the Add Button.
+                  </p>*@
+                  <form class="forms-sample" method="post"
+                  asp-controller="Setup" asp-action="AddCampus">
+                  @if(User.HasClaim("Permission","Campus.Create")){
+                  <div class="row">
+                    <div class="col-4">
+                        <div class="form-group">
+                            <label asp-for="CampusName">Campus Name</label>
+                            <input type="text" class="form-control" asp-for="CampusName" placeholder="Enter Campus Name" />
+                            <span asp-validation-for="CampusName" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="form-group">
+                    <label asp-for="SchoolId">School Name</label>
+                    <select asp-for="SchoolId" class="form-select" aria-label="Default select example">
+                      <option selected value="@null">Select School Please</option>
+                            @foreach (var school in ViewBag.Schools)
+                            {
+                                <option value="@school.SchoolId">@school.SchoolName</option>
+                            }
+                    </select>
+                      <span asp-validation-for="SchoolId" class="text-danger"></span>
+                    </div>
+                    </div>
+                    <div class="col-4">
+                         <div class="form-group">
+                      <label asp-for="PrincipalName">Principal Name</label>
+                      <input type="text" class="form-control" asp-for="PrincipalName" placeholder="Enter Principal Name" />
+                      <span asp-validation-for="PrincipalName" class="text-danger"></span>
+                    </div>
+                    </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-4">
+                            <div class="form-group">
+                      <label asp-for="Email">Email Address</label>
+                      <input type="email" class="form-control" asp-for="Email" placeholder="Enter Email Please" />
+                      <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+                        </div>
+                        <div class="col-4">
+                         <div class="form-group">
+                      <label asp-for="PhoneNo">Phone No</label>
+                      <input type="text" class="form-control" asp-for="PhoneNo" placeholder="Enter Phone No" />
+                      <span asp-validation-for="PhoneNo" class="text-danger"></span>
+                    </div>
+                    </div>
+                    <div class="col-4">
+                         <div class="form-group">
+                      <label asp-for="Abbrevation">Abbrevation</label>
+                      <input type="text" class="form-control" asp-for="Abbrevation" placeholder="Enter Abbrevation No" />
+                      <span asp-validation-for="Abbrevation" class="text-danger"></span>
+                    </div>
+                    </div>
+                    </div>
+                    <div class="row">
+                    <div class="col-4">
+                        <div class="form-group">
+                          <label asp-for="address">Campus Address</label>
+                          <input type="text" class="form-control" asp-for="address" placeholder="Enter Address Please" />
+                          <span asp-validation-for="address" class="text-danger"></span>
+                        </div>
+                    </div>
+                    </div>
+                        <div class="float-right">
+                        <button type="submit" class="btn btn-primary mr-2">Add</button>
+                    </div>
+                    }
+                    <div class="col-12 grid-margin stretch-card">
+                      <div class="card">
+                        <div class="card-body">
+                          <h4 class="card-title">All-Campuses</h4>
+                          @*<p class="card-description">
+                            The Created Campuses!
+                          </p>*@
+                          <div class="table-responsive">
+                            <table class="table table-hover table-bordered">
+                                <thead class="bg-primary text-white">
+                                    <tr>
+                                    @if(User.HasClaim("Permission","Campus.Update") || User.HasClaim("Permission","Campus.Delete")){
+                                    <th>Actions</th>
+                                                        }
+                                    <th>Status</th>
+                                    <th>Campus Name</th>
+                                    <th>School Name</th>
+                                    <th>Abbrevation</th>
+                                    <th>Principal Name</th>
+                                    <th>Email Address</th>
+                                    <th>Phone No</th>
+                                    <th>Campus Addess</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="term-data">
+                                @foreach (var Campus in Model.campuses)
+                                {
+                                    <tr>
+                                        @if(User.HasClaim("Permission","Campus.Update") || User.HasClaim("Permission","Campus.Delete")){
+                                        <td class="actions">
+                                            @if(User.HasClaim("Permission","Campus.Update")){
+                                            <a class="fa fa-edit mr-3" asp-route-id="@Campus.CampusId"  asp-controller="Setup" asp-action="UpdateCampus" role="button"></a>
+                                            }
+                                            @if(User.HasClaim("Permission","Campus.Delete")){
+                                            <a class="fa fa-trash text-danger mr-3" onclick="return confirm('Are you sure you want to delete this School?');" asp-route-id="@Campus.CampusId" asp-controller="Setup" asp-action="DeleteCampus" role="button"></a>
+                                            }
+                                        </td>
+                                        }
+                                        <td>
+                                            @if ((bool)Campus.IsActive)
+                                            {
+                                            <label class="badge badge-success">Active</label>
+                                            }
+                                            else
+                                            {
+                                            <label class="badge badge-danger">InActive</label>
+                                            }
+                                        </td>
+                                        <td>@Campus.CampusName</td>
+                                        <td>@Campus.SchoolName</td>
+                                        <td>@Campus.Abbrevation</td>
+                                        <td>@Campus.PrincipalName</td>
+                                        <td>@Campus.Email</td>
+                                        <td>@Campus.PhoneNo</td>
+                                        <td>@Campus.address</td>
+                                    </tr> 
+                                }
+                                </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+           </div>
+          </div>
+         </div>
+@section scripts{
+
+}

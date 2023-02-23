@@ -1,0 +1,122 @@
+﻿@model Entities.ViewModels.UnitVM
+@{
+}
+<div class="main-panel">
+    <div class="content-wrapper">
+        <div class="row">
+            <div class="col-12 grid-margin stretch-card">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Add New Unit of @ViewBag.Book</h4>
+                        @*<p class="card-description">
+                            Please Add The New Unit for @ViewBag.Book and Press the Add Button.
+                        </p>*@
+                        <form class="forms-sample" method="post"
+                              asp-controller="Grade" asp-action="Unit">
+                            <input type="hidden" asp-for="BookId" />
+                            @if (User.HasClaim("Permission", "Unit.Create"))
+                            {
+                                <h4>Unit</h4>
+                                <div class="row">
+                                    <div class="col-3">
+                                        <div class="form-group">
+                                            <label asp-for="UnitName">Unit Name</label>
+                                            <input type="text" class="form-control" asp-for="UnitName" placeholder="Enter Unit Name">
+                                            <span asp-validation-for="UnitName" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-3">
+                                        <div class="form-group">
+                                            <label asp-for="StartPage">Start Page</label>
+                                            <input type="number" class="form-control" asp-for="StartPage" placeholder="Enter Start Page">
+                                            <span asp-validation-for="StartPage" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-3">
+                                        <div class="form-group">
+                                            <label asp-for="EndPage">End Page</label>
+                                            <input type="number" class="form-control" asp-for="EndPage" placeholder="Enter End Page">
+                                            <span asp-validation-for="EndPage" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-3">
+                                        <div class="form-group">
+                                            <label asp-for="SLO">SLO</label>
+                                            <input type="text" class="form-control" asp-for="SLO" placeholder="Enter SLO Please">
+                                            <span asp-validation-for="SLO" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="float-right mt-5">
+                                    <button type="submit" class="btn btn-primary mr-2">Add</button>
+                                </div>
+                            }
+                            <div class="col-12 grid-margin stretch-card">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h4 class="card-title">Units of @ViewBag.Book</h4>
+                                        @*<p class="card-description">
+                                            Units for the Book
+                                        </p>*@
+                                        <div class="table-responsive">
+                                            <table class="table table-hover table-bordered">
+                                                <thead class="bg-primary text-white">
+                                                    <tr>
+                                                        @if (User.HasClaim("Permission", "Unit.Update") || User.HasClaim("Permission", "Unit.Delete") || User.HasClaim("Permission", "Chapter.Read") || User.HasClaim("Permission", "Chapter.Create") || User.HasClaim("Permission", "Chapter.Delete") || User.HasClaim("Permission", "Chapter.Update")){
+                                                        <th>Actions</th>
+                                                        }
+                                                        <th>Unit Name</th>
+                                                        <th>SLO</th>
+                                                        <th>Start Page</th>
+                                                        <th>End Page</th>
+                                                        <th>Status</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody class="term-data">
+                                                    @foreach (var Unit in ViewBag.Units)
+                                                    {
+                                                        <tr>
+                                                            @if (User.HasClaim("Permission", "Unit.Update") || User.HasClaim("Permission", "Unit.Delete") || User.HasClaim("Permission", "Chapter.Read") || User.HasClaim("Permission", "Chapter.Create") || User.HasClaim("Permission", "Chapter.Delete") || User.HasClaim("Permission", "Chapter.Update"))
+                                                            {
+                                                                <td class="actions">
+                                                                    @if (User.HasClaim("Permission", "Chapter.Create")){
+                                                                    <a class="fa fa-file mr-3" title="Add Chapters" asp-route-id="@Unit.UnitId" asp-controller="Grade" asp-action="Chapter" role="button"></a>
+                                                                    }
+                                                                    @if (User.HasClaim("Permission", "Unit.Update")){
+                                                                    <a class="fa fa-edit mr-3" title="Edit Unit" asp-route-id="@Unit.UnitId" asp-controller="Grade" asp-action="UpdateUnit" role="button"></a>
+                                                                    }
+                                                                    @if (User.HasClaim("Permission", "Unit.Delete"))
+                                                                    {
+                                                                        <a class="fa fa-trash text-danger" title="Delete Unit" onclick="return confirm('Are you sure you want to delete?');" asp-route-id="@Unit.UnitId" asp-route-BookId="@Model.BookId" asp-controller="Grade" asp-action="DeleteUnit" role="button"></a>
+                                                                    }
+                                                                </td>
+                                                            }
+                                                            <td>
+                                                            @if(Unit.IsActive == true)
+                                                            {
+                                                                <label class="badge badge-success">Active</label>
+                                                            }
+                                                            else
+                                                            {
+                                                                <label class="badge badge-danger">InActive</label>
+                                                            }
+                                                            </td>
+                                                            <td>@Unit.UnitName</td>
+                                                            <td>@Unit.SLO</td>
+                                                            <td>@Unit.StartPage</td>
+                                                            <td>@Unit.EndPage</td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,118 @@
+﻿@model Entities.ViewModels.TopicVM
+@{
+}
+<div class="main-panel">
+    <div class="content-wrapper">
+        <div class="row">
+            <div class="col-12 grid-margin stretch-card">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Add New Topic of Chapter @ViewBag.Chapter Between Pages @ViewBag.CStartPage and @ViewBag.CEndPage</h4>
+                        @*<p class="card-description">
+                            Please Add The New Topic of @ViewBag.Chapter and Press the Add Button.
+                        </p>*@
+                        <form class="forms-sample" method="post"
+                              asp-controller="Grade" asp-action="Topic">
+                            <input type="hidden" asp-for="ChapterId" />
+                            @if (User.HasClaim("Permission", "Topic.Create"))
+                            {
+                                <h4>Topic</h4>
+                                <div class="row">
+                                    <div class="col-4">
+                                        <div class="form-group">
+                                            <label asp-for="TopicName">Topic Name</label>
+                                            <input type="text" class="form-control" asp-for="TopicName" placeholder="Enter Topic Name"/>
+                                            <span asp-validation-for="TopicName" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="form-group">
+                                            <label asp-for="StartPage">Start Page</label>
+                                            <input type="number" min="@Model.MinPage" max="@Model.MaxPage" class="form-control" asp-for="StartPage" placeholder="Enter Start Page"/>
+                                            <span asp-validation-for="StartPage" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="form-group">
+                                            <label asp-for="EndPage">End Page</label>
+                                            <input type="number" min="@Model.MinPage" max="@Model.MaxPage" class="form-control" asp-for="EndPage" placeholder="Enter End Page"/>
+                                            <span asp-validation-for="EndPage" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="float-right mt-5">
+                                    <button type="submit" class="btn btn-primary mr-2">Add</button>
+                                </div>   
+                            }
+                            <div class="col-12 grid-margin stretch-card">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h4 class="card-title">Topics of @ViewBag.Chapter</h4>
+                                        @*<p class="card-description">
+                                            Topic of the Chapter @ViewBag.Chapter
+                                        </p>*@
+                                        <div class="table-responsive">
+                                            <table class="table table-hover table-bordered">
+                                                <thead class="bg-primary text-white">
+                                                    <tr>
+                                                        @if (User.HasClaim("Permission", "Topic.Update") || User.HasClaim("Permission", "Topic.Delete") || User.HasClaim("Permission", "SubTopic.Read") || User.HasClaim("Permission", "SubTopic.Create") || User.HasClaim("Permission", "SubTopic.Delete"))
+                                                        {
+                                                            <th>Actions</th>
+                                                        }
+                                                        <th>Status</th>
+                                                        <th>Topic Name</th>
+                                                        <th>Start Page</th>
+                                                        <th>End Page</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody class="term-data">
+                                                    @foreach (var Topic in ViewBag.Topics)
+                                                    {
+                                                        <tr>
+                                                            @if (User.HasClaim("Permission", "Topic.Update") || User.HasClaim("Permission", "Topic.Delete") || User.HasClaim("Permission", "SubTopic.Update") || User.HasClaim("Permission", "SubTopic.Read") || User.HasClaim("Permission", "SubTopic.Create") || User.HasClaim("Permission", "SubTopic.Delete"))
+                                                            {
+                                                            <td class="actions">
+                                                                    @if(User.HasClaim("Permission", "SubTopic.Create"))
+                                                                    {
+                                                                            <a class="fa fa-file mr-3" asp-route-id="@Topic.TopicId"  title="Add Sub-Topics" asp-controller="Grade" asp-action="SubTopic" role="button"></a>
+
+                                                                    }
+                                                                    @if(User.HasClaim("Permission", "Topic.Update"))
+                                                                    {
+                                                                    <a class="fa fa-edit mr-3" asp-route-id="@Topic.TopicId" title="Edit Topic" asp-controller="Grade" asp-action="UpdateTopic" role="button"></a>
+                                                                    }
+                                                                    @if(User.HasClaim("Permission", "Topic.Delete"))
+                                                                    {
+                                                                        <a class="fa fa-trash text-danger" title="Delete Topic" onclick="return confirm('Are you sure you want to delete?');" asp-route-id="@Topic.TopicId" asp-controller="Grade" asp-action="DeleteTopic" role="button"></a>
+                                                                    }
+                                                            </td>
+                                                            }
+                                                            <td>
+                                                            @if (Topic.IsActive == true)
+                                                            {
+                                                                <label class="badge badge-success">Active</label>
+                                                            }
+                                                            else
+                                                            {
+                                                                <label class="badge badge-danger">InActive</label>
+                                                            }
+                                                            </td>
+                                                            <td>@Topic.TopicName</td>
+                                                            <td>@Topic.StartPage</td>
+                                                            <td>@Topic.EndPage</td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
