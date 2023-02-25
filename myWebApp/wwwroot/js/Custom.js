@@ -150,21 +150,36 @@ function SelectQuestionType(id) {
 
 //Funtion to Generate Dynamic Rows for MCQ Quiz
 
-function AddNewRow(id) {
-    const table = document.getElementById('MCQChoiceTable');
-    const button = document.getElementById(`${id}`);
+//function AddNewRow(id) {
+//    const table = document.getElementById('MCQChoiceTable');
+//    const button = document.getElementById(`${id}`);
 
-    // Add a click event listener to the button
-    button.addEventListener('click', function () {
-        // Create a new table row
-        const newRow = table.insertRow();
+//    // Add a click event listener to the button
+//    button.addEventListener('click', function () {
+//        // Create a new table row
+//        const newRow = table.insertRow();
 
-        // Add two cells to the row
-        const cell1 = newRow.insertCell(0);
-        const cell2 = newRow.insertCell(1);
+//        // Add two cells to the row
+//        const cell1 = newRow.insertCell(0);
+//        const cell2 = newRow.insertCell(1);
 
-        // Add the input and select elements to the cells
-        cell1.innerHTML = '<div class="form-group"><label>Topic Name</label><input type="text" class="form-control" placeholder="Enter Choice Please"/></div>';
-        cell2.innerHTML = '<div class="form-group"><label>True or False?</label><select class="form-select" aria-label="Default select example"><option selected value="@null">Please Select Answer</option><option value="@true">True</option><option value="@false">False</option></select></div>';
+//        // Add the input and select elements to the cells
+//        cell1.innerHTML = '<div class="form-group"><label>Topic Name</label><input type="text" class="form-control" placeholder="Enter Choice Please"/></div>';
+//        cell2.innerHTML = '<div class="form-group"><label>True or False?</label><select class="form-select" aria-label="Default select example"><option selected value="@null">Please Select Answer</option><option value="@true">True</option><option value="@false">False</option></select></div>';
 
+//    }
+//}
+
+
+//function to select all the permissions on Add and Update roles page
+
+
+function SelectAllPermissions() {
+    //debugger;
+    var checkboxes = document.getElementsByTagName('input');
+    for (var i = 0; i < checkboxes.length; i++) {
+        if (checkboxes[i].type == 'checkbox') {
+            checkboxes[i].checked = true;
+        }
+    }
 }

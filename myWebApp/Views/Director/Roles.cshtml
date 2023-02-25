@@ -1,80 +1,107 @@
 ﻿@model myWebApp.ViewModels.Director.RolesVM
 @{
 }
-<div class="main-panel">        
+@section styles{
+    <link href="~/modalwindoweffects-master/css/default.css" rel="stylesheet" />
+    <link href="~/modalwindoweffects-master/css/component.css" rel="stylesheet" />
+}
+<div class="main-panel">
     <div class="content-wrapper">
         <div class="row">
             <div class="col-12 grid-margin stretch-card">
                 <div class="card">
                     <div class="card-body">
                         <h4 class="card-title">Add Role</h4>
-                        @*<p class="card-description">
-                        Please Add The New Adacmic-Calendar --Term and Press the Add Button.
-                        </p>*@
-                        <form class="forms-sample" method="post"
-                        asp-controller="Director" asp-action="Role">
-                                <h3>Roles</h3>
-                                    <input type="hidden" asp-for="RoleId"/>
-                                <div class="row">
-                        <div class="col-4">
-                                    <div class="form-group">
-                            <label asp-for="RoleName">Role Name</label>
-                            <input type="text" class="form-control" asp-for="RoleName" placeholder="Enter Role Name">
-                            <span asp-validation-for="RoleName" class="text-danger"></span>
-                        </div>
-                        </div>
-                        </div>
-                            <div class="float-right mt-5">
-                            <button type="submit" class="btn btn-primary mr-2">Add</button>
-                        </div>
-
+                        <p class="card-description">
+                            Please Add The New Adacmic-Calendar --Term and Press the Add Button.
+                        </p>
                         <div class="col-12 grid-margin stretch-card">
                             <div class="card">
-                            <div class="card-body">
-                                <h4 class="card-title">All-Roles</h4>
-                                <p class="card-description">
-                                The Created Terms!
-                                </p>
-                                <div class="table-responsive">
-                                    <table class="table table-hover table-bordered">
-                                        <thead class="bg-primary text-white">
-                                            <tr>
-                                                <th>Actions</th>
-                                                <th>Status</th>
-                                                <th>Role Name</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody class="term-data">
-                                        @foreach (var role in ViewBag.Roles)
-                                        {
-                                            <tr>
-                                                <td class="actions">
-                                                    <a class="fa fa-edit mr-3" asp-route-id="@role.RoleId" asp-controller="Director" asp-action="UpdateRole" role="button"></a>
-                                                    <a class="fa fa-trash text-danger" onclick="return confirm('Are you sure you want to delete?');" asp-route-id="@role.RoleId" asp-controller="Director" asp-action="DeleteRole" role="button"></a>
-                                                </td>
-                                                <td>
-                                                    @if ((bool)role.IsActive)
-                                                    {
-                                                        <label class="badge badge-success">Active</label>
-                                                    }
-                                                    else
-                                                    {
-                                                        <label class="badge badge-danger">InActive</label>
-                                                    }
-                                                </td>
-                                                <td>@role.RollName</td>
-                                            </tr>   
-                                        }
-                                        </tbody>
-                                    </table>
+                                <div class="card-body">
+                                    <h4 class="card-title">All-Roles</h4>
+                                    <p class="card-description">
+                                        The Created Terms!
+                                    </p>
+                                    <div class="table-responsive">
+                                        <table class="table table-hover table-bordered">
+                                            <thead class="bg-primary text-white">
+                                                <tr>
+                                                    <th>Actions</th>
+                                                    <th>Status</th>
+                                                    <th>Role Name</th>
+                                                    <th>Permissions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="term-data">
+                                                @foreach (var role in Model.roles)
+                                                {
+                                                    <tr>
+                                                        <td class="actions">
+                                                            <a class="fa fa-edit mr-3" asp-route-id="@role.RoleId" asp-controller="Director" asp-action="UpdateRole" role="button"></a>
+                                                            <a class="fa fa-trash text-danger" onclick="return confirm('Are you sure you want to delete?');" asp-route-id="@role.RoleId" asp-controller="Director" asp-action="DeleteRole" role="button"></a>
+                                                        </td>
+                                                        <td>
+                                                            @if ((bool)role.IsActive)
+                                                            {
+                                                                <label class="badge badge-success">Active</label>
+                                                            }
+                                                            else
+                                                            {
+                                                                <label class="badge badge-danger">InActive</label>
+                                                            }
+                                                        </td>
+                                                        <td>@role.RoleName</td>
+                                                        <td>
+                                                            <button type="button" class="md-trigger btn btn-sm btn-primary" data-modal="modal-@role.RoleId">View Permissions</button>
+                                                            <div class="row">
+                                                            <div class="md-modal md-effect-16 col-12 col-md-8 col-lg-6" id="modal-@role.RoleId">
+                                                                <div class="md-content">
+                                                                    <h3>Given Permissions</h3>
+                                                                    <div>
+                                                                        <p class="h4">@role.RoleName has the permission(s) mentioned below.</p>
+                                                                        <div class="row" style="height:300px; overflow:auto;">
+                                                                            @foreach (var perm in role.Permissions)
+                                                                            {
+                                                                                <label class="fs-6 badge badge-success col-6 col-md-4 col-lg-3 mt-2">@perm</label>
+                                                                            }
+                                                                        </div>
+                                                                        <button type="button" class=" btn-sm btn md-close btn-warning fw-bold mt-4" onclick="pWindowCancelButton(@role.RoleId)">Close me!</button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                            </div>
+                                                            <div class="md-overlay"></div>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
-                            </div>
                         </div>
-                        </form>
                     </div>
                 </div>
             </div>
+            @if (User.HasClaim("Permission", "Roles.Create"))
+            {
+                <div class="col-2 offset-10">
+                    <a class="btn btn-primary" asp-controller="Director" asp-action="AddRoles" role="button">Add</a>
+                </div>
+            }
         </div>
     </div>
 </div>
+@section scripts{
+    <script src="~/js/custom.js"></script>
+    <script src="~/modalwindoweffects-master/js/classie.js"></script>
+    <script src="~/modalwindoweffects-master/js/modaleffects.js"></script>
+    @*<script>
+        // this is important for IEs
+        var polyfilter_scriptpath = '~/modalwindoweffects-master/js/';
+    </script>
+    <script src="~/modalwindoweffects-master/js/cssparser.js"></script>
+    <script src="~/modalwindoweffects-master/js/css-filters-polyfill.js"></script>
+    <script src="~/modalwindoweffects-master/js/modernizr.custom.js"></script>*@
+} 

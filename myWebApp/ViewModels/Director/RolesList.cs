@@ -2,14 +2,13 @@
 
 namespace myWebApp.ViewModels.Director
 {
-    public class RolesVM
+    public class RolesList
     {
         [Display(Name = "Role Name")]
-        public string RoleName { get; set; }
+        public string? RoleName { get; set; }
         public int RoleId { get; set; }
         [Display(Name = "Status")]
         public bool IsActive { get; set; }
-        public List<Permissions> AddUpdatePermissions { get; set; }
-        public List<RolesList> roles { get; set; }
+        public List<string>? Permissions { get; set; }
     }
 }

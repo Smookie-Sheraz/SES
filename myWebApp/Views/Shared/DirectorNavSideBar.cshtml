@@ -389,9 +389,9 @@
                   @if(User.HasClaim("Permission","Year.Read")){
                 <li class="nav-item"> <a class="nav-link" asp-controller="AcademicCalendar" asp-action="Year">Year</a></li>
                 }
-                  @if(User.HasClaim("Permission","Planner.Read")){
+                  @*@if(User.HasClaim("Permission","Planner.Read")){*@
                 <li class="nav-item"> <a class="nav-link" asp-controller="AcademicCalendar" asp-action="Calendar">Calendar</a></li>
-                  }
+                  @*}*@
               </ul>
             </div>
           </li>

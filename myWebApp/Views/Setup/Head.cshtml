@@ -2,7 +2,6 @@
 <div class="main-panel">
    <div class="content-wrapper">
           <div class="row">
-
             <div class="col-12 grid-margin stretch-card">
               <div class="card">
                 <div class="card-body">
@@ -25,7 +24,7 @@
                             @foreach (var head in Model)
                             {
                             <tr>
-                                @if (User.HasClaim("Permission", "Heads.Update") || User.HasClaim("Permission", "Heads.Delete")){
+                                @*@if(User.HasClaim("Permission","Heads.Update") || User.HasClaim("Permission","Heads.Delete")){*@
                                 <td class="actions">
                                     @if (User.HasClaim("Permission", "Heads.Update")){
                                     <a class="fa fa-edit mr-3" asp-route-id="@head.HeadId" asp-controller="Setup" asp-action="UpdateHead" role="button"></a>
@@ -34,7 +33,8 @@
                                     <a class="fa fa-trash text-danger" onclick="return confirm('Are you sure you want to delete?');" asp-route-id="@head.HeadId" asp-controller="Setup" asp-action="DeleteHead" role="button"></a>
                                     }
                                 <td>
-                                }
+                                @*}*@
+                                <td>
                                 @if ((bool)head.IsActive)
                                 {
                                     <label class="badge badge-success">Active</label>
@@ -43,7 +43,6 @@
                                 {
                                     <label class="badge badge-danger">InActive</label>
                                 }
-                                </td>
                                 </td>
                                 @if(head.EmployeeName == null)
                                 {       

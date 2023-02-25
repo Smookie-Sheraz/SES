@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using myWebApp.ViewModels.Auth;
+using System.Security.Claims;
 
 namespace Entities.Controllers
 {
@@ -32,6 +33,10 @@ namespace Entities.Controllers
         }
         public IActionResult Index()
         {
+            var user = User.FindFirst(ClaimTypes.Sid)?.Value;
+            int uIdint = Convert.ToInt32(user);
+            var emp = _db.Employees.Where(x => x.EmployeeId == uIdint).FirstOrDefault();
+            ViewBag.UserName =  emp?.FName + " " + emp?.LName;
             return View();
         }
 
@@ -312,22 +317,59 @@ namespace Entities.Controllers
         [HttpGet]
         public async Task<IActionResult> Roles()
         {
-            ViewBag.Roles = await _db.Roles.ToListAsync();
-            return View();
+            RolesVM roleVM = new RolesVM();
+            var roles = await _db.Roles.ToListAsync();
+            roleVM.roles = roles.Select(x => new RolesList { RoleId = x.RoleId, RoleName = x.RollName, IsActive = (bool)x.IsActive}).Where(x => x.IsActive == true).ToList();
+            foreach (var role in roleVM.roles)
+            {
+                var permissions = from a in _db.UserPermissions
+                                  from b in _db.Permissions
+                                  where a.RoleId == role.RoleId && b.PermissionId == a.PermissionId
+                                  select new
+                                  {
+                                      PermissionName = b.PermissionName
+                                  };
+                List<string> permiss = new List<string>();
+                role.Permissions = permissions.Select(x => x.PermissionName).ToList();
+            }
+            return View(roleVM);
+        }
+        [Authorize(Policy = "Roles.Create")]
+        [HttpGet]
+        public async Task<IActionResult> AddRoles()
+        {
+            RolesVM roles = new RolesVM();
+            roles.AddUpdatePermissions = await _db.Permissions.Select(x => new myWebApp.ViewModels.Director.Permissions { PermissionId = x.PermissionId, PermissionName = x.PermissionName }).ToListAsync();
+            return View(roles);
         }
         [Authorize(Policy = "Roles.Create")]
         [HttpPost]
-        public async Task<IActionResult> Role(RolesVM role)
+        public async Task<IActionResult> AddRoles(RolesVM role)
         {
             //string UserImage = user.UserImage == null ? null : FileSaver(user);
-            var newRole = new Roles
+            var newRole = new Roles()
             {
                 RollName = role.RoleName
             };
             await _repository.AddAsync(newRole);
             if (await _repository.SaveChanges())
             {
-                return RedirectToAction("Roles");
+                var recentRole = await _db.Roles.OrderBy(x => x.RoleId).LastOrDefaultAsync();
+                var selectedPermissions = role.AddUpdatePermissions.Where(x => x.isSelected == true).ToList();
+                foreach (var permission in selectedPermissions)
+                {
+                    var rolePermissions = new UserPermissions
+                    {
+                        RoleId = recentRole.RoleId,
+                        PermissionId = permission.PermissionId
+                    };
+                    await _repository.AddAsync(rolePermissions);
+                }
+                if (await _repository.SaveChanges())
+                {
+                    return RedirectToAction("Roles");
+                }
+                ModelState.AddModelError("", "Error While Saving to Database");
             }
             else
             {
@@ -346,6 +388,18 @@ namespace Entities.Controllers
                 IsActive = (bool)temp.IsActive,
                 RoleName = temp.RollName
             };
+            user.AddUpdatePermissions = await _db.Permissions.Select(x => new myWebApp.ViewModels.Director.Permissions { PermissionId = x.PermissionId, PermissionName = x.PermissionName }).ToListAsync();
+            var userPermissions = await _db.UserPermissions.Where(x => x.RoleId == id).ToListAsync();
+            foreach (var rolep in user.AddUpdatePermissions)
+            {
+                foreach (var permission in userPermissions)
+                {
+                    if (rolep.PermissionId == permission.PermissionId)
+                    {
+                        rolep.isSelected = true;
+                    }
+                }
+            }
             return View(user);
         }
         [Authorize(Policy = "Roles.Update")]
@@ -355,6 +409,18 @@ namespace Entities.Controllers
             var temp = await _db.Roles.Where(x => x.RoleId == role.RoleId).FirstOrDefaultAsync();
             temp.RollName = role.RoleName;
             temp.IsActive = role.IsActive;
+            var oldPermissions = await _db.UserPermissions.Where(x => x.RoleId == temp.RoleId).ToListAsync();
+            _db.RemoveRange(oldPermissions);
+            var newPermissions = role.AddUpdatePermissions.Where(x => x.isSelected == true).ToList();
+            foreach (var perm in newPermissions)
+            {
+                var add = new UserPermissions
+                {
+                    RoleId = temp.RoleId,
+                    PermissionId = perm.PermissionId
+                };
+                await _repository.AddAsync(add);
+            }
             await _repository.UpdateAsync(temp);
             if (await _repository.SaveChanges())
             {

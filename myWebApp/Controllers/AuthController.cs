@@ -29,6 +29,23 @@ namespace myWebApp.Controllers
         [HttpGet]
         public IActionResult Index()
         {
+            //var permissions = _db.Permissions.ToList();
+            //var uper = _db.UserPermissions.ToList();
+            //foreach (var per in permissions)
+            //{
+            //    foreach (var up in uper)
+            //    {
+            //        if (per.PermissionId != up.PermissionId)
+            //        {
+            //            var userP = new UserPermissions
+            //            {
+            //                RoleId = 1,
+            //                PermissionId = per.PermissionId
+            //            };
+            //            _db.Add(userP);
+            //        }
+            //    }
+            //}
             ClaimsPrincipal claim = HttpContext.User;
             if (claim.Identity.IsAuthenticated) RedirectToAction("Index", "Director");
             return View();

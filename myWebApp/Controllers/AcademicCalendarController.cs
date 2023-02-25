@@ -1226,7 +1226,7 @@ namespace myWebApp.Controllers
         #endregion
 
         #region Calendar
-        [Authorize(Policy = "Planner.Read")]
+        //[Authorize(Policy = "Planner.Read")]
         [HttpGet]
         public async Task<IActionResult> Calendar(CalendarVM calender)
         {

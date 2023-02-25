@@ -94,7 +94,7 @@ namespace myWebApp.Controllers
             ViewBag.Schools = await _db.Schools.ToListAsync();
             ViewBag.Campuses = await _db.Campuses.ToListAsync();
             ViewBag.SchoolSections = await _db.SchoolSections.ToListAsync();
-            ViewBag.Roles = await _db.Roles.ToListAsync();
+            ViewBag.Roles = await _db.Roles.Where(x => x.IsActive == true).ToListAsync();
             return View();
         }
         [Authorize(Policy = "Employee.Create")]
@@ -181,7 +181,7 @@ namespace myWebApp.Controllers
             ViewBag.Schools = await _db.Schools.ToListAsync();
             ViewBag.Campuses = await _db.Campuses.ToListAsync();
             ViewBag.SchoolSections = await _db.SchoolSections.ToListAsync();
-            ViewBag.Roles = await _db.Roles.ToListAsync();
+            ViewBag.Roles = await _db.Roles.Where(x => x.IsActive == true).ToListAsync();
             var shoora = await _repository.GetEmployeeById(id);
             if (shoora == null)
             {
