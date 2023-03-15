@@ -148,7 +148,11 @@ namespace Entities.Controllers
                 }
             }
             classes.books = bookLists;
-            ViewBag.Employees = await _db.Employees.ToListAsync();
+            ViewBag.Employees = from a in _db.Grades
+                                from b in _db.Sections
+                                from d in _db.Employees
+                                where b.SectionId == id && b.GradeId == a.GradeId && d.SchoolSectionId == a.SchoolSectionId
+                                select d;
             return View(classes);
         }
         [HttpPost]

@@ -18,7 +18,8 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     {
         options.LoginPath = "/Auth/Index";
         options.SlidingExpiration = true;
-        options.ExpireTimeSpan = TimeSpan.FromHours(3);
+        options.ExpireTimeSpan = TimeSpan.FromDays(7);
+        options.AccessDeniedPath = "/Auth/AccessDenied";
         //options.Cookie.Expiration = TimeSpan.FromMinutes(1);
     });
 
@@ -132,6 +133,7 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("Planner.Read", policy => policy.RequireClaim("Permission", "Planner.Read"));
     options.AddPolicy("Planner.Update", policy => policy.RequireClaim("Permission", "Planner.Update"));
     options.AddPolicy("Planner.Delete", policy => policy.RequireClaim("Permission", "Planner.Delete"));
+    options.AddPolicy("Academic Planning", policy => policy.RequireClaim("Permission", "Academic Planning"));
 });
 
 

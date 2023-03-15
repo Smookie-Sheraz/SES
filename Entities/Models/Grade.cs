@@ -20,6 +20,8 @@ namespace Entities.Models
         //[Display(Name = "Created by")]
         public string? CreatedBy { get; set; }
         public bool? IsDeleted { get; set; }
+        public Employee? GradeManager { get; set; }
+        public int? GradeManagerId { get; set; }
         public SchoolSection? SchoolSection { get; set; }
         public int? SchoolSectionId { get; set; }
         //[Display(Name = "Created On")]

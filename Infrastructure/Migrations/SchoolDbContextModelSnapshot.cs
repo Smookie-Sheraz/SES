@@ -22,6 +22,81 @@ namespace Infrastructure.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
+            modelBuilder.Entity("Entities.Models.ACPlanApproval", b =>
+                {
+                    b.Property<int>("ACPlanApprovalId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ACPlanApprovalId"), 1L, 1);
+
+                    b.Property<bool?>("ACApproval")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool?>("CTApproval")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("Comments")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("CreatedDate")
+                        .HasColumnType("date");
+
+                    b.Property<bool?>("DAApproval")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool?>("DCApproval")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<DateTime?>("DeletedOn")
+                        .HasColumnType("date");
+
+                    b.Property<bool?>("GMApproval")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool?>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<bool?>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ModifiedDate")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("PlanId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Status")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("ACPlanApprovalId")
+                        .HasName("PK_ACPlanApproval");
+
+                    b.HasIndex("PlanId");
+
+                    b.ToTable("ACPlanApproval", (string)null);
+                });
+
             modelBuilder.Entity("Entities.Models.Book", b =>
                 {
                     b.Property<int>("BookId")
@@ -310,6 +385,9 @@ namespace Infrastructure.Migrations
                     b.Property<string>("ModifiedDate")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("SectionId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime?>("StartDate")
                         .HasColumnType("date");
 
@@ -332,6 +410,8 @@ namespace Infrastructure.Migrations
                         .HasName("PK_ChapterAllocation");
 
                     b.HasIndex("ChapterId");
+
+                    b.HasIndex("SectionId");
 
                     b.HasIndex("TermId");
 
@@ -446,6 +526,231 @@ namespace Infrastructure.Migrations
                     b.HasIndex("ChapterId");
 
                     b.ToTable("ChapterQuestions", (string)null);
+                });
+
+            modelBuilder.Entity("Entities.Models.CTPlanApproval", b =>
+                {
+                    b.Property<int>("CTPlanApprovalId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CTPlanApprovalId"), 1L, 1);
+
+                    b.Property<bool?>("ACApproval")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool?>("CTApproval")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("Comments")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("CreatedDate")
+                        .HasColumnType("date");
+
+                    b.Property<bool?>("DAApproval")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool?>("DCApproval")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<DateTime?>("DeletedOn")
+                        .HasColumnType("date");
+
+                    b.Property<bool?>("GMApproval")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool?>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<bool?>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ModifiedDate")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("PlanId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Status")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("CTPlanApprovalId")
+                        .HasName("PK_CTPlanApproval");
+
+                    b.HasIndex("PlanId");
+
+                    b.ToTable("CTPlanApproval", (string)null);
+                });
+
+            modelBuilder.Entity("Entities.Models.DAPlanApproval", b =>
+                {
+                    b.Property<int>("DAPlanApprovalId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DAPlanApprovalId"), 1L, 1);
+
+                    b.Property<bool?>("ACApproval")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool?>("CTApproval")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("Comments")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("CreatedDate")
+                        .HasColumnType("date");
+
+                    b.Property<bool?>("DAApproval")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool?>("DCApproval")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<DateTime?>("DeletedOn")
+                        .HasColumnType("date");
+
+                    b.Property<bool?>("GMApproval")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool?>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<bool?>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ModifiedDate")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("PlanId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Status")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("DAPlanApprovalId")
+                        .HasName("PK_DAPlanApproval");
+
+                    b.HasIndex("PlanId");
+
+                    b.ToTable("DAPlanApproval", (string)null);
+                });
+
+            modelBuilder.Entity("Entities.Models.DCPlanApproval", b =>
+                {
+                    b.Property<int>("DCPlanApprovalId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DCPlanApprovalId"), 1L, 1);
+
+                    b.Property<bool?>("ACApproval")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool?>("CTApproval")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("Comments")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("CreatedDate")
+                        .HasColumnType("date");
+
+                    b.Property<bool?>("DAApproval")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool?>("DCApproval")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<DateTime?>("DeletedOn")
+                        .HasColumnType("date");
+
+                    b.Property<bool?>("GMApproval")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool?>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<bool?>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ModifiedDate")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("PlanId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Status")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("DCPlanApprovalId")
+                        .HasName("PK_DCPlanApproval");
+
+                    b.HasIndex("PlanId");
+
+                    b.ToTable("DCPlanApproval", (string)null);
                 });
 
             modelBuilder.Entity("Entities.Models.Department", b =>
@@ -689,6 +994,81 @@ namespace Infrastructure.Migrations
                     b.ToTable("Setup_Gender", (string)null);
                 });
 
+            modelBuilder.Entity("Entities.Models.GMPlanApproval", b =>
+                {
+                    b.Property<int>("GMPlanApprovalId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("GMPlanApprovalId"), 1L, 1);
+
+                    b.Property<bool?>("ACApproval")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool?>("CTApproval")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("Comments")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("CreatedDate")
+                        .HasColumnType("date");
+
+                    b.Property<bool?>("DAApproval")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool?>("DCApproval")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<DateTime?>("DeletedOn")
+                        .HasColumnType("date");
+
+                    b.Property<bool?>("GMApproval")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool?>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<bool?>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ModifiedDate")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("PlanId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Status")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("GMPlanApprovalId")
+                        .HasName("PK_GMPlanApproval");
+
+                    b.HasIndex("PlanId");
+
+                    b.ToTable("GMPlanApproval", (string)null);
+                });
+
             modelBuilder.Entity("Entities.Models.Grade", b =>
                 {
                     b.Property<int>("GradeId")
@@ -709,6 +1089,9 @@ namespace Infrastructure.Migrations
                     b.Property<string>("GradeCode")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("GradeManagerId")
+                        .HasColumnType("int");
+
                     b.Property<string>("GradeName")
                         .HasColumnType("nvarchar(max)");
 
@@ -727,6 +1110,8 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("GradeId")
                         .HasName("PK_Grade");
+
+                    b.HasIndex("GradeManagerId");
 
                     b.HasIndex("SchoolSectionId");
 
@@ -1108,6 +1493,9 @@ namespace Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SectionId"), 1L, 1);
 
+                    b.Property<int?>("ClassTeacherId")
+                        .HasColumnType("int");
+
                     b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(max)");
 
@@ -1138,6 +1526,8 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("SectionId")
                         .HasName("PK_Section");
+
+                    b.HasIndex("ClassTeacherId");
 
                     b.HasIndex("GradeId");
 
@@ -1229,6 +1619,101 @@ namespace Infrastructure.Migrations
                     b.HasIndex("SchoolId");
 
                     b.ToTable("Shoora", (string)null);
+                });
+
+            modelBuilder.Entity("Entities.Models.STPlanApproval", b =>
+                {
+                    b.Property<int>("STPlanApprovalId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("STPlanApprovalId"), 1L, 1);
+
+                    b.Property<bool?>("ACApproval")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<int?>("BookId")
+                        .HasColumnType("int");
+
+                    b.Property<bool?>("CTApproval")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("Comments")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("CreatedDate")
+                        .HasColumnType("date");
+
+                    b.Property<bool?>("DAApproval")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool?>("DCApproval")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<DateTime?>("DeletedOn")
+                        .HasColumnType("date");
+
+                    b.Property<int?>("EmployeeId")
+                        .HasColumnType("int");
+
+                    b.Property<bool?>("GMApproval")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<bool?>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<bool?>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ModifiedDate")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("SectionId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Status")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("TermId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("YearId")
+                        .HasColumnType("int");
+
+                    b.HasKey("STPlanApprovalId")
+                        .HasName("PK_STPlanApproval");
+
+                    b.HasIndex("BookId");
+
+                    b.HasIndex("EmployeeId");
+
+                    b.HasIndex("SectionId");
+
+                    b.HasIndex("TermId");
+
+                    b.HasIndex("YearId");
+
+                    b.ToTable("STPlanApproval", (string)null);
                 });
 
             modelBuilder.Entity("Entities.Models.SubDepartment", b =>
@@ -1507,6 +1992,9 @@ namespace Infrastructure.Migrations
                     b.Property<string>("ModifiedDate")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("SectionId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime?>("StartDate")
                         .HasColumnType("date");
 
@@ -1530,6 +2018,8 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("SubTopicAllocationId")
                         .HasName("PK_SubTopicAllocation");
+
+                    b.HasIndex("SectionId");
 
                     b.HasIndex("SubTopicId");
 
@@ -1752,6 +2242,9 @@ namespace Infrastructure.Migrations
                     b.Property<string>("ModifiedDate")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("SectionId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime?>("StartDate")
                         .HasColumnType("date");
 
@@ -1780,6 +2273,8 @@ namespace Infrastructure.Migrations
                         .HasName("PK_TopicAllocation");
 
                     b.HasIndex("ChapterId");
+
+                    b.HasIndex("SectionId");
 
                     b.HasIndex("TeachingMethodologyId");
 
@@ -1889,6 +2384,9 @@ namespace Infrastructure.Migrations
                     b.Property<string>("ModifiedDate")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("SectionId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime?>("StartDate")
                         .HasColumnType("date");
 
@@ -1909,6 +2407,8 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("UnitAllocationId")
                         .HasName("PK_UnitAllocation");
+
+                    b.HasIndex("SectionId");
 
                     b.HasIndex("TermId");
 
@@ -2093,6 +2593,17 @@ namespace Infrastructure.Migrations
                     b.ToTable("Setup_Year", (string)null);
                 });
 
+            modelBuilder.Entity("Entities.Models.ACPlanApproval", b =>
+                {
+                    b.HasOne("Entities.Models.STPlanApproval", "Plan")
+                        .WithMany("ACPlans")
+                        .HasForeignKey("PlanId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("FK_ACPlanApproval_STPlanId");
+
+                    b.Navigation("Plan");
+                });
+
             modelBuilder.Entity("Entities.Models.Book", b =>
                 {
                     b.HasOne("Entities.Models.Grade", "Grade")
@@ -2169,6 +2680,12 @@ namespace Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.SetNull)
                         .HasConstraintName("FK_ChapterAllocation_ChapterId");
 
+                    b.HasOne("Entities.Models.Section", "Section")
+                        .WithMany("ChapterAllocations")
+                        .HasForeignKey("SectionId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("FK_ChapterAllocation_SectionId");
+
                     b.HasOne("Entities.Models.Term", "Term")
                         .WithMany("ChapterAllocations")
                         .HasForeignKey("TermId")
@@ -2188,6 +2705,8 @@ namespace Infrastructure.Migrations
                         .HasConstraintName("FK_ChapterAllocation_WorkBookId");
 
                     b.Navigation("Chapter");
+
+                    b.Navigation("Section");
 
                     b.Navigation("Term");
 
@@ -2216,6 +2735,39 @@ namespace Infrastructure.Migrations
                         .HasConstraintName("FK_ChapterQuestions_ChapterId");
 
                     b.Navigation("Chapter");
+                });
+
+            modelBuilder.Entity("Entities.Models.CTPlanApproval", b =>
+                {
+                    b.HasOne("Entities.Models.STPlanApproval", "Plan")
+                        .WithMany("CTPlans")
+                        .HasForeignKey("PlanId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("FK_CTPlanApproval_CTPlanId");
+
+                    b.Navigation("Plan");
+                });
+
+            modelBuilder.Entity("Entities.Models.DAPlanApproval", b =>
+                {
+                    b.HasOne("Entities.Models.STPlanApproval", "Plan")
+                        .WithMany("DAPlans")
+                        .HasForeignKey("PlanId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("FK_DAPlanApproval_STPlanId");
+
+                    b.Navigation("Plan");
+                });
+
+            modelBuilder.Entity("Entities.Models.DCPlanApproval", b =>
+                {
+                    b.HasOne("Entities.Models.STPlanApproval", "Plan")
+                        .WithMany("DCPlans")
+                        .HasForeignKey("PlanId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("FK_DCPlanApproval_STPlanId");
+
+                    b.Navigation("Plan");
                 });
 
             modelBuilder.Entity("Entities.Models.Department", b =>
@@ -2302,13 +2854,32 @@ namespace Infrastructure.Migrations
                     b.Navigation("SubDepartmentHead");
                 });
 
+            modelBuilder.Entity("Entities.Models.GMPlanApproval", b =>
+                {
+                    b.HasOne("Entities.Models.STPlanApproval", "Plan")
+                        .WithMany("GMPlans")
+                        .HasForeignKey("PlanId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("FK_GMPlanApproval_STPlanId");
+
+                    b.Navigation("Plan");
+                });
+
             modelBuilder.Entity("Entities.Models.Grade", b =>
                 {
+                    b.HasOne("Entities.Models.Employee", "GradeManager")
+                        .WithMany("Grades")
+                        .HasForeignKey("GradeManagerId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("FK_Grade_GradeManagerId");
+
                     b.HasOne("Entities.Models.SchoolSection", "SchoolSection")
                         .WithMany("Grades")
                         .HasForeignKey("SchoolSectionId")
                         .OnDelete(DeleteBehavior.SetNull)
                         .HasConstraintName("FK_Grade_SchoolSectionId");
+
+                    b.Navigation("GradeManager");
 
                     b.Navigation("SchoolSection");
                 });
@@ -2364,11 +2935,19 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Entities.Models.Section", b =>
                 {
+                    b.HasOne("Entities.Models.Employee", "ClassTeacher")
+                        .WithMany("Sections")
+                        .HasForeignKey("ClassTeacherId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("FK_Section_ClassTeacherId");
+
                     b.HasOne("Entities.Models.Grade", "Grade")
                         .WithMany("Sections")
                         .HasForeignKey("GradeId")
                         .OnDelete(DeleteBehavior.SetNull)
                         .HasConstraintName("FK_Section_GradeId");
+
+                    b.Navigation("ClassTeacher");
 
                     b.Navigation("Grade");
                 });
@@ -2398,6 +2977,47 @@ namespace Infrastructure.Migrations
                     b.Navigation("Gender");
 
                     b.Navigation("School");
+                });
+
+            modelBuilder.Entity("Entities.Models.STPlanApproval", b =>
+                {
+                    b.HasOne("Entities.Models.Book", "Book")
+                        .WithMany("STPlans")
+                        .HasForeignKey("BookId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("FK_STPlanApproval_BookId");
+
+                    b.HasOne("Entities.Models.Employee", "Employee")
+                        .WithMany("STPlans")
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("FK_STPlanApproval_EmployeeId");
+
+                    b.HasOne("Entities.Models.Section", "Section")
+                        .WithMany("STPlans")
+                        .HasForeignKey("SectionId");
+
+                    b.HasOne("Entities.Models.Term", "Term")
+                        .WithMany("STPlans")
+                        .HasForeignKey("TermId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("FK_STPlanApproval_TermId");
+
+                    b.HasOne("Entities.Models.Year", "Year")
+                        .WithMany("STPlans")
+                        .HasForeignKey("YearId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("FK_STPlanApproval_YearId");
+
+                    b.Navigation("Book");
+
+                    b.Navigation("Employee");
+
+                    b.Navigation("Section");
+
+                    b.Navigation("Term");
+
+                    b.Navigation("Year");
                 });
 
             modelBuilder.Entity("Entities.Models.SubDepartment", b =>
@@ -2478,6 +3098,12 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Entities.Models.SubTopicAllocation", b =>
                 {
+                    b.HasOne("Entities.Models.Section", "Section")
+                        .WithMany("SubTopicAllocations")
+                        .HasForeignKey("SectionId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("FK_SubTopicAllocation_SectionId");
+
                     b.HasOne("Entities.Models.SubTopic", "SubTopic")
                         .WithMany("SubTopicAllocations")
                         .HasForeignKey("SubTopicId")
@@ -2501,6 +3127,8 @@ namespace Infrastructure.Migrations
                         .HasForeignKey("WorkBookId")
                         .OnDelete(DeleteBehavior.SetNull)
                         .HasConstraintName("FK_SubTopicAllocation_WorkBookId");
+
+                    b.Navigation("Section");
 
                     b.Navigation("SubTopic");
 
@@ -2541,6 +3169,12 @@ namespace Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.SetNull)
                         .HasConstraintName("FK_TopicAllocation_ChapterId");
 
+                    b.HasOne("Entities.Models.Section", "Section")
+                        .WithMany("TopicAllocations")
+                        .HasForeignKey("SectionId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("FK_TopicAllocation_SectionId");
+
                     b.HasOne("Entities.Models.TeachingMethodology", "TeachingMethodology")
                         .WithMany("TopicAllocations")
                         .HasForeignKey("TeachingMethodologyId")
@@ -2567,6 +3201,8 @@ namespace Infrastructure.Migrations
 
                     b.Navigation("Chapter");
 
+                    b.Navigation("Section");
+
                     b.Navigation("TeachingMethodology");
 
                     b.Navigation("Term");
@@ -2589,6 +3225,12 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Entities.Models.UnitAllocation", b =>
                 {
+                    b.HasOne("Entities.Models.Section", "Section")
+                        .WithMany("UnitAllocations")
+                        .HasForeignKey("SectionId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("FK_UnitAllocation_SectionId");
+
                     b.HasOne("Entities.Models.Term", "Term")
                         .WithMany("UnitAllocations")
                         .HasForeignKey("TermId")
@@ -2606,6 +3248,8 @@ namespace Infrastructure.Migrations
                         .HasForeignKey("WorkBookId")
                         .OnDelete(DeleteBehavior.SetNull)
                         .HasConstraintName("FK_UnitAllocation_WorkBookId");
+
+                    b.Navigation("Section");
 
                     b.Navigation("Term");
 
@@ -2638,6 +3282,8 @@ namespace Infrastructure.Migrations
                     b.Navigation("BookAllocations");
 
                     b.Navigation("ChapterAllocations");
+
+                    b.Navigation("STPlans");
 
                     b.Navigation("SubTopicAllocations");
 
@@ -2689,7 +3335,13 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Entities.Models.Employee", b =>
                 {
+                    b.Navigation("Grades");
+
                     b.Navigation("Heads");
+
+                    b.Navigation("STPlans");
+
+                    b.Navigation("Sections");
 
                     b.Navigation("SubjectTeacherAllocations");
                 });
@@ -2752,9 +3404,19 @@ namespace Infrastructure.Migrations
                 {
                     b.Navigation("BookAllocations");
 
+                    b.Navigation("ChapterAllocations");
+
+                    b.Navigation("STPlans");
+
+                    b.Navigation("SubTopicAllocations");
+
                     b.Navigation("SubjectAllocations");
 
                     b.Navigation("SubjectTeacherAllocations");
+
+                    b.Navigation("TopicAllocations");
+
+                    b.Navigation("UnitAllocations");
                 });
 
             modelBuilder.Entity("Entities.Models.Shoora", b =>
@@ -2762,6 +3424,19 @@ namespace Infrastructure.Migrations
                     b.Navigation("Departments");
 
                     b.Navigation("Heads");
+                });
+
+            modelBuilder.Entity("Entities.Models.STPlanApproval", b =>
+                {
+                    b.Navigation("ACPlans");
+
+                    b.Navigation("CTPlans");
+
+                    b.Navigation("DAPlans");
+
+                    b.Navigation("DCPlans");
+
+                    b.Navigation("GMPlans");
                 });
 
             modelBuilder.Entity("Entities.Models.SubDepartment", b =>
@@ -2792,6 +3467,8 @@ namespace Infrastructure.Migrations
 
                     b.Navigation("Holidays");
 
+                    b.Navigation("STPlans");
+
                     b.Navigation("SubTopicAllocations");
 
                     b.Navigation("TopicAllocations");
@@ -2819,6 +3496,8 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Entities.Models.Year", b =>
                 {
+                    b.Navigation("STPlans");
+
                     b.Navigation("Terms");
                 });
 #pragma warning restore 612, 618

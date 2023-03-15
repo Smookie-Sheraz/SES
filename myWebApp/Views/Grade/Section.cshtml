@@ -1,7 +1,4 @@
-﻿@model IEnumerable<Entities.Models.Section>
-@{
-    int i = -1;
-}
+﻿@*@model IEnumerable<Entities.Models.Section>*@
 <div class="main-panel">
    <div class="content-wrapper">
           <div class="row">
@@ -13,8 +10,8 @@
                     The Classes can be added here!
                   </p>*@
                   <div class="table-responsive">
-                            @if (Model.Any())
-                            {
+@*                            @if (ViewBag.Sections.Any())
+                            {*@
                                 <table class="table table-hover table-bordered">
                                     <thead class="bg-primary text-white">
                                         <tr>
@@ -28,9 +25,8 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach (var Sections in Model)
+                                        @foreach (var Sections in ViewBag.Sections)
                                         {
-                                            i++;
                                             <tr>
                                                 @if (User.HasClaim("Permission", "Section.Update") || User.HasClaim("Permission", "Section.Delete"))
                                                 {
@@ -41,11 +37,12 @@
                                                         {
                                                         <a class="fa fa-person mr-3" title="Allocate Teacher(s) to This Class Book(s)" asp-route-id="@Sections.SectionId" asp-controller="Director" asp-action="SubjectTeacherAllocation" role="button"></a>
                                                         }
-                                                        @if (User.HasClaim("Permission", "Section.Update"))
+                                                        @if (User.HasClaim("Permission", "Section.Update") && Sections.ShowDeleteUpdate)
                                                         {
                                                         <a class="fa fa-edit mr-3" title="Edit Class" asp-route-id="@Sections.SectionId" asp-controller="Grade" asp-action="UpdateSection" role="button"></a>
                                                         }
-                                                        @if (User.HasClaim("Permission", "Section.Delete")){
+                                                        @if (User.HasClaim("Permission", "Section.Delete") && Sections.ShowDeleteUpdate)
+                                                        {
                                                         <a class="fa fa-trash text-danger" title="Delete Class" onclick="return confirm('Are you sure you want to delete?');" asp-route-id="@Sections.SectionId" asp-controller="Grade" asp-action="DeleteSection" role="button"></a>
                                                         }
                                                     </td>
@@ -60,18 +57,18 @@
                                                         <label class="badge badge-danger">InActive</label>
                                                     }
                                                 </td>
-                                                <td>@ViewBag.GradeNames[i]</td>
+                                                <td>@Sections.GradeName</td>
                                                 <td>@Sections.SectionName</td>
                                                 @*<td>@Sections.SectionCode</td>*@
                                             </tr> 
                                         }
                                     </tbody>
                                 </table>
-                            }
+                            @*}
                             else
                             {
                                 <h3>No Data Found!</h3>
-                            }
+                            }*@
                   </div>
                 </div>
               </div>

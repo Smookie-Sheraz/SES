@@ -12,5 +12,8 @@ namespace Entities.ViewModels
         public int GradeId { get; set; }
         [Display(Name ="Status")]
         public bool IsActive { get; set; }
+        //[Display(Name = "Class Teacher")]
+        //[Required(ErrorMessage = "{0} is required")]
+        //public int ClassTeacherId { get; set; }
     }
 }

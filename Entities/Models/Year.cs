@@ -44,6 +44,7 @@ namespace Entities.Models
         //[DataType(DataType.Date)]
         public DateTime? DeletedOn { get; set; }
         public List<Term> Terms { get; set; }
+        public ICollection<STPlanApproval> STPlans { get; set; } = null!;
 
     }
 }

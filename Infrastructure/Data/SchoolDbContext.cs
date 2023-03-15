@@ -52,6 +52,12 @@ namespace Infrastructure.Data
         public DbSet<Roles> Roles { get; set; }
         public DbSet<Permissions> Permissions { get; set; }
         public DbSet<UserPermissions> UserPermissions { get; set; }
+        public DbSet<STPlanApproval> STPlanApproval { get; set; }
+        public DbSet<CTPlanApproval> CTPlanApproval { get; set; }
+        public DbSet<GMPlanApproval> GMPlanApproval { get; set; }
+        public DbSet<ACPlanApproval> ACPlanApproval { get; set; }
+        public DbSet<DCPlanApproval> DCPlanApproval { get; set; }
+        public DbSet<DAPlanApproval> DAPlanApproval { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             //Apply Configurations
@@ -92,6 +98,12 @@ namespace Infrastructure.Data
             modelBuilder.ApplyConfiguration(new ChapterAnswersConfiguration());
             modelBuilder.ApplyConfiguration(new PermissionsConfiguration());
             modelBuilder.ApplyConfiguration(new UserPermissionsConfiguration());
+            modelBuilder.ApplyConfiguration(new STPlanApprovalConfiguration());
+            modelBuilder.ApplyConfiguration(new CTPlanApprovalConfiguration());
+            modelBuilder.ApplyConfiguration(new GMPlanApprovalConfiguration());
+            modelBuilder.ApplyConfiguration(new ACPlanApprovalConfiguration());
+            modelBuilder.ApplyConfiguration(new DCPlanApprovalConfiguration());
+            modelBuilder.ApplyConfiguration(new DAPlanApprovalConfiguration());
             base.OnModelCreating(modelBuilder);
         }
     }

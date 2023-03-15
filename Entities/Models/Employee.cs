@@ -80,5 +80,8 @@ namespace Entities.Models
         public List<Head>? Heads { get; set; }
         public SubDepartment? SubDepartmentHead { get; set; }
         public ICollection<SubjectTeacherAllocation> SubjectTeacherAllocations { get; set; } = null!;
+        public ICollection<STPlanApproval> STPlans { get; set; } = null!;
+        public ICollection<Section> Sections { get; set; } = null!;
+        public ICollection<Grade> Grades { get; set; } = null!;
     }
 }

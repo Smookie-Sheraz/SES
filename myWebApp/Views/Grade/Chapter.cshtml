@@ -81,7 +81,7 @@
                                                             <td class="actions">
                                                                 <a class="fa fa-file-pen mr-3" title="Add Questions" asp-route-ChapterId="@Chapter.ChapterId" asp-route-UnitId="@Model.BookId" asp-controller="Grade" asp-action="Questions" role="button"></a>
                                                                 @if(User.HasClaim("Permission", "Topic.Read") || User.HasClaim("Permission", "Topic.Create") || User.HasClaim("Permission", "Topic.Delete")){
-                                                                <a class="fa fa-book-copy mr-3" title="Add Topics" asp-route-id="@Chapter.ChapterId" asp-controller="Grade" asp-action="Topic" role="button"></a>
+                                                                <a class="fa fa-book mr-3" title="Add Topics" asp-route-id="@Chapter.ChapterId" asp-controller="Grade" asp-action="Topic" role="button"></a>
                                                                 }
                                                                 @if(User.HasClaim("Permission", "Chapter.Update")){
                                                                 <a class="fa fa-edit mr-3" title="Edit Chapter" asp-route-id="@Chapter.ChapterId" asp-controller="Grade" asp-action="UpdateChapter" role="button"></a>

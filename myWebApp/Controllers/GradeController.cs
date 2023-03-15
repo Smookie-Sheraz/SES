@@ -913,17 +913,44 @@ namespace myWebApp.Controllers
         [HttpGet]
         public IActionResult Grade()
         {
-            ViewBag.Grades = from a in _db.Grades
-                             join b in _db.SchoolSections on a.SchoolSectionId equals b.SchoolSectionId into GradeSchoolSection
-                             from schoolSection in GradeSchoolSection.DefaultIfEmpty()
-                             where schoolSection.SchoolSectionId == a.SchoolSectionId
-                             select new
-                             {
-                                 GradeId = a.GradeId,
-                                 GradeName = a.GradeName,
-                                 SchoolSection = schoolSection.SectionName,
-                                 IsActive = a.IsActive
-                             };
+            var userId = Convert.ToInt16(User.FindFirst(ClaimTypes.Sid)?.Value);
+            //var user = _db.Employees.Where(x => x.EmployeeId == userId).FirstOrDefault();
+            if(User.IsInRole("Grade Manager"))
+            {
+                ViewBag.Grades = from a in _db.Grades
+                                 join b in _db.SchoolSections on a.SchoolSectionId equals b.SchoolSectionId into GradeSchoolSection
+                                 from schoolSection in GradeSchoolSection.DefaultIfEmpty()
+                                 join c in _db.Employees on a.GradeManagerId equals c.EmployeeId into GradeManager
+                                 from GM in GradeManager.DefaultIfEmpty()
+                                 where schoolSection.SchoolSectionId == a.SchoolSectionId
+                                 select new
+                                 {
+                                     GradeId = a.GradeId,
+                                     GradeName = a.GradeName,
+                                     SchoolSection = schoolSection.SectionName,
+                                     IsActive = a.IsActive,
+                                     GradeManager = GM.FName + " " + GM.LName,
+                                     ShowDeleteUpdate = a.GradeManagerId == userId ? true : false
+                                 };
+            }
+            else if(!User.IsInRole("Subject Teacher"))
+            {
+                ViewBag.Grades = from a in _db.Grades
+                                 join b in _db.SchoolSections on a.SchoolSectionId equals b.SchoolSectionId into GradeSchoolSection
+                                 from schoolSection in GradeSchoolSection.DefaultIfEmpty()
+                                 join c in _db.Employees on a.GradeManagerId equals c.EmployeeId into GradeManager
+                                 from GM in GradeManager.DefaultIfEmpty()
+                                 where schoolSection.SchoolSectionId == a.SchoolSectionId
+                                 select new
+                                 {
+                                     GradeId = a.GradeId,
+                                     GradeName = a.GradeName,
+                                     SchoolSection = schoolSection.SectionName,
+                                     IsActive = a.IsActive,
+                                     GradeManager = GM.FName + " " + GM.LName,
+                                     ShowDeleteUpdate = true
+                                 };
+            }
             return View();
         }
         [Authorize(Policy = "Grade.Create")]
@@ -931,6 +958,16 @@ namespace myWebApp.Controllers
         public async Task<IActionResult> AddGrade()
         {
             ViewBag.SchoolSections = await _db.SchoolSections.ToListAsync();
+            ViewBag.GradeManagers = from a in _db.Employees
+                                    join b in _db.Roles on a.RoleId equals b.RoleId into empRole
+                                    from role in empRole.DefaultIfEmpty()
+                                    where role.RollName == "Grade Manager"
+                                    select new
+                                    {
+                                        FName = a.FName,
+                                        EmployeeId = a.EmployeeId,
+                                        LName = a.LName
+                                    };
             return View();
         }
         [Authorize(Policy = "Grade.Create")]
@@ -940,7 +977,8 @@ namespace myWebApp.Controllers
             var newGrade = new Grade
             {
                 GradeName = grade.GradeName,
-                SchoolSectionId = grade.SchoolSectionId 
+                SchoolSectionId = grade.SchoolSectionId,
+                GradeManagerId = grade.GradeManagerId
             };
             await _repository.AddAsync(newGrade);
             if (await _repository.SaveChanges())
@@ -958,6 +996,16 @@ namespace myWebApp.Controllers
         public async Task<IActionResult> UpdateGrade(int id)
         {
             ViewBag.SchoolSections = await _db.SchoolSections.ToListAsync();
+            ViewBag.GradeManagers = from a in _db.Employees
+                                    join b in _db.Roles on a.RoleId equals b.RoleId into empRole
+                                    from role in empRole.DefaultIfEmpty()
+                                    where role.RollName == "Grade Manager"
+                                    select new
+                                    {
+                                        FName = a.FName,
+                                        EmployeeId = a.EmployeeId,
+                                        LName = a.LName
+                                    };
             var temp = await _repository.GetGradeById(id);
             if (temp == null)
             {
@@ -968,7 +1016,8 @@ namespace myWebApp.Controllers
                 GradeId = temp.GradeId,
                 GradeName = temp.GradeName,
                 IsActive = (bool)temp.IsActive,
-                SchoolSectionId = (int)temp.SchoolSectionId
+                SchoolSectionId = (int)temp.SchoolSectionId,
+                GradeManagerId = (int)temp.GradeManagerId
             };
             return View(grade);
         }
@@ -993,6 +1042,7 @@ namespace myWebApp.Controllers
             temp.GradeName = grade.GradeName;
             temp.IsActive = grade.IsActive;
             temp.SchoolSectionId = grade.SchoolSectionId;
+            temp.GradeManagerId = grade.GradeManagerId;
             await _repository.UpdateAsync(temp);
             if (await _repository.SaveChanges())
             {
@@ -1024,18 +1074,36 @@ namespace myWebApp.Controllers
         [HttpGet]
         public async Task<IActionResult> Section()
         {
-            var sections = await _repository.GetSections();
-            string[] gradeNames = new string[sections.Count()];
-            int i = -1;
-            foreach (var section in sections)
+            int userId = Convert.ToInt16(User.FindFirst(ClaimTypes.Sid)?.Value);
+            if(User.IsInRole("Grade Manager"))
             {
-                i++;
-                string? gradename = _db.Grades.Where(x => x.GradeId.Equals(section.GradeId))
-                    .Select(x => x.GradeName).FirstOrDefault();
-                gradeNames[i] = gradename;
+                ViewBag.Sections = (await (from a in _db.Grades
+                                           from b in _db.Sections
+                                           where b.GradeId == a.GradeId
+                                           select new
+                                           {
+                                               SectionName = b.SectionName,
+                                               SectionId = b.SectionId,
+                                               IsActive = b.IsActive,
+                                               GradeName = a.GradeName,
+                                               ShowDeleteUpdate = a.GradeManagerId == userId ? true : false
+                                           }).ToListAsync());
             }
-            ViewBag.GradeNames = gradeNames;
-            return View(sections);
+            else if(!User.IsInRole("Subject Teacher"))
+            {
+                ViewBag.Sections = (await (from a in _db.Grades
+                                           from b in _db.Sections
+                                           where b.GradeId == a.GradeId
+                                           select new
+                                           {
+                                               SectionName = b.SectionName,
+                                               SectionId = b.SectionId,
+                                               IsActive = b.IsActive,
+                                               GradeName = a.GradeName,
+                                               ShowDeleteUpdate = true
+                                           }).ToListAsync());
+            }
+            return View();
         }
         [Authorize(Policy = "Section.Create")]
         [HttpGet]
@@ -1343,7 +1411,7 @@ namespace myWebApp.Controllers
         #endregion
 
         #region Book-Details
-        [Authorize(Policy = "BookDetails.Read")]
+        //[Authorize(Policy = "BookDetails.Read")]
         [HttpGet]
         public async Task<IActionResult> BookDetails(int BookId)
         {
@@ -1415,6 +1483,24 @@ namespace myWebApp.Controllers
             }
             return View(bookDetailss);
         }
-    #endregion
+        #endregion
+
+        #region Dynamic-Data
+
+        //public async Task<JsonResult> GetClassTeachers(int GradeId)
+        //{
+        //    var subjects = (await (from a in _db.Grades
+        //                           from c in _db.Employees
+        //                           where a.GradeId == GradeId && c.SchoolSectionId == a.SchoolSectionId
+        //                           select new
+        //                           {
+        //                               EmployeeId = c.EmployeeId,
+        //                               FName = c.FName,
+        //                               LName = c.LName
+        //                           }).Distinct().ToListAsync());
+        //    return Json(subjects);
+        //}
+
+        #endregion
     }
-  }
+}

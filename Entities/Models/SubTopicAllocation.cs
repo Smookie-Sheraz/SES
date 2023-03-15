@@ -20,6 +20,8 @@ namespace Entities.Models
         public int? WorkBookEndPage { get; set; }
         public SubTopic? SubTopic { get; set; }
         public int? SubTopicId { get; set; }
+        public Section? Section { get; set; }
+        public int? SectionId { get; set; }
         public bool IsAllocated { get; set; }
         public bool? IsActive { get; set; }
         public DateTime? StartDate { get; set; }

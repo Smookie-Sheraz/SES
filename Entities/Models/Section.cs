@@ -26,9 +26,16 @@ namespace Entities.Models
         public ICollection<BookAllocation> BookAllocations { get; set; } = null!;
         public ICollection<SubjectAllocation> SubjectAllocations { get; set; } = null!;
         public ICollection<SubjectTeacherAllocation> SubjectTeacherAllocations { get; set; } = null!;
+        public ICollection<UnitAllocation> UnitAllocations { get; set; } = null!;
+        public ICollection<ChapterAllocation> ChapterAllocations { get; set; } = null!;
+        public ICollection<TopicAllocation> TopicAllocations { get; set; } = null!;
+        public ICollection<SubTopicAllocation> SubTopicAllocations { get; set; } = null!;
+        public ICollection<STPlanApproval> STPlans { get; set; } = null!;
         //public Book Book { get; set; }
         //public int? BookId { get; set; }
         public Grade? Grade { get; set; }
         public int? GradeId { get; set; }
+        public Employee? ClassTeacher { get; set; }
+        public int? ClassTeacherId { get; set; }
     }
 }

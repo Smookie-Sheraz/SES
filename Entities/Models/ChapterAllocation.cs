@@ -18,6 +18,8 @@ namespace Entities.Models
         public int? UnitId { get; set; }
         public Book? WorkBook { get; set; }
         public int? WorkBookId { get; set; }
+        public Section? Section { get; set; }
+        public int? SectionId { get; set; }
         public int? WorkBookStartPage { get; set; }
         public int? WorkBookEndPage { get; set; }
         public bool? IsActive { get; set; }

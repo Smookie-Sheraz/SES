@@ -39,6 +39,11 @@ namespace Infrastructure.Configurations
                 .HasForeignKey(FK => FK.GradeId)
                 .HasConstraintName("FK_Section_GradeId")
                 .OnDelete(DeleteBehavior.SetNull);
+            builder.HasOne(p => p.ClassTeacher)
+                .WithMany(p => p.Sections)
+                .HasForeignKey(FK => FK.ClassTeacherId)
+                .HasConstraintName("FK_Section_ClassTeacherId")
+                .OnDelete(DeleteBehavior.SetNull);
             //builder.HasOne(p => p.Campus)
             //    .WithMany(a => a.Departments)
             //    .IsRequired()

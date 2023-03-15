@@ -50,6 +50,6 @@ namespace Entities.Models
         public List<TopicAllocation> TopicAllocations { get; set; }
         public List<SubTopicAllocation> SubTopicAllocations { get; set; }
         public List<Holiday> Holidays { get; set; }
-
+        public ICollection<STPlanApproval> STPlans { get; set; } = null!;
     }
 }

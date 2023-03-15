@@ -66,6 +66,11 @@ namespace Infrastructure.Configurations
                 .HasConstraintName("FK_TopicAllocation_TeachingMethodologyId")
                 .HasForeignKey(FK => FK.TeachingMethodologyId)
                 .OnDelete(DeleteBehavior.SetNull);
+            builder.HasOne(p => p.Section)
+                .WithMany(p => p.TopicAllocations)
+                .HasForeignKey(FK => FK.SectionId)
+                .HasConstraintName("FK_TopicAllocation_SectionId")
+                .OnDelete(DeleteBehavior.SetNull);
         }
     }
 }

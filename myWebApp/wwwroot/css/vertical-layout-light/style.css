@@ -117,7 +117,7 @@
 /*-------------------------------------------------------------------*/
 /* === SCSS Compass Functions === */
 @-moz-keyframes flash {
-  0% {
+    0% {
     opacity: 1;
   }
   25% {
@@ -825,7 +825,7 @@
   50% {
     -webkit-transform: translateX(-10px);
     -moz-transform: translateX(-10px);
-    -ms-transform: translateX(-10px);
+    -ms-transform:f translateX(-10px);
     -o-transform: translateX(-10px);
     transform: translateX(-10px);
   }

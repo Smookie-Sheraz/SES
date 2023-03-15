@@ -1,13 +1,61 @@
 
-//$(document).ready(function () {
-//    SchoolSectionChange('SchoolSectionId');
-//    Gradechange('GradeId');
-//    SubjectChanged('SubjectId');
-//})
+//Function to retrieve the School Section if anyone has done planning in any SchoolSection books to the current user
+
+function GetSchoolSections(id) {
+    $.get("/AcademicCalendar/GetSchoolSections", { YearId: parseInt($(`#${id}`).val(), 10) }, function (data) {
+        $("#SchoolSectionId").empty();
+        $("#GradeId").empty();
+        $("#ClassId").empty();
+        $("#BookId").empty();
+        $("#SchoolSectionId").append("<Option value='0'>" + "---Select Section Please---" + "</Option>");
+        $.each(data, function (index, row) {
+            console.log(row);
+            $("#SchoolSectionId").append("<Option value='" + row.schoolSectionId + "'>" + row.sectionName + "</Option>")
+        });
+    });
+};
+
+function GetGrades(id) {
+    $.get("/AcademicCalendar/GetGrades", { SchoolSectionId: parseInt($(`#${id}`).val(), 10) }, function (data) {
+        $("#GradeId").empty();
+        $("#ClassId").empty();
+        $("#BookId").empty();
+        $("#GradeId").append("<Option value='0'>" + "---Select Grade Please---" + "</Option>");
+        $.each(data, function (index, row) {
+            console.log(row);
+            $("#GradeId").append("<Option value='" + row.gradeId + "'>" + row.gradeName + "</Option>")
+        });
+    });
+};
+
+function GetSubjects(id) {
+    $.get("/AcademicCalendar/GetSubjects", { GradeId: parseInt($(`#${id}`).val(), 10) }, function (data) {
+        $("#SubjectId").empty();
+        $("#BookId").empty();
+        $("#SubjectId").append("<Option value='0'>" + "---Select Subject Please---" + "</Option>");
+        $.each(data, function (index, row) {
+            console.log(row);
+            $("#SubjectId").append("<Option value='" + row.subjectId + "'>" + row.subjectName + "</Option>")
+        });
+    });
+};
+
+function GetBooks(id) {
+    //debugger;
+    var Grade = $("#GradeId").val();
+    $.get("/AcademicCalendar/GetBooks", { SubjectId: parseInt($(`#${id}`).val(), 10), GradeId: parseInt(Grade, 10) }, function (data) {
+        $("#BookId").empty();
+        $("#BookId").append("<Option value='0'>" + "---Select Book Please---" + "</Option>");
+        $.each(data, function (index, row) {
+            console.log(row);
+            $("#BookId").append("<Option value='" + row.bookId + "'>" + row.bookName + "</Option>")
+        });
+    });
+};
 
 function SubjectChanged(id) {
     console.log("I'm Selected!");
-    $.get("/AcademicCalendar/GetBooks", { SubjectId: parseInt($(`#${id}`).val(),10), GradeId: $("#GradeId").val() }, function (data) {
+    $.get("/AcademicCalendar/GetBooks", { SubjectId: parseInt($(`#${id}`).val(), 10), GradeId: $("#GradeId").val() }, function (data) {
         $("#BookId").empty();
         $("#BookId").append("<Option value='0'>" + "---Select Book Please---" + "</Option>");
         $.each(data, function (index, row) {
@@ -25,7 +73,7 @@ function Gradchange(id) {
     console.log($(`#${id}`).val());
     $("#SubjectId").val('0');
     $("#BookId").val('0');
-    $.get("/AcademicCalendar/GetSubjects", { GradeId: parseInt($(`#${id}`).val(),10) }, function (data) {
+    $.get("/AcademicCalendar/GetSubjects", { GradeId: parseInt($(`#${id}`).val(), 10) }, function (data) {
         $("#SubjectId").empty();
         $("#SubjectId").append("<Option value='0'>" + "---Select Subject Please---" + "</Option>");
         $.each(data, function (index, row) {
@@ -183,3 +231,31 @@ function SelectAllPermissions() {
         }
     }
 }
+
+//Funtion to enable the WBStart and End Pages if any workbook selected during the planning
+
+function EnterWBPages(id) {
+    var stringId = id.toString();
+    var splitId = stringId.split("__");
+    if ($(`#${id}`).val() != "") {
+        $(`#${splitId[0]}__WorkBookStartPage`).removeAttr("disabled");
+        $(`#${splitId[0]}__WorkBookEndPage`).removeAttr("disabled");
+    }
+    else {
+        $(`#${splitId[0]}__WorkBookStartPage`).attr("disabled", true);
+        $(`#${splitId[0]}__WorkBookEndPage`).attr("disabled", true);
+    }
+}
+
+//Function to retrieve the School Section if anyone has done planning in any SchoolSection books to the current user
+
+//function GetClassTeachers(id) {
+//    $.get("/Grade/GetClassTeachers", { GradeId: parseInt($(`#${id}`).val(), 10) }, function (data) {
+//        $("#ClassTeacherId").empty();
+//        $("#ClassTeacherId").append("<Option value='0'>" + "---Select Class Teacher Please---" + "</Option>");
+//        $.each(data, function (index, row) {
+//            console.log(row);
+//            $("#ClassTeacherId").append("<Option value='" + row.employeeId + "'>" + row.fName + " " + row.lName + "</Option>")
+//        });
+//    });
+//};

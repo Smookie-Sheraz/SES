@@ -22,6 +22,8 @@ namespace Entities.Models
         public int? ChapterId { get; set; }
         public TeachingMethodology? TeachingMethodology { get; set; }
         public int? TeachingMethodologyId { get; set; }
+        public Section? Section { get; set; }
+        public int? SectionId { get; set; }
         public string? TMethodDesc { get; set; }
         public bool IsAllocated { get; set; }
         public DateTime? StartDate { get; set; }

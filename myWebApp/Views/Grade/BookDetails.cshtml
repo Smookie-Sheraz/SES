@@ -15,7 +15,7 @@
                   <div class="table-responsive">
                             @if (Model.units.Any())
                             {
-                            <table class="table table-hover">
+                                    <table class="table table-hover bg-success text-light">
                                 <thead>
                                     <tr>
                                         <th></th>
@@ -33,7 +33,7 @@
                                 <tbody>
                                         @foreach (var unit in Model.units)
                                         {
-                                            <tr>
+                                            <tr class="bg-primary">
                                                 <td style="width:20px; margin:0px; padding:0px;"><button onclick="CollapseButton(this.id)" id="Button-Book-@unit.BookId" style="font-size:22px; padding:0px 10px;"class="btn btn-primary" type="button" data-toggle="collapse" data-target=".Chapter-@unit.UnitId" aria-expanded="false" aria-controls="Chapter-@unit.UnitId">+</button></td>
                                                 <td colspan="3">@unit.UnitName</td>
                                                 <td></td>
@@ -46,7 +46,7 @@
                                                 <td></td>
                                             </tr>
                                             @if(unit.Chapters.Any()){
-                                                <tr class="collapse Chapter-@unit.UnitId" style="width:95%;">
+                                                <tr class="collapse bg-success Chapter-@unit.UnitId" style="width:95%;">
                                                 @*<th></th>
                                                 <th></th>*@
                                                 <th></th>
@@ -67,7 +67,7 @@
                                             </tr>
                                             @foreach (var chapter in unit.Chapters)
                                             {
-                                                    <tr class="collapse Chapter-@unit.UnitId" style="width:95%;">
+                                                    <tr class="collapse bg-info Chapter-@unit.UnitId" style="width:95%;">
                                                         <td style="width:20px; margin:0px; padding:0px;"><button onclick="CollapseButton(this.id)" id="Button-Book-@unit.BookId" style="font-size:22px; padding:0px 10px;"class="btn btn-primary" type="button" data-toggle="collapse" data-target=".Topic-@chapter.BookId" aria-expanded="false" aria-controls="Topic-@chapter.BookId">+</button></td>
                                                         <td colspan="3">@chapter.ChapterName</td>
                                                         <td></td>
@@ -81,7 +81,7 @@
                                                     </tr>
                                                 if (chapter.topics.Any())
                                                 {
-                                                        <tr class="collapse Topic-@chapter.BookId" >
+                                                        <tr class="collapse bg-success Topic-@chapter.BookId" >
                                                             <th></th>
                                                             <th colspan="3">Topic Name</th>
                                                             <th></th>
@@ -95,7 +95,7 @@
                                                         </tr>
                                                     foreach (var topic in chapter.topics)
                                                     {
-                                                            <tr class="collapse Topic-@topic.ChapterId">
+                                                            <tr class="collapse bg-secondary Topic-@topic.ChapterId">
                                                                 <td style="width:20px; margin:0px; padding:0px;"><button onclick="CollapseButton(this.id)" id="Button-Book-@unit.BookId" style="font-size:22px; padding:0px 10px;"class="btn btn-primary" type="button" data-toggle="collapse" data-target=".SubTopic-@topic.TopicId" aria-expanded="false" aria-controls="SubTopic-@topic.TopicId">+</button></td>
                                                                 <td colspan="3">@topic.TopicName</td>
                                                                 <td></td>
@@ -109,7 +109,7 @@
                                                             </tr>
                                                         if (topic.SubTopics.Any())
                                                         {
-                                                                <tr class="collapse SubTopic-@topic.TopicId">
+                                                                <tr class="collapse bg-success SubTopic-@topic.TopicId">
                                                                 <th></th>
                                                                 <th colspan="3">Sub-Topic Name</th>
                                                                 <th></th>
@@ -123,7 +123,7 @@
                                                                 </tr>
                                                             foreach (var sTopic in topic.SubTopics)
                                                             {
-                                                                <tr class="collapse SubTopic-@sTopic.TopicId">
+                                                                    <tr class="collapse bg-warning SubTopic-@sTopic.TopicId">
                                                                     <td></td>
                                                                     <td colspan="3">@sTopic.SubTopicName</td>
                                                                     <td></td>

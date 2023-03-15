@@ -51,10 +51,10 @@
                                                     }
                                                 </td>
                                                 }
-                                                @if (User.HasClaim("Permission", "BookDetails.Read"))
-                                                {
+                                                @*@if (User.HasClaim("Permission", "BookDetails.Read"))
+                                                {*@
                                                     <td><a target="_blank" asp-controller="Grade" asp-action="BookDetails" asp-route-BookId="@Book.BookId" class="btn btn-outline-info btn-sm">Details</a></td>
-                                                }
+                                                @*}*@
                                                 <td>
                                                     @if ((bool)Book.IsActive)
                                                     {

@@ -1,4 +1,7 @@
-﻿@*@model IEnumerable<Entities.Models.Grade>*@
+﻿@*@using System.Security.Claims;*@
+@*@model IEnumerable<Entities.Models.Grade>*@
+    @{
+    }
 <div class="main-panel">
    <div class="content-wrapper">
     <div class="row">
@@ -18,8 +21,9 @@
                                     @if (User.HasClaim("Permission", "Grade.Update") || User.HasClaim("Permission", "Grade.Delete")){
                                         <th>Actions</th>
                                     }
-                                    <th>Active</th>
+                                    <th>Status</th>
                                     <th>Grade Name</th>
+                                    <th>Grade Manager</th>
                                     <th>Shool Section</th>
                                 </tr>
                             </thead>
@@ -29,10 +33,10 @@
                             <tr>
                                 @if (User.HasClaim("Permission", "Grade.Update") || User.HasClaim("Permission", "Grade.Delete")){
                                 <td class="actions">
-                                    @if(User.HasClaim("Permission", "Grade.Update")){
+                                    @if(User.HasClaim("Permission", "Grade.Update") && Garde.ShowDeleteUpdate){
                                         <a class="fa fa-edit mr-3" asp-route-id="@Garde.GradeId" asp-controller="Grade" asp-action="UpdateGrade" role="button"></a>
                                     }
-                                    @if(User.HasClaim("Permission", "Grade.Delete")){
+                                    @if(User.HasClaim("Permission", "Grade.Delete") && Garde.ShowDeleteUpdate){
                                         <a class="fa fa-trash text-danger" onclick="return confirm('Are you sure you want to delete?');" asp-route-id="@Garde.GradeId" asp-controller="Grade" asp-action="DeleteGrade" role="button"></a>
                                     }
                                 </td>
@@ -48,6 +52,7 @@
                                     }
                                 </td>
                                 <td>@Garde.GradeName</td>
+                                <td>@Garde.GradeManager</td>
                                 <td>@Garde.SchoolSection</td>
                             </tr> 
                         }

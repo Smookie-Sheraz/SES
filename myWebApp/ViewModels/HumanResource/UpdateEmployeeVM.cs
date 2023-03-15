@@ -22,6 +22,7 @@ namespace myWebApp.ViewModels.HumanResource
         //[Required(ErrorMessage = "{0} is required")]
         //[StringLength(100, ErrorMessage = "{0} can't exceed {1} characters")]
         public string? FatherName { get; set; }
+        public string? Role { get; set; }
         public string? UserImageUrl { get; set; }
         public IFormFile? UserImage { get; set; }
         //[Display(Name = "Spouse Name")]

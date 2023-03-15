@@ -42,6 +42,8 @@ namespace myWebApp.Controllers
                                from sDepartment in EmpSDepartment.DefaultIfEmpty()
                                join h in _db.Designations on a.DesignationId equals h.DesignationId into EmpDesignation
                                from designation in EmpDesignation.DefaultIfEmpty()
+                               join i in _db.Roles on a.RoleId equals i.RoleId into empRole
+                               from role in empRole.DefaultIfEmpty()
                                    //where b.GenderId == a.GenderId && c.SchoolId == a.SchoolId && d.CampusId == a.CampusId && e.SchoolSectionId == a.SchoolSectionId && f.DepartmentId == a.DepartmentId && g.SubDepartmentId == a.SubDepartmentId && h.DesignationId == a.DesignationId
                                select new UpdateEmployeeVM
                               {
@@ -61,6 +63,7 @@ namespace myWebApp.Controllers
                                   Mobile = a.Mobile,
                                   SpouseName = a.SpouseName,
                                   EmployeeId = a.EmployeeId,
+                                  Role = role.RollName,
                                    SchoolSectionName = section.SectionName,
                                    ProbationPeriod = a.ProbationPeriod,
                                   StartofPeriodDate = a.StartofPeriodDate,
@@ -79,7 +82,7 @@ namespace myWebApp.Controllers
                                   IsActive = (bool)a.IsActive
                               };
 
-            employee.AddRange(await shoramembers.Select(x => new UpdateEmployeeVM { IsActive = x.IsActive,UserImageUrl = x.UserImageUrl,Address = x.Address, CampusName = x.CampusName, GenderName = x.GenderName, FName = x.FName, FatherName = x.FatherName, Email = x.Email, CNICNo = x.CNICNo, DOB = x.DOB, CNICExpiryDate = x.CNICExpiryDate, CNICIssueDate = x.CNICIssueDate, LName = x.LName, SchoolName = x.SchoolName, SpouseName = x.SpouseName, MaritalStatus = x.MaritalStatus, Mobile = x.Mobile, EmployeeId = x.EmployeeId, Period = x.Period, JoiningDate = x.JoiningDate, EmployeeType = x.EmployeeType, FieldOfSpecialization = x.FieldOfSpecialization, EndofProbationDate = x.EndofProbationDate, ConfirmationDate = x.ConfirmationDate, DepartmentName = x.DepartmentName, DesignationName = x.DesignationName, EndofPeriodDate = x.EndofPeriodDate, ProbationPeriod = x.ProbationPeriod, SchoolSectionName = x.SchoolSectionName, StartofPeriodDate = x.StartofPeriodDate, StartofProbationDate = x.StartofProbationDate, SubDepartmentName = x.SubDepartmentName }).ToListAsync());
+            employee.AddRange(await shoramembers.Select(x => new UpdateEmployeeVM { Role = x.Role, IsActive = x.IsActive,UserImageUrl = x.UserImageUrl,Address = x.Address, CampusName = x.CampusName, GenderName = x.GenderName, FName = x.FName, FatherName = x.FatherName, Email = x.Email, CNICNo = x.CNICNo, DOB = x.DOB, CNICExpiryDate = x.CNICExpiryDate, CNICIssueDate = x.CNICIssueDate, LName = x.LName, SchoolName = x.SchoolName, SpouseName = x.SpouseName, MaritalStatus = x.MaritalStatus, Mobile = x.Mobile, EmployeeId = x.EmployeeId, Period = x.Period, JoiningDate = x.JoiningDate, EmployeeType = x.EmployeeType, FieldOfSpecialization = x.FieldOfSpecialization, EndofProbationDate = x.EndofProbationDate, ConfirmationDate = x.ConfirmationDate, DepartmentName = x.DepartmentName, DesignationName = x.DesignationName, EndofPeriodDate = x.EndofPeriodDate, ProbationPeriod = x.ProbationPeriod, SchoolSectionName = x.SchoolSectionName, StartofPeriodDate = x.StartofPeriodDate, StartofProbationDate = x.StartofProbationDate, SubDepartmentName = x.SubDepartmentName }).ToListAsync());
             
             return View(employee);
         }

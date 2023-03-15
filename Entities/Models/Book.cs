@@ -49,5 +49,6 @@ namespace Entities.Models
         public ICollection<TopicAllocation> TopicAllocations { get; set; } = null!;
         public ICollection<SubTopicAllocation> SubTopicAllocations { get; set; } = null!;
         public ICollection<SubjectTeacherAllocation> SubjectTeacherAllocations { get; set; } = null!;
+        public ICollection<STPlanApproval> STPlans { get; set; } = null!;
     }
 }

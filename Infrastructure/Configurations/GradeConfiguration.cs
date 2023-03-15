@@ -33,6 +33,11 @@ namespace Infrastructure.Configurations
                 .HasForeignKey(fk => fk.SchoolSectionId)
                 .HasConstraintName("FK_Grade_SchoolSectionId")
                 .OnDelete(DeleteBehavior.SetNull);
+            builder.HasOne(p => p.GradeManager)
+                .WithMany(a => a.Grades)
+                .HasForeignKey(fk => fk.GradeManagerId)
+                .HasConstraintName("FK_Grade_GradeManagerId")
+                .OnDelete(DeleteBehavior.SetNull);
         }
     }
 }

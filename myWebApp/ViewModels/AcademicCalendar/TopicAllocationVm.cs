@@ -10,7 +10,7 @@ namespace myWebApp.ViewModels.AcademicCalendar
     {
         public int YearId { get; set; }
         public int TermId { get; set; }
-        
+        public int? ChapterId { get; set; }
         public DateTime? MinDate { get; set; }
         public DateTime? MaxDate { get; set; }
         public List<TopicList> Topics { get; set; }

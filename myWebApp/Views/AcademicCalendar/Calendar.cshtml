@@ -1,362 +1,280 @@
 ﻿@model myWebApp.ViewModels.AcademicCalendar.CalendarVM
 
-<div class="main-panel">        
+<div class="main-panel">
     <div class="content-wrapper">
         <div class="row">
             <div class="col-12 grid-margin stretch-card">
-              <div class="card">
-                <div class="card-body">
-                  <h4 class="card-title">Academic Calendar</h4>
-                  @*<p class="card-description">
-                    Academic Planning of the Year
-                  </p>*@
-                <form asp-asp-controller="AcademicCalendar" asp-action="Calendar" method="Get">
-                  <div class="row">
-                      <div class="col-2">
-                          <div class="form-group">
-                          <label>Classes</label>
-                          <select asp-for="GradeId" class="form-select" onchange="GetClassBooks(this.id)" aria-label="Default select example">
-                          <option selected >Select Class Please</option>
-                                @foreach (var sSection in ViewBag.Classes)
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Academic Calendar</h4>
+                        @*<p class="card-description">
+                        Academic Planning of the Year
+                        </p>*@
+                        <form asp-asp-controller="AcademicCalendar" asp-action="Calendar" method="Get">
+                            <div class="row">
+                                @if (User.IsInRole("Director Academics") || User.IsInRole("Deputy Coordinator"))
                                 {
-                                    <option value="@sSection.SectionId">@sSection.ClassName</option>
+                                    <div class="col-2 text-center">
+                                        <div class="form-group">
+                                            <label>Academic Calendar</label>
+                                            <select asp-for="YearId" class="form-select" onchange="GetSchoolSections(this.id)" aria-label="Default select example">
+                                                <option selected>Select Calendar Please</option>
+                                                @foreach (var sSection in ViewBag.Calendars)
+                                                {
+                                                    <option value="@sSection.YearId">@sSection.YearName</option>
+                                                }
+                                            </select>
+                                            <span asp-validation-for="YearId" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-2 text-center">
+                                        <div class="form-group">
+                                            <label>Section</label>
+                                            <select asp-for="SchoolSectionId" class="form-select" onchange="GetGrades(this.id)" aria-label="Default select example">
+                                                <option selected>Select Section Please</option>
+                                                @if (Model.SchoolSectionId != null)
+                                                {
+                                                    @foreach (var sSection in ViewBag.SchoolSections)
+                                                    {
+                                                        <option value="@sSection.SchoolSectionId">@sSection.SectionName</option>
+                                                    }
+                                                }
+                                            </select>
+                                            <span asp-validation-for="SchoolSectionId" class="text-danger"></span>
+                                        </div>
+                                    </div>
                                 }
-                        </select>
-                      <span asp-validation-for="SchoolSectionId" class="text-danger"></span>
-
-                        </div>
-                      </div>
-                      <div class="col-2">
-                          <div class="form-group">
-                          <label>Books</label>
-                          <select asp-for="BookId" class="form-select" aria-label="Default select example">
-                                            @*<option selected >Select Grade Please</option>
-                                @foreach (var grade in ViewBag.Grades)
+                                @if (User.IsInRole("Director Academics") || User.IsInRole("Deputy Coordinator") || User.IsInRole("Assistant Coordinator") || User.IsInRole("Grade Manager"))
                                 {
-                                    <option value="@grade.GradeId">@grade.GradeName</option>
-                                }*@
-                        </select>
-                        </div>
-                      </div>
-                                @*<div class="col-2">
-                          <div class="form-group">
-                          <label>Grades</label>
-                          <select asp-for="GradeId" class="form-select" onchange="Gradchange(this.id)" aria-label="Default select example">
-                          <option selected >Select Grade Please</option>
-                                @foreach (var grade in ViewBag.Grades)
-                                {
-                                    <option value="@grade.GradeId">@grade.GradeName</option>
+                                    <div class="col-2 text-center">
+                                        <div class="form-group">
+                                            <label>Grades</label>
+                                            <select asp-for="GradeId" class="form-select" onchange="GetSubjects(this.id)" aria-label="Default select example">
+                                                <option selected>Select Grade Please</option>
+                                                @if (Model.GradeId != null)
+                                                {
+                                                    @foreach (var sSection in ViewBag.Grades)
+                                                    {
+                                                        <option value="@sSection.GradeId">@sSection.GradeName</option>
+                                                    }
+                                                }
+                                                else if (User.IsInRole("Assistant Coordinator") || (User.IsInRole("Grade Manager")))
+                                                {
+                                                    @foreach (var sSection in ViewBag.Grades)
+                                                    {
+                                                        <option value="@sSection.GradeId">@sSection.GradeName</option>
+                                                    }
+                                                }
+                                            </select>
+                                            <span asp-validation-for="GradeId" class="text-danger"></span>
+                                        </div>
+                                    </div>
                                 }
-                        </select>
-                        </div>
-                      </div>
-                      <div class="col-2">
-                          <div class="form-group">
-                                  <label asp-for="SubjectId">Subjects</label>
-                                  <select asp-for="SubjectId" class="form-select" aria-label="Default select example" onchange="SubjectChanged(this.id)">
-                                      <option selected >Select Subject Please</option>
-                                            @foreach (var sub in ViewBag.Subjects)
+                                @if (User.IsInRole("Director Academics") || User.IsInRole("Deputy Coordinator") || User.IsInRole("Assistant Coordinator") || User.IsInRole("Grade Manager") || User.IsInRole("Subject Teacher"))
+                                {
+                                    <div class="col-2 text-center">
+                                        <div class="form-group">
+                                            <label>Classes</label>
+                                            <select asp-for="SubjectId" class="form-select" onchange="GetBooks(this.id)" aria-label="Default select example">
+                                                <option value="@null" selected>Select Subject Please</option>
+                                                @if (Model.SubjectId != null)
+                                                {
+                                                    @foreach (var sSection in ViewBag.Subjects)
+                                                    {
+                                                        <option value="@sSection.SubjectId">@sSection.SubjectName</option>
+                                                    }
+                                                }
+                                                else if (User.IsInRole("Assistant Coordinator") || (User.IsInRole("Grade Manager")) || (User.IsInRole("Subject Teacher")))
+                                                {
+                                                    @foreach (var sSection in ViewBag.Subjects)
+                                                    {
+                                                        <option value="@sSection.SubjectId">@sSection.SubjectName</option>
+                                                    }
+                                                }
+                                            </select>
+                                            <span asp-validation-for="SubjectId" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                }
+                                <div class="col-2 text-center">
+                                    <div class="form-group">
+                                        <label>Books</label>
+                                        <select asp-for="BookId" class="form-select" aria-label="Default select example">
+                                            @if (Model.BookId != null)
                                             {
-                                                <option value="@sub.SubjectId">@sub.SubjectName</option>
+                                                @foreach (var sSection in ViewBag.Books)
+                                                {
+                                                    <option value="@sSection.BookId">@sSection.BookName</option>
+                                                }
                                             }
-                                </select>
+                                        </select>
+                                        <span asp-validation-for="BookId" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-2 text-center">
+                                    <button class="btn btn-primary mt-4" type="submit">Find Plan</button>
+                                </div>
                             </div>
-                        </div>
-                    <div class="col-2">
-                          <div class="form-group">
-                          <label asp-for="BookId">Books</label>
-                          <select asp-for="BookId" class="form-select" aria-label="Default select example">
-                          <option selected >Select Book Please</option>
-                                        @foreach (var book in ViewBag.Books)
-                                        {
-                                        <option value="@book.BookId">@book.BookName</option>
-                                        }
-                        </select>
-                        </div>
-                      </div>*@
-                      <div class="col-2">
-                          <button class="btn btn-primary mt-4" type="submit">Find Plan</button>
-                      </div>
-                    </div>
-                </form>
-                    @if(Model.years.Any()){
-                    <div class="table-responsive">
-                    <table class="table table-hover">
-                        <thead>
-                            <tr class="bg-info rounded" style="color:white;">
-                                <td>Class</td>
-                                <td>Year</td>
-                                <td>Term</td>
-                                <td>Total Days</td>
-                                <td>Sat &amp; Sun</td>
-                                <td>Holidays</td>
-                                <td>Assessment Days</td>
-                                <td>School Days</td>
-                                <td>Assesment Wise School Days</td>
-                            </tr>
-                        </thead>
-                        <tbody>
-                                @foreach (var year in Model.years)
-                                {
-                                    @if (year.terms.Any())
-                                    {
-                                        foreach (var term in year.terms)
-                                        {
+                        </form>
+                        @if (Model.Plan.Any())
+                        {
+                            <div class="row">
+                                <div class="col-12" style="overflow-x: scroll;">
+                                    <table class="table table-bordered table-hover table-responsive">
+                                        <thead class="text-light bg-primary"> 
                                             <tr>
-                                                <td style="width:20px; margin:0px; padding:0px;"><button onclick="CollapseButton(this.id)" id="Button-Chapter-@term.TermId" style="font-size:22px; padding:0px 10px;"class="btn btn-primary" type="button" data-toggle="collapse" data-target=".Units-@term.TermId" aria-expanded="false" aria-controls=".Units-@term.TermId">+</button></td>
-                                                <td>@term.YearName</td>
-                                                <td>@term.TermName</td>
-                                                <td>@term.TotalDays</td>
-                                                <td>@term.TotalSatSundays</td>
-                                                <td>@term.Holidays</td>
-                                                <td>@term.AssesmentDays</td>
-                                                <td>@term.TotalSchoolDays</td>
-                                                <td>@term.AssessmentWiseSchoolDays</td>
+                                                <th colspan="10">
+                                                    <h1 class="text-uppercase fw-bold">Seerat Academic Planner</h1>
+                                                </th>
                                             </tr>
-                                            @*@if(term.units.Any()){*@
-                                                @*@if(term.Books.Count > 1){
-                                                    <tr>
-                                                        @*<td></td>
-                                                        <td>Book Name</td>
-                                                    </tr>
-                                                    foreach (var book in term.Books)
-                                                    {
-                                                       <tr>
-                                                        <td style="width:20px; margin:0px; padding:0px;"><button onclick="CollapseButton(this.id)" id="Button-Chapter-@term.TermId" style="font-size:22px; padding:0px 10px;"class="btn btn-primary" type="button" data-toggle="collapse" data-target=".Units-@term.TermId" aria-expanded="false" aria-controls=".Units-@term.TermId">+</button></td>
-                                                        <td>@book.BookName</td>
-                                                       </tr>         
-                                                    }
-                                                }*@
-                                                @*else{*@
-                                                        @*@if(ViewBag.BookSelected == false)
-                                                        {
-                                                            <tr>
-                                                                <td>
-                                                                    <h4>Please Select a Book!</h4>
-                                                                </td>
-                                                            </tr>
-                                                        }
-                                                        else
-                                                        {*@
-                                                            @if (term.units.Any())
-                                                    {
-                                                        <tr class="collapse Units-@term.TermId">
-                                                                @*<th></th>*@
-                                                            <th></th>
-                                                            <th>Unit Name</th>
-                                                            <th>Start Date</th>
-                                                            <th>End Date</th>
-                                                            <th>Workbook</th>
-                                                            <th>WB Start Page</th>
-                                                            <th>WB End Page</th>
-                                                        </tr>
-                                                        @*foreach (var book in term.Books)
-                                                        {*@
-                                                            foreach (var unit in term.units)
-                                                            {
-                                                                <tr class="collapse Units-@unit.TermId" style="color:white;">
-                                                                    @*<td></td>*@
-                                                                    <td style="width:20px; margin:0px; padding:0px;"><button onclick="CollapseButton(this.id)" id="Button-Chapter-@unit.UnitId" style="font-size:22px; padding:0px 10px;"class="btn btn-primary" type="button" data-toggle="collapse" data-target=".Chapter-@unit.UnitId-@term.TermId" aria-expanded="false" aria-controls=".Chapter-@unit.UnitId-@term.TermId">+</button></td>
-                                                                    <td style="width:60px;" class="bg-primary rounded-left">@unit.UnitName</td>
-                                                                    <td style="width:60px;" class="bg-primary">@Convert.ToDateTime(unit.StartDate).ToString("dd-MM-yyyy")</td>
-                                                                    <td class="bg-primary">@Convert.ToDateTime(unit.EndDate).ToString("dd-MM-yyyy")</td>
-                                                                    <td class="bg-primary">@unit.BookName</td>
-                                                                    <td class="bg-primary">@unit.WorkBookStartPage</td>
-                                                                    <td class="bg-primary rounded-right">@unit.WorkBookEndPage</td>
-                                                                </tr>
-                                                                if (unit.chapters.Any())
-                                                                {
-                                                                    <tr class="collapse Chapter-@unit.UnitId-@term.TermId">
-                                                                        @*<th></th>
-                                                                        <th></th>*@
-                                                                        <th></th>
-                                                                        <th>Chapter Name</th>
-                                                                        <th>Book Name</th>
-                                                                        <th>Start Date</th>
-                                                                        <th>End Date</th>
-                                                                        <th>WB Start Page</th>
-                                                                        <th>WB End Page</th>
-                                                                    </tr>
-                                                                    foreach (var chapter in unit.chapters)
-                                                                    {
-                                                                        <tr class="collapse Chapter-@chapter.UnitId-@term.TermId" style="color:white;">
-                                                                            @*<td></td>
-                                                                            <td></td>*@
-                                                                            <td style="width:20px; margin:0px; padding:0px;"><button onclick="CollapseButton(this.id)" id="Button-Chapter-@chapter.ChapterId-@term.TermId" style="font-size:22px; padding:0px 10px;"class="btn btn-primary" type="button" data-toggle="collapse" data-target=".Topics-@chapter.ChapterId-@term.TermId" aria-expanded="false" aria-controls=".Topics-@chapter.ChapterId-@term.TermId">+</button></td>
-                                                                            <td style="width:60px;" class="bg-primary rounded-left">@chapter.ChapterName</td>
-                                                                            <td class="bg-primary">@chapter.UnitName</td>
-                                                                            <td style="width:60px;" class="bg-primary">@Convert.ToDateTime(chapter.StartDate).ToString("dd-MM-yyyy")</td>
-                                                                            <td class="bg-primary">@Convert.ToDateTime(chapter.EndDate).ToString("dd-MM-yyyy")</td>
-                                                                            <td class="bg-primary">@chapter.WorkBookStartPage</td>
-                                                                            <td class="bg-primary rounded-right">@chapter.WorkBookEndPage</td>
-                                                                        </tr>
-                                                                        if (chapter.topics.Any())
-                                                                        {
-                                                                            <tr class="collapse topics rounded Topics-@chapter.ChapterId-@term.TermId">
-                                                                                @*<th></th>*@
-                                                                                <th></th>
-                                                                                <th class="rounded-left">Topic Name</th>
-                                                                                <th>Chapter Name</th>
-                                                                                <th>Teaching Method</th>
-                                                                                <th>Teaching Method Desc</th>
-                                                                                <th>Start Date</th>
-                                                                                <th class="">End Date</th>
-                                                                                <th class="">WB Start Page</th>
-                                                                                <th class="rounded-right">WB End Page</th>
-                                                                            </tr>
-                                                                            foreach (var topic in chapter.topics)
-                                                                            {
-                                                                                <tr class="collapse topics Topics-@topic.ChapterId-@term.TermId" style="color:white;">
-                                                                                    @*<td></td>*@
-                                                                                    <td style="width:20px; margin:0px; padding:0px;" ><button onclick="CollapseButton(this.id)" id="Button-Topic-@topic.TopicId" style="font-size:22px; padding:0px 10px;"class="btn btn-primary" type="button" data-toggle="collapse" data-target=".SubTopics-@topic.TopicId-@term.TermId" aria-expanded="false" aria-controls=".SubTopics-@topic.TopicId-@term.TermId">+</button></td>
-                                                                                    <td class="bg-secondary rounded-left" style="width:60px;">@topic.TopicName</td>
-                                                                                    <td class="bg-secondary">@topic.ChapterName</td>
-                                                                                    <td class="bg-secondary">@topic.TeachingMethodology</td>
-                                                                                    <td class="bg-secondary">@topic.TeachingMethodologyDesc</td>
-                                                                                    <td class="bg-secondary" style="width:60px;">@Convert.ToDateTime(topic.StartDate).ToString("dd-MM-yyyy")</td>
-                                                                                    <td class="bg-secondary">@Convert.ToDateTime(topic.EndDate).ToString("dd-MM-yyyy")</td>
-                                                                                    <td class="bg-secondary">@topic.WorkBookStartPage</td>
-                                                                                    <td class="bg-secondary rounded-right">@topic.WorkBookEndPage</td> 
-                                                                                </tr>
-                                                                                if (topic.subTopics.Any())
-                                                                                {
-                                                                                    <tr class="collapse subTopics SubTopics-@topic.TopicId-@term.TermId" style="color:white;">
-                                                                                       @* <th></th>
-                                                                                        <th></th>
-                                                                                        <th></th>
-                                                                                        <th></th>*@
-                                                                                        <th></th>
-                                                                                        <th class="bg-success rounded-left">Sub-Topic Name</th>
-                                                                                        <th class="bg-success">Topic Name</th>
-                                                                                        <th class="bg-success">Start Date</th>
-                                                                                        <th class="bg-success">End Date</th>
-                                                                                        <th class="bg-success">WB Start Page</th>
-                                                                                        <th class="bg-success rounded-right">WB End Page</th>
-                                                                                    </tr>
-                                                                                    foreach (var subTopic in topic.subTopics)
-                                                                                    {
-                                                                                        <tr class="collapse subTopics SubTopics-@subTopic.TopicId-@term.TermId">
-                                                                                            @*<td></td>
-                                                                                            <td></td>
-                                                                                            <td></td>
-                                                                                            <td></td>*@
-                                                                                            <td></td>
-                                                                                            <td style="width:60px;" class="rounded-left">@subTopic.SubTopicName</td>
-                                                                                            <td>@subTopic.TopicName</td>
-                                                                                            <td style="width:60px;">@Convert.ToDateTime(subTopic.StartDate).ToString("dd-MM-yyyy")</td>
-                                                                                            <td>@Convert.ToDateTime(subTopic.EndDate).ToString("dd-MM-yyyy")</td>
-                                                                                            <td>@subTopic.WorkBookStartPage</td>
-                                                                                            <td class="rounded-right">@subTopic.WorkBookEndPage</td>
-                                                                                        </tr>
-                                                                                    }
-                                                                                }
-                                                                                else
-                                                                                {
-                                                                                    <tr class="collapse subTopics SubTopics-@topic.TopicId-@term.TermId">
-                                                                                        @*<td></td>
-                                                                                        <td></td>
-                                                                                        <td></td>
-                                                                                        <td></td>*@
-                                                                                        <td>
-                                                                                            <h6>Not Sub-Topics Allocated!</h6>
-                                                                                        </td>
-                                                                                    </tr>
-                                                                                }
-                                                                            }
-                                                                        }
-                                                                        else
-                                                                        {
-                                                                            <tr class="collapse topics Topics-@chapter.ChapterId-@term.TermId">
-                                                                               @* <td></td>
-                                                                                <td></td>
-                                                                                <td></td>*@
-                                                                                <td>
-                                                                                    <h6>No Topics Allocated!</h6>
-                                                                                </td>
-                                                                            </tr>
-                                                                        }
-                                                                    }
-                                                                }
-                                                                else
-                                                                {
-                                                                    <tr class="collapse Chapter-@unit.TermId-@term.TermId">
-                                                                        @*<td></td>
-                                                                        <td></td>*@
-                                                                        <td>
-                                                                            <h6>No Chapters Allocated!</h6>
-                                                                        </td>
-                                                                    </tr>
-                                                                }
-                                                            }
-                                                        @*}*@
-                                                    }
-                                                                else
-                                                                {
-                                                                    <tr class="collapse Units-@term.TermId">
-                                                                        <td>
-                                                                            <h6>No Units Allocated!</h6>
-                                                                        </td>
-                                                                    </tr>
-                                                                }
-                                                        @*}*@
-                                                        @*}*@
-                                            @*}*@
-                                           @* else{
+                                            <tr>
+                                                <th colspan="2">
+                                                    <div class="row flex-column justify-content-around h-100">
+                                                        <div>
+                                                            <h4>Grade Name</h4>
+                                                        </div>
+                                                        <div>
+                                                            <label class="badge badge-success fs-6">@Model.GradeName</label>
+                                                        </div> 
+                                                    </div>
+                                                </th>
+                                                <th colspan="2">
+                                                    <div class="row flex-column justify-content-around h-100">
+                                                        <div>
+                                                            <h4>Subject Name</h4>
+                                                        </div>
+                                                        <div>
+                                                            <label class="badge badge-success fs-6">@Model.SubjectName</label>
+                                                        </div>
+                                                    </div>
+                                                </th>
+                                                <th colspan="3">
+                                                    <div class="row flex-column justify-content-around h-100">
+                                                        <div>
+                                                            <h4>Textbook</h4>
+                                                        </div>
+                                                        <div>
+                                                            <label class="badge badge-success fs-6">@Model.Textbook</label>
+                                                        </div>
+                                                    </div>
+                                                </th>
+                                                @if (Model.Workbook == null)
+                                                {
+                                                    <th colspan="3">
+                                                        <div class="row flex-column justify-content-around h-100">
+                                                            <div>
+                                                                <h4>Workbook</h4>
+                                                            </div>
+                                                            <div>
+                                                                <label class="badge badge-success fs-6">No Workbook Planned!</label>
+                                                            </div>
+                                                        </div>
+                                                    </th>
+                                                }
+                                                else
+                                                {
+                                                    <th colspan="3">
+                                                        <div class="row flex-column justify-content-around h-100">
+                                                            <div>
+                                                                <h4>Workbook</h4>
+                                                            </div>
+                                                            <div>
+                                                                <label class="badge badge-success fs-6">@Model.Workbook</label>
+                                                            </div>
+                                                        </div>
+                                                    </th>
+                                                }
+                                            </tr>
+                                            <tr>
+                                                <th colspan="3">
+                                                    <div class="row flex-column justify-content-around h-100">
+                                                        <div>
+                                                            <h4>Teacher Name</h4>
+                                                        </div>
+                                                        <div>
+                                                            <label class="badge badge-success fs-6">@Model.TeacherName</label>
+                                                        </div>
+                                                    </div>
+                                                </th>
+                                                <th colspan="2">
+                                                    <div class="row flex-column justify-content-around h-100">
+                                                        <div>
+                                                            <h4>Class Name</h4>
+                                                        </div>
+                                                        <div>
+                                                            <label class="badge badge-success fs-6">@Model.ClassName</label>
+                                                        </div>
+                                                    </div>
+                                                </th>
+                                                <th colspan="2">
+                                                    <div class="row flex-column justify-content-around">
+                                                        <div>
+                                                            <h4>Duration</h4>
+                                                        </div>
+                                                        <div>
+                                                            <label class="badge badge-success fs-6">Duration Days</label>
+                                                        </div>
+                                                    </div>
+                                                </th>
+                                                <th colspan="3">
+                                                    <div class="row flex-column justify-content-around">
+                                                        <div>
+                                                            <h4>Term Name</h4>
+                                                        </div>
+                                                        <div>
+                                                            <label class="badge badge-success fs-6">Term Name</label>
+                                                        </div>
+                                                    </div>
+                                                </th>
+                                            </tr>
+                                            <tr class="bg-primary">
+                                                <th>Start Date</th>
+                                                <th>End Date</th>
+                                                <th>Unit</th>
+                                                <th>Chapter</th>
+                                                <th>Topic</th>
+                                                <th>Sub-Topic</th>
+                                                <th>Teaching Methodology</th>
+                                                <th>SLO</th>
+                                                <th>WB Start Page</th>
+                                                <th>WB End Page</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var plan in Model.Plan)
+                                            {
                                                 <tr>
-                                                    <td><h4>No Units Planned!</h4></td>
+                                                    <td>@plan.StartDate</td>
+                                                    <td>@plan.EndDate</td>
+                                                    <td>@plan.UnitName</td>
+                                                    <td>@plan.ChapterName</td>
+                                                    <td>@plan.TopicName</td>
+                                                    <td>@plan.SubTopicName</td>
+                                                    <td>@plan.TeachingMethodologyName</td>
+                                                    <td>@plan.SLO</td>
+                                                    <td>@plan.WbStartPage</td>
+                                                    <td>@plan.WbEndPage</td>
                                                 </tr>
-                                            }*@
-                                        }
-                                    }
-                                }
-                        </tbody>
-                    </table>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="justify-content-around row text-danger">
+                                <div class="col-3 text-center">
+                                    <h3>Please Select the Book!</h3>
+                                </div>
+                            </div>
+                        }
+                    </div>
                 </div>
-                    }
-                    else{
-                        <div>
-                            <h5>No Academic Year Found!</h5>
-                        </div>
-                    }
-                </div>
-              </div>
             </div>
         </div>
     </div>
 </div>
-@*@section scripts{
-        <script>
-                function CollapseButton(id){
-                    var button = document.getElementById(id);
-                    //var IdDetermination =id.split("-");
-                    //console.log(IdDetermination[1]);
-                    //if(IdDetermination[1] == "Chapter" && button.innerHTML == "--"){
-                    //    console.log("Reached!");
-                    //    var topics = document.getElementsByClassName("subTopics");
-                    //    console.log(typeof(topics));
-                    //    for(var prop in topics){
-                    //        topics[prop].classList.remove("show");
-                    //        console.log(topics[prop]);
-                    //    }
-                    //}
-                    //else if(IdDetermination == "Month" && button.innerHTML == "--"){
-                    //    var chapters = document.getElementsByClassName("Chapters");
-                    //    var topic = document.getElementsByClassName("Topics");
-                    //    var subTopic = document.getElementsByClassName("subTOpics");
-                    //    for(var prop in subTopics){
-                    //        subTopic[prop].classList.remove("show");
-                    //    }
-                    }
-                    if(button.innerHTML == "+"){
-                        button.innerHTML = "--";
-                    }
-                    else{
-                        button.innerHTML = "+";
-                    }
-                }
-
-        </script>
-}*@
 @section scripts{
-        <script src="~/js/custom.js"></script>
+    <script src="~/js/custom.js"></script>
 }

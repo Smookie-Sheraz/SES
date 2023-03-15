@@ -30,7 +30,7 @@
                                             <th>School</th>
                                             <th>Campus</th>
                                             <th>School Section</th>
-                                            @*<th>Details</th>*@
+                                            <th>Role</th>
                                             <th>Mobile</th>
                                             <th>Date of Birth</th>
                                             <th>CNIC No</th>
@@ -87,6 +87,7 @@
                                                 <td>@employee.CampusName</td>
                                                 @*<td><a class="fa fa-edit mr-3" asp-route-Id="@employee.EmployeeId" asp-controller="HumanResource" asp-action="EmployeeDetails" role="button"></a></td>*@
                                              <td>@employee.MaritalStatus</td>
+                                                <td>@employee.Role</td>
                                                 <td>@employee.Mobile</td>
                                                 @if(employee.DOB == null){
                                                 <td></td>

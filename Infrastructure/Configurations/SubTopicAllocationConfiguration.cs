@@ -59,6 +59,11 @@ namespace Infrastructure.Configurations
                 .HasForeignKey(FK => FK.SubTopicId)
                 .HasConstraintName("FK_SubTopicAllocation_SubTopicId")
                 .OnDelete(DeleteBehavior.SetNull);
+            builder.HasOne(p => p.Section)
+                .WithMany(p => p.SubTopicAllocations)
+                .HasForeignKey(FK => FK.SectionId)
+                .HasConstraintName("FK_SubTopicAllocation_SectionId")
+                .OnDelete(DeleteBehavior.SetNull);
         }
     }
 }

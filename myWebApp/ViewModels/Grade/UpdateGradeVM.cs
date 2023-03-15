@@ -10,6 +10,9 @@ namespace Entities.ViewModels
         [Display(Name = "School Section")]
         [Required(ErrorMessage = "{0} is required")]
         public int SchoolSectionId { get; set; }
+        [Display(Name = "Grade Manager")]
+        [Required(ErrorMessage = "{0} is required")]
+        public int GradeManagerId { get; set; }
         [Display(Name = "Status")]
         public bool IsActive { get; set; }
 

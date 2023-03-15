@@ -54,21 +54,21 @@
                                                         <td>
                                                             <button type="button" class="md-trigger btn btn-sm btn-primary" data-modal="modal-@role.RoleId">View Permissions</button>
                                                             <div class="row">
-                                                            <div class="md-modal md-effect-16 col-12 col-md-8 col-lg-6" id="modal-@role.RoleId">
-                                                                <div class="md-content">
-                                                                    <h3>Given Permissions</h3>
-                                                                    <div>
-                                                                        <p class="h4">@role.RoleName has the permission(s) mentioned below.</p>
-                                                                        <div class="row" style="height:300px; overflow:auto;">
-                                                                            @foreach (var perm in role.Permissions)
-                                                                            {
-                                                                                <label class="fs-6 badge badge-success col-6 col-md-4 col-lg-3 mt-2">@perm</label>
-                                                                            }
+                                                                <div class="md-modal md-effect-16 col-12 col-md-8 col-lg-6" id="modal-@role.RoleId">
+                                                                    <div class="md-content">
+                                                                        <h3>Given Permissions</h3>
+                                                                        <div>
+                                                                            <p class="h4">@role.RoleName has the permission(s) mentioned below.</p>
+                                                                            <div class="row" style="height:300px; overflow:auto;">
+                                                                                @foreach (var perm in role.Permissions)
+                                                                                {
+                                                                                    <label class="fs-6 badge badge-success col-6 col-md-4 col-lg-3 mt-2">@perm</label>
+                                                                                }
+                                                                            </div>
+                                                                            <button type="button" class=" btn-sm btn md-close btn-warning fw-bold mt-4" onclick="pWindowCancelButton(@role.RoleId)">Close me!</button>
                                                                         </div>
-                                                                        <button type="button" class=" btn-sm btn md-close btn-warning fw-bold mt-4" onclick="pWindowCancelButton(@role.RoleId)">Close me!</button>
                                                                     </div>
                                                                 </div>
-                                                            </div>
 
                                                             </div>
                                                             <div class="md-overlay"></div>
