@@ -18,6 +18,8 @@ namespace Entities.Models
         public int? CampusId { get; set; }
         public School? School { get; set; }
         public int? SchoolId { get; set; }
+        public Employee? AssistantCoordinator { get; set; }
+        public int? AssistantCoordinatorId { get; set; }
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
         public bool? IsActive { get; set; }

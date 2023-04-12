@@ -1,0 +1,86 @@
+﻿@*@using System.Security.Claims;*@
+@*@model IEnumerable<Entities.Models.Grade>*@
+@{
+}
+<div class="main-panel">
+    <div class="content-wrapper">
+        <div class="row">
+            <div class="col-12 grid-margin stretch-card">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Gardes</h4>
+                        @*<p class="card-description">
+                        The Gardes can be added here!
+                        </p>*@
+                        <div class="table-responsive">
+                            @*@if (ViewBag.Grade == null)
+                            {*@
+                            <table class="table table-hover table-bordered">
+                                <thead class="bg-primary text-white">
+                                    <tr>
+                                        @if (User.HasClaim("Permission", "Diary.Update") || User.HasClaim("Permission", "Diary.Delete"))
+                                        {
+                                            <th>Actions</th>
+                                        }
+                                        <th>Status</th>
+                                        <th>Class Name</th>
+                                        <th>Subject Name</th>
+                                        <th>Class Work</th>
+                                        <th>Home Work</th>
+                                        <th>Test</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var Garde in ViewBag.Diary)
+                                    {
+                                        <tr>
+                                            @if (User.HasClaim("Permission", "Diary.Update") || User.HasClaim("Permission", "Diary.Delete"))
+                                            {
+                                                <td class="actions">
+                                                    @if (User.HasClaim("Permission", "Diary.Update") && Garde.ShowDeleteUpdate)
+                                                    {
+                                                        <a class="fa fa-edit mr-3" asp-route-DiaryId="@Garde.DiaryId" asp-controller="AcademicActivities" asp-action="UpdateDiary" role="button"></a>
+                                                    }
+                                                    @if (User.HasClaim("Permission", "Diary.Delete") && Garde.ShowDeleteUpdate)
+                                                    {
+                                                        <a class="fa fa-trash text-danger" onclick="return confirm('Are you sure you want to delete?');" asp-route-DiaryId="@Garde.DiaryId" asp-controller="AcademicActivities" asp-action="DeleteDiary" role="button"></a>
+                                                    }
+                                                </td>
+                                                }
+                                                <td>
+                                                    @if ((bool)Garde.IsActive)
+                                                    {
+                                                        <label class="badge badge-success">Active</label>
+                                                    }
+                                                    else
+                                                    {
+                                                        <label class="badge badge-danger">InActive</label>
+                                                    }
+                                                </td>
+                                                <td>@Garde.ClassName</td>
+                                                <td>@Garde.Subject</td>
+                                                <td>@Garde.ClassWork</td>
+                                                <td>@Garde.HomeWork</td>
+                                                <td>@Garde.Test</td>
+                                            </tr>
+                                            }
+                                    </tbody>
+                                </table>
+                                        @*}
+                            else
+                            {
+                            <h3>No Data Found!</h3>
+                            }*@
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @if (User.HasClaim("Permission", "Diary.Create"))
+            {
+                <div class="col-2 offset-10">
+                    <a class="btn btn-primary" asp-controller="AcademicActivities" asp-action="AddDiary" role="button">Add</a>
+                </div>
+                                        }
+            </div>
+        </div>
+    </div>

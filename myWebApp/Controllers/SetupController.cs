@@ -232,6 +232,10 @@ namespace myWebApp.Controllers
         [HttpGet]
         public async Task<IActionResult> SchoolSection()
         {
+            ViewBag.ACs = await (from a in _db.Employees
+                          from b in _db.Roles
+                          where b.RoleId == a.RoleId && b.RollName == "Assistant Coordinator"
+                          select a).FirstOrDefaultAsync();
             SchoolSectionVM sSection = new SchoolSectionVM();
             var sSections = from s in _db.SchoolSections
                            from c in _db.Campuses
@@ -246,7 +250,8 @@ namespace myWebApp.Controllers
                                address = s.address,
                                Abbrevation = s.Abbrevation,
                                SectionHead = s.SectionHead,
-                               SchoolId = s.SchoolId
+                               SchoolId = s.SchoolId,
+                               ACId = (int)s.AssistantCoordinatorId
                            };
             sSection.SchoolSections = await sSections.ToListAsync();
             ViewBag.Campuses = await _db.Campuses.ToListAsync();
@@ -266,7 +271,8 @@ namespace myWebApp.Controllers
                 PhoneNo = sSection.PhoneNo,
                 CampusId = sSection.CampusId,
                 SectionName = sSection.SectionName,
-                SchoolId = sSection.SchoolId
+                SchoolId = sSection.SchoolId,
+                AssistantCoordinatorId = sSection.ACId
             };
             await _repository.AddAsync(newSchoolSection);
             if (await _repository.SaveChanges())
@@ -284,6 +290,10 @@ namespace myWebApp.Controllers
         public async Task<IActionResult> UpdateSchoolSection(int id)
         {
             var temp = await _db.SchoolSections.Where(x => x.SchoolSectionId == id).FirstOrDefaultAsync();
+            ViewBag.ACs = await (from a in _db.Employees
+                                 from b in _db.Roles
+                                 where b.RoleId == a.RoleId && b.RollName == "Assistant Coordinator"
+                                 select a).FirstOrDefaultAsync();
             var Ssection = new SchoolSectionVM
             {
                 CampusId = temp.CampusId,
@@ -295,7 +305,8 @@ namespace myWebApp.Controllers
                 Email = temp.Email,
                 PhoneNo = temp.PhoneNo,
                 SchoolId = temp.SchoolId,
-                IsActive = (bool)temp.IsActive
+                IsActive = (bool)temp.IsActive,
+                ACId = (int)temp.AssistantCoordinatorId
             };
             ViewBag.Campuses = await _db.Campuses.ToListAsync();
             ViewBag.Schools = await _db.Schools.ToListAsync();
@@ -315,6 +326,7 @@ namespace myWebApp.Controllers
             temp.CampusId = sSection.CampusId;
             temp.SchoolId = sSection.SchoolId;
             temp.IsActive = sSection.IsActive;
+            temp.AssistantCoordinatorId = sSection.ACId;
             await _repository.UpdateAsync(temp);
             if (await _repository.SaveChanges())
             {
@@ -332,7 +344,8 @@ namespace myWebApp.Controllers
             {
                 return NotFound();
             }
-            await _repository.Delete(temp);
+            temp.IsActive = false;
+            await _repository.UpdateAsync(temp);
             if (await _repository.SaveChanges())
             {
                 return RedirectToAction("SchoolSection");

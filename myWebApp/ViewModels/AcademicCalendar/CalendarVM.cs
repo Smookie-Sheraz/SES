@@ -25,5 +25,8 @@ namespace myWebApp.ViewModels.AcademicCalendar
 
         public List<YearList> years = new List<YearList>();
         public List<PLanList> Plan = new List<PLanList>();
+        // Below attributes are used when the subject teacher is logged in it needs these including the YearId above
+        public int? TermId { get; set; }
+        public int? SectionId { get; set; }
     }
 }

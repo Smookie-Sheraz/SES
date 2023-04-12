@@ -1,0 +1,91 @@
+﻿@model myWebApp.ViewModels.School.LetterVM
+@{
+}
+<div class="main-panel">
+    <div class="content-wrapper">
+        <div class="row">
+            <div class="col-12 grid-margin stretch-card">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Send Letter to @ViewBag.StudentName</h4>
+                        @*<p class="card-description">
+                        Please Add New Employee and Press the Add Button.
+                        </p>*@
+                        <form class="forms-sample" method="post"
+                              asp-controller="School" asp-action="AddLetter">
+                            <div class="row">
+                                <div class="col-12 col-md-6">
+                                    <input type="hidden" asp-for="StudentId" />
+                                    <div class="form-group">
+                                        <label asp-for="SenderName">Sender Name</label>
+                                        <input type="text" class="form-control" asp-for="SenderName" placeholder="Enter Sender Name">
+                                        <span asp-validation-for="SenderName" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label asp-for="SenderDesignation">Sender Designation</label>
+                                        <input type="text" class="form-control" asp-for="SenderDesignation" placeholder="Enter Sender Designation">
+                                        <span asp-validation-for="SenderDesignation" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label asp-for="SenderContact">Sender Contact</label>
+                                        <input type="text" class="form-control" asp-for="SenderContact" placeholder="Enter Sender Contact">
+                                        <span asp-validation-for="SenderContact" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label asp-for="ReceiverName">Receiver Name</label>
+                                        <input type="text" class="form-control" asp-for="ReceiverName" placeholder="Enter Receiver Name">
+                                        <span asp-validation-for="ReceiverName" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label asp-for="ReceiverDesignation">Receiver Designation</label>
+                                        <input type="text" class="form-control" asp-for="ReceiverDesignation" placeholder="Enter Receiver Designation">
+                                        <span asp-validation-for="ReceiverDesignation" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <div class="form-group">
+                                        <label asp-for="ReceiverContact">Receiver Contact</label>
+                                        <input type="text" class="form-control" asp-for="ReceiverContact" placeholder="Enter Receiver Contact">
+                                        <span asp-validation-for="ReceiverContact" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label asp-for="Salutation">Salutation</label>
+                                        <input type="text" class="form-control" asp-for="Salutation" placeholder="Dear Parent/Student">
+                                        <span asp-validation-for="Salutation" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label asp-for="Date">Date</label>
+                                        <input type="date" class="form-control" asp-for="Date" placeholder="Enter Date">
+                                        <span asp-validation-for="Date" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label asp-for="Body">Body of Letter</label>
+                                        <textarea class="form-control" asp-for="Body" rows="10"></textarea>
+                                        <span asp-validation-for="Body" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label asp-for="Closing">Closing</label>
+                                        <input type="text" class="form-control" asp-for="Closing" placeholder="Your Sincerely">
+                                        <span asp-validation-for="Closing" class="text-danger"></span>
+                                    </div>
+                                    <div class="float-right mt-2">
+                                        <a class="btn btn-light" asp-controller="Student" asp-action="Student">Cancel</a>
+                                        <button type="submit" class="btn btn-primary mr-2">Send</button>
+                                    </div>
+                                </div>
+                                @*<div class="col-12 col-md-6">
+                                    
+                                </div>*@
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script src="~/lib/jquery-validate/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+}

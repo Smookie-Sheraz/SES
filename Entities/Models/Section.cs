@@ -30,7 +30,11 @@ namespace Entities.Models
         public ICollection<ChapterAllocation> ChapterAllocations { get; set; } = null!;
         public ICollection<TopicAllocation> TopicAllocations { get; set; } = null!;
         public ICollection<SubTopicAllocation> SubTopicAllocations { get; set; } = null!;
+        public ICollection<Student> Students { get; set; } = null!;
         public ICollection<STPlanApproval> STPlans { get; set; } = null!;
+        public ICollection<StudentAttendance> StudentAttendances { get; set; } = null!;
+        public ICollection<Test> Tests { get; set; } = null!;
+        public ICollection<Diary> Diaries { get; set; } = null!;
         //public Book Book { get; set; }
         //public int? BookId { get; set; }
         public Grade? Grade { get; set; }

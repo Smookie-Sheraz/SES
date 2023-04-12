@@ -50,6 +50,11 @@ namespace Infrastructure.Configurations
                 .HasForeignKey(x => x.SchoolId)
                 .HasConstraintName("FK_SchoolSection_SchoolId")
                 .OnDelete(DeleteBehavior.SetNull);
+            builder.HasOne(x => x.AssistantCoordinator)
+                .WithMany(x => x.SchoolSections)
+                .HasForeignKey(x => x.AssistantCoordinatorId)
+                .HasConstraintName("FK_SchoolSection_AssistantCoordinatorId")
+                .OnDelete(DeleteBehavior.SetNull);
         }
     }
 }

@@ -48,16 +48,21 @@ namespace myWebApp.Controllers
         public async Task<IActionResult> Index(LoginVM login)
         {
             var user = await _db.Users.Where(x => x.Email == login.Email).FirstOrDefaultAsync();
+            var Employee = await _db.Employees.Where(x => x.Email == login.Email).FirstOrDefaultAsync();
+            var Parent = await _db.Parents.Where(x => x.Email == login.Email).FirstOrDefaultAsync();
+            var Student = await _db.Students.Where(x => x.Email == login.Email).FirstOrDefaultAsync();
 
             ViewBag.LoginStatus = true;
             if (ModelState.IsValid)
             {
                 if (login.Password == user.Password)
                 {
-                    var emp = await _db.Employees.Where(x => x.Email == login.Email).FirstOrDefaultAsync();
-                    var role = await _db.Roles.Where(x => x.RoleId == emp.RoleId).FirstOrDefaultAsync();
-                    var userPermissions = await _db.UserPermissions.Where(x => x.RoleId == emp.RoleId).ToListAsync();
-                    List<Claim> claims = new List<Claim>()
+                    if(Employee != null)
+                    {
+                        var emp = await _db.Employees.Where(x => x.Email == login.Email).FirstOrDefaultAsync();
+                        var role = await _db.Roles.Where(x => x.RoleId == emp.RoleId).FirstOrDefaultAsync();
+                        var userPermissions = await _db.UserPermissions.Where(x => x.RoleId == emp.RoleId).ToListAsync();
+                        List<Claim> claims = new List<Claim>()
                     {
                         new Claim(ClaimTypes.NameIdentifier, login.Email),
                         new Claim(ClaimTypes.Sid, Convert.ToString(emp?.EmployeeId)),
@@ -65,21 +70,79 @@ namespace myWebApp.Controllers
                         new Claim(ClaimTypes.Role, role.RollName),
                         new Claim("UserName", emp.FName + " " + emp.LName)
                     };
-                    foreach (var perm in userPermissions)
-                    {
-                        var permission = await _db.Permissions.Where(x => x.PermissionId == perm.PermissionId).FirstOrDefaultAsync();
-                        //if (permission.PermissionDbName == null) permission.PermissionDbName = "";
-                        var Claim = new Claim("Permission", permission?.PermissionDbName);
-                        claims.Add(Claim);
+                        foreach (var perm in userPermissions)
+                        {
+                            var permission = await _db.Permissions.Where(x => x.PermissionId == perm.PermissionId).FirstOrDefaultAsync();
+                            //if (permission.PermissionDbName == null) permission.PermissionDbName = "";
+                            var Claim = new Claim("Permission", permission?.PermissionDbName);
+                            claims.Add(Claim);
+                        }
+                        ClaimsIdentity claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                        AuthenticationProperties authenticationProperties = new AuthenticationProperties()
+                        {
+                            AllowRefresh = true,
+                            IsPersistent = true
+                        };
+                        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authenticationProperties);
+                        return RedirectToAction("Index", "Director");
                     }
-                    ClaimsIdentity claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-                    AuthenticationProperties authenticationProperties = new AuthenticationProperties()
+                    else if(Parent != null)
                     {
-                        AllowRefresh = true,
-                        IsPersistent = true
+                        //var pr = await _db.Employees.Where(x => x.Email == login.Email).FirstOrDefaultAsync();
+                        var role = await _db.Roles.Where(x => x.RoleId == 12).FirstOrDefaultAsync();
+                        var userPermissions = await _db.UserPermissions.Where(x => x.RoleId == 12).ToListAsync();
+                        List<Claim> claims = new List<Claim>()
+                    {
+                        new Claim(ClaimTypes.NameIdentifier, login.Email),
+                        new Claim(ClaimTypes.Sid, Convert.ToString(Parent?.ParentId)),
+                        //new Claim("DepartmentId",Convert.ToString(emp?.DepartmentId)),
+                        new Claim(ClaimTypes.Role, role.RollName),
+                        new Claim("UserName", Parent.FName + " " + Parent.LName)
                     };
-                    await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authenticationProperties);
-                    return RedirectToAction("Index", "Director");
+                        foreach (var perm in userPermissions)
+                        {
+                            var permission = await _db.Permissions.Where(x => x.PermissionId == perm.PermissionId).FirstOrDefaultAsync();
+                            //if (permission.PermissionDbName == null) permission.PermissionDbName = "";
+                            var Claim = new Claim("Permission", permission?.PermissionDbName);
+                            claims.Add(Claim);
+                        }
+                        ClaimsIdentity claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                        AuthenticationProperties authenticationProperties = new AuthenticationProperties()
+                        {
+                            AllowRefresh = true,
+                            IsPersistent = true
+                        };
+                        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authenticationProperties);
+                        return RedirectToAction("Dashboard", "Parent");
+                    }
+                    else
+                    {
+                        var userPermissions = await _db.UserPermissions.Where(x => x.RoleId == 13).ToListAsync();
+                        var role = await _db.Roles.Where(x => x.RoleId == 13).FirstOrDefaultAsync();
+                        List<Claim> claims = new List<Claim>()
+                    {
+                        new Claim(ClaimTypes.NameIdentifier, login.Email),
+                        new Claim(ClaimTypes.Sid, Convert.ToString(Student?.StudentId)),
+                        //new Claim("DepartmentId",Convert.ToString(emp?.DepartmentId)),
+                        new Claim(ClaimTypes.Role, role.RollName),
+                        new Claim("UserName", Student.FName + " " + Student.LName)
+                    };
+                        foreach (var perm in userPermissions)
+                        {
+                            var permission = await _db.Permissions.Where(x => x.PermissionId == perm.PermissionId).FirstOrDefaultAsync();
+                            //if (permission.PermissionDbName == null) permission.PermissionDbName = "";
+                            var Claim = new Claim("Permission", permission?.PermissionDbName);
+                            claims.Add(Claim);
+                        }
+                        ClaimsIdentity claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                        AuthenticationProperties authenticationProperties = new AuthenticationProperties()
+                        {
+                            AllowRefresh = true,
+                            IsPersistent = true
+                        };
+                        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authenticationProperties);
+                        return RedirectToAction("Dashboard", "Student");
+                    }
                 }
                 else
                 {

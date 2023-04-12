@@ -20,6 +20,8 @@ namespace Entities.Models
         public int? WorkBookEndPage { get; set; }
         public Chapter? Chapter { get; set; }
         public int? ChapterId { get; set; }
+        public AcademicPlannings? Plan { get; set; }
+        public int? PlanId { get; set; }
         public TeachingMethodology? TeachingMethodology { get; set; }
         public int? TeachingMethodologyId { get; set; }
         public Section? Section { get; set; }

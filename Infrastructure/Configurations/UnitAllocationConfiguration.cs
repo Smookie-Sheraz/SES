@@ -56,6 +56,11 @@ namespace Infrastructure.Configurations
                 .HasForeignKey(FK => FK.SectionId)
                 .HasConstraintName("FK_UnitAllocation_SectionId")
                 .OnDelete(DeleteBehavior.SetNull);
+            builder.HasOne(p => p.Plan)
+                .WithMany(p => p.UnitAllocations)
+                .HasForeignKey(FK => FK.PlanId)
+                .HasConstraintName("FK_UnitAllocation_PlanId")
+                .OnDelete(DeleteBehavior.SetNull);
         }
     }
 }

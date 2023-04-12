@@ -1,58 +1,58 @@
 ﻿@model Entities.ViewModels.SectionVM
 @{
 }
-       <div class="main-panel">        
-        <div class="content-wrapper">
+<div class="main-panel">
+    <div class="content-wrapper">
         <div class="row">
             <div class="col-12 grid-margin stretch-card">
-              <div class="card">
-                <div class="card-body">
-                  <h4 class="card-title">Add New Subject</h4>
-                  @*<p class="card-description">
-                    Please Add New Subject and Press the Add Button.
-                  </p>*@
-                  <form class="forms-sample" method="post"
-                  asp-controller="Grade" asp-action="AddSection">
-                  <div class="row">
-                      <div class="col-12 col-md-6">
-                          <div class="form-group">
-                      <select asp-for="GradeId" class="form-select" onchange="GetClassTeachers(this.id)" aria-label="Default select example">
-                      <option selected>Select Grade Please</option>
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Add New Subject</h4>
+                        @*<p class="card-description">
+                        Please Add New Subject and Press the Add Button.
+                        </p>*@
+                        <form class="forms-sample" method="post"
+                              asp-controller="Grade" asp-action="AddSection">
+                            <div class="row">
+                                <div class="col-12 col-md-6">
+                                    <div class="form-group">
+                                        <select asp-for="GradeId" class="form-select" onchange="GetClassTeachers(this.id)" aria-label="Default select example">
+                                            <option selected>Select Grade Please</option>
                                             @foreach (var grades in ViewBag.Grades)
                                             {
-                                                     <option value="@grades.GradeId">@grades.GradeName</option>
+                                                <option value="@grades.GradeId">@grades.GradeName</option>
                                             }
-                    </select>
-                      <span asp-validation-for="GradeId" class="text-danger"></span>
-                    </div>
-                    @*<div class="form-group">
-                      <select asp-for="ClassTeacherId" class="form-select" aria-label="Default select example">
-                      @*<option selected>Select Class Teacher Please</option>
-                                            @foreach (var teacher in ViewBag.ClassTeachers)
+                                        </select>
+                                        <span asp-validation-for="GradeId" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <select asp-for="ClassTeacherId" class="form-select" aria-label="Default select example">
+                                            <option selected>Select Grade First</option>
+                                            @*@foreach (var teacher in ViewBag.ClassTeachers)
                                             {
-                                                     <option value="@teacher.EmployeeId">@teacher.FName @teacher.LName</option>
+                                                <option value="@teacher.EmployeeId">@teacher.FName @teacher.LName</option>
                                             }*@
-                    </select>
-                    <span asp-validation-for="ClassTeacherId" class="text-danger"></span>
-                    </div>*@
-                           <div class="form-group">
-                      <label asp-for="SectionName">Section Name</label>
-                      <input type="text" class="form-control" asp-for="SectionName" placeholder="Enter Section Name">
-                      <span asp-validation-for="SectionName" class="text-danger"></span>
+                                        </select>
+                                        <span asp-validation-for="ClassTeacherId" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label asp-for="SectionName">Section Name</label>
+                                        <input type="text" class="form-control" asp-for="SectionName" placeholder="Enter Section Name">
+                                        <span asp-validation-for="SectionName" class="text-danger"></span>
+                                    </div>
+                                    <div class="float-right mt-2">
+                                        <a class="btn btn-light" asp-controller="Grade" asp-action="Section">Cancel</a>
+                                        <button type="submit" class="btn btn-primary mr-2">Add</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
                     </div>
-                    <div class="float-right mt-2">
-                    <a class="btn btn-light" asp-controller="Grade" asp-action="Section">Cancel</a>
-                        <button type="submit" class="btn btn-primary mr-2">Add</button>
-                    </div>
-                      </div>
-                  </div>
-                  </form>
                 </div>
-              </div>
             </div>
-           </div>
-          </div>
-         </div>
+        </div>
+    </div>
+</div>
 
 @section scripts{
     <script src="~/js/custom.js"></script>

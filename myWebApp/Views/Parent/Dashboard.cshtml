@@ -1,0 +1,30 @@
+﻿@model IEnumerable<Entities.Models.Student>
+<div class="main-panel">
+    <div class="content-wrapper">
+        <div class="row">
+            @if (Model.Any())
+            {
+                @foreach (var student in Model)
+                {
+                    <div class="col-md-2">
+                        <div class="card">
+                            <img class="card-img-top" src="~/StudentsImages/@student.Picture" alt="Card image cap">
+                            <div class="card-body">
+                                <h5 class="card-title">@student.FName @student.LName</h5>
+                            </div>
+                            @*<ul class="list-group list-group-flush">
+                    <li class="list-group-item">Cras justo odio</li>
+                    <li class="list-group-item">Dapibus ac facilisis in</li>
+                    <li class="list-group-item">Vestibulum at eros</li>
+                    </ul>*@
+                            <div class="card-body">
+                                <a target="_blank" asp-controller="Student" asp-action="StudentDetails" asp-route-StudentId="@student.StudentId" class="btn btn-outline-info btn-sm">Details</a>
+                                <a target="_blank" asp-controller="Parent" asp-action="LeaveApplication" asp-route-StudentId="@student.StudentId" class="btn btn-outline-info btn-sm">Leave</a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+</div>

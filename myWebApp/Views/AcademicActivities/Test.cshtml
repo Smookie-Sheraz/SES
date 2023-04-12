@@ -1,0 +1,80 @@
+﻿<div class="main-panel">
+    <div class="content-wrapper">
+        <div class="row">
+            <div class="col-12 grid-margin stretch-card">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Tests</h4>
+                        @*<p class="card-description">
+                        The Gardes can be added here!
+                        </p>*@
+                        <div class="table-responsive">
+                            @*@if (ViewBag.Grade == null)
+                            {*@
+                                <table class="table table-hover table-bordered">
+                                    <thead class="bg-primary text-white">
+                                        <tr>
+                                        @if (User.HasClaim("Permission", "ClassTests.Update") || User.HasClaim("Permission", "ClassTests.Delete"))
+                                            {
+                                                <th>Actions</th>
+                                            }
+                                            <th>Status</th>
+                                            <th>Test Name</th>
+                                            <th>Book Name</th>
+                                            <th>Subject Name</th>
+                                            <th>Class Name</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var Test in ViewBag.Tests)
+                                        {
+                                            <tr>
+                                                @if (User.HasClaim("Permission", "ClassTests.Update") || User.HasClaim("Permission", "ClassTests.Delete"))
+                                                {
+                                                    <td class="actions">
+                                                        @if (User.HasClaim("Permission", "ClassTests.Update"))
+                                                        {
+                                                    <a class="fa fa-edit mr-3" asp-route-TestId="@Test.TestId" asp-controller="AcademicActivities" asp-action="UpdateTest" role="button"></a>
+                                                        }
+                                                        @if (User.HasClaim("Permission", "ClassTests.Delete"))
+                                                        {
+                                                            <a class="fa fa-trash text-danger" onclick="return confirm('Are you sure you want to delete?');" asp-route-TestId="@Test.TestId" asp-controller="AcademicActivities" asp-action="DeleteTest" role="button"></a>
+                                                        }
+                                                    </td>
+                                                }
+                                                <td>
+                                                    @if ((bool)Test.IsActive)
+                                                    {
+                                                        <label class="badge badge-success">Active</label>
+                                                    }
+                                                    else
+                                                    {
+                                                        <label class="badge badge-danger">InActive</label>
+                                                    }
+                                                </td>
+                                                <td>@Test.TestTitle</td>
+                                                <td>@Test.Book</td>
+                                                <td>@Test.Subject</td>
+                                                <td>@Test.Class</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            @*}
+                            else
+                            {
+                                <h3>No Data Found!</h3>
+                            }*@
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @if (User.HasClaim("Permission", "ClassTests.Create"))
+            {
+                <div class="col-2 offset-10">
+                <a class="btn btn-primary" asp-controller="AcademicActivities" asp-action="AddTest" role="button">Add</a>
+                </div>
+            }
+        </div>
+    </div>
+</div>

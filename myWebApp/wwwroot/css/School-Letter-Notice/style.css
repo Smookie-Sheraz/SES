@@ -1,0 +1,146 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html {
+    font-family: 'Poppins', sans-serif;
+    line-height: 1.15;
+}
+
+body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #3b444f;
+    text-align: left;
+    background-color: #fff;
+    height: 100vh !important;
+}
+
+
+.main {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    justify-content: center;
+}
+
+.first_table {
+    width: 100%;
+    flex: 1 0 auto;
+    margin-top: auto;
+}
+
+.table_head {
+    width: 100%;
+    height: 300px;
+    background-color: #393939;
+    background-image: url('../../images/school-letter-notice/seerat-header.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+    position: sticky;
+    top: 0 !important;
+    z-index: 999;
+}
+
+.letter-content {
+    text-align: justify;
+}
+
+.letter-heading {
+    margin-top: 30px;
+    margin-bottom: 20px;
+}
+
+.letterhead-address {
+    font-weight: 500;
+    word-spacing: 2px;
+}
+
+.letterhead-footer {
+    background-color: #3b444f;
+    color: #fff;
+    text-align: center;
+    vertical-align: middle;
+    margin-left: 10px;
+    margin-right: 10px;
+
+}
+
+.letterhead-footer td {
+    border-right: 1px solid #fff;
+
+}
+
+.main-content {
+    /*padding-left: 20px;*/
+    padding-right: 30px;
+}
+
+.table-body {
+    position: relative;
+    display: block;
+    margin-top: 20px;
+}
+
+.footer-table{
+    position: sticky;
+    bottom: 0;
+    z-index: 999;
+}
+
+.letterhead-footer td p{
+    margin: 0 !important;
+}
+.row{
+    text-align: left;
+}
+
+@media print {
+
+    .table_head {
+        width: 100%;
+        height: 300px;
+        background-color: #393939;
+        background-image: url('../../images/school-letter-notice/seerat-header.png') !important;
+        background-repeat: no-repeat;
+        background-size: cover;
+        position: sticky;
+        top: 0;
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+
+.footer-table{
+    position: sticky;
+    bottom: 0;
+    z-index: 999;
+}
+
+.letterhead-footer {
+    background-color: #3b444f !important;
+    color: #fff;
+    text-align: center;
+    vertical-align: middle;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.letterhead-footer td {
+    border-right: 1px solid #fff;
+    vertical-align: middle;
+}
+
+
+.letterhead-footer td p{
+    margin: 0 !important;
+}
+}

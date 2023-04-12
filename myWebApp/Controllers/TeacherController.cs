@@ -5,6 +5,7 @@ using Infrastructure.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace myWebApp.Controllers
 {
@@ -18,10 +19,6 @@ namespace myWebApp.Controllers
             _db = db;
             _repository = repository;
         }
-        //public IActionResult Index()
-        //{
-        //    return View();
-        //}
         #region TeachingMethodology
         [HttpGet]
         public async Task<IActionResult> TeachingMethodology()
@@ -98,5 +95,63 @@ namespace myWebApp.Controllers
             return RedirectToAction("TeachingMethodology");
         }
         #endregion
+        [Authorize(Policy = "Student.Attendance")]
+        [HttpGet]
+        public IActionResult Attendance()
+        {
+            var userId = Convert.ToInt16(User.FindFirst(ClaimTypes.Sid)?.Value);
+            StudentAttendanceVM studentAttendanceVM = new StudentAttendanceVM();
+            studentAttendanceVM.ClassName = (from a in _db.Sections
+                                            from b in _db.Grades
+                                            where a.ClassTeacherId == userId && b.GradeId == a.GradeId
+                                            select b.GradeName + " " + a.SectionName).FirstOrDefault();
+            studentAttendanceVM.Date = DateTime.Now.ToString("dd-MMM-yyyy");
+            studentAttendanceVM.TeacherName = User?.FindFirst("Username").ToString();
+            studentAttendanceVM.AttendanceList = (from a in _db.Sections
+                                                    from b in _db.Students
+                                                    join d in _db.LeaveApplications on b.StudentId equals d.StudentId into StudentLeaves
+                                                    from leaves in StudentLeaves.DefaultIfEmpty()
+                                                    from c in _db.Parents
+                                                    where a.ClassTeacherId == userId && b.ClassId == a.SectionId && c.ParentId == b.ParentId && b.Status == true
+                                                    select new StudentAttendanceList
+                                                    {
+                                                        StudentId = b.StudentId,
+                                                        ClassId = b.ClassId,
+                                                        RollNo = b.RollNo,
+                                                        StudentName = b.FName + " " + b.LName,
+                                                        ParentName = c.FName + " " + c.LName,
+                                                        LeaveReason = leaves.StartDate <= DateTime.Now && leaves.IsActive == true ? leaves.Reason:null,
+                                                        StartDate = leaves.StartDate <= DateTime.Now && leaves.IsActive == true ? Convert.ToDateTime(leaves.StartDate).ToString("dd-MMM-yyyy"): null,
+                                                        EndDate = leaves.StartDate <= DateTime.Now && leaves.IsActive == true ? Convert.ToDateTime(leaves.EndDate).ToString("dd-MMM-yyyy"): null,
+                                                        LeaveStatus = leaves.EndDate < DateTime.Now && leaves.IsActive == true ? "": leaves.ApplicationStatus
+                                                    }).Distinct().ToList();
+            return View(studentAttendanceVM);
+        }
+        [Authorize(Policy = "Student.Attendance")]
+        [HttpPost]
+        public async Task<IActionResult> Attendance(StudentAttendanceVM studentAttendanceVM)
+        {
+            if (ModelState.IsValid)
+            {
+                List<StudentAttendance> studentAttendance = new List<StudentAttendance>();
+                studentAttendance = studentAttendanceVM.AttendanceList.Select(x => new StudentAttendance { AttendanceStatus = x.LeaveStatus == "Approved" ? "Leave":x.AttendanceStatus, ClassId = x.ClassId, Date = DateTime.Now, LateOrOnTime = x.OnTimeOrLate, StudentId = x.StudentId }).ToList();
+                foreach (var student in studentAttendanceVM.AttendanceList)
+                {
+                    if(student.StartDate != null)
+                    {
+                        var leave = _db.LeaveApplications.Where(x => x.StudentId == student.StudentId && x.StartDate == Convert.ToDateTime(student.StartDate)).FirstOrDefault();
+                        leave.ApplicationStatus = student.LeaveResponse;
+                        await _repository.UpdateAsync(leave);
+                    }
+                }
+                await _db.AddRangeAsync(studentAttendance);
+                if(await _repository.SaveChanges())
+                {
+                    return RedirectToAction("Attendance");
+                }
+                ModelState.AddModelError("", "Error While Saving in Database!");
+            }
+            return View(studentAttendanceVM);
+        }
     }
 }

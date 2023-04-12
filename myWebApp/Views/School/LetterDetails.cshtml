@@ -1,0 +1,104 @@
+﻿@section styles{
+    <link href="~/css/school-letter-notice/style.css" rel="stylesheet" />
+}
+<div class="main-panel">
+    <div class="content-wrapper">
+        <div class="row">
+            <div class="col-12 grid-margin stretch-card">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Letter to @ViewBag.Letter.StudentName</h4>
+                        <div class="table-responsive">
+                            <div class="main">
+                                <table class="position-relative first_table">
+                                    <thead class="table_head" style="background-image: url('../../images/school-letter-notice/seerat-header.png');">
+                                        <tr class="d-flex justify-content-between align-items-center">
+                                            <td class="mt-5"><img src="~/images/school-letter-notice/seerat-logo.png" width="210px" height="200px" alt="" /></td>
+                                            <td class="pr-5"> <img src="~/images/school-letter-notice/seerat.png" width="300px" height="120px" alt="" /></td>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="table-body">
+                                        <tr>
+                                            <td colspan="2">
+                                                <div class="row">
+                                                    <div class="col-12">
+                                                        <p class="fs-5">@ViewBag.Letter.SenderName</p>
+                                                        <p class="fs-5">@ViewBag.Letter.SenderDesignation</p>
+                                                        <p class="fs-5">@ViewBag.Letter.SenderContact</p>
+                                                    </div>
+                                                </div>
+                                                <div class="row mt-5">
+                                                    <div class="col-12">
+                                                        <p class="fs-6">@Convert.ToDateTime(ViewBag.Letter.Date).ToString("dd-MMM-yyyy")</p>
+                                                    </div>
+                                                </div>
+                                                <div class="row mt-5">
+                                                    <div class="col-12">
+                                                        <p class="fs-5">@ViewBag.Letter.ReceiverName</p>
+                                                        <p class="fs-5">@ViewBag.Letter.ReceiverDesignation</p>
+                                                        <p class="fs-5">@ViewBag.Letter.ReceiverContact</p>
+                                                    </div>
+                                                </div>
+                                                <div class="row mt-5">
+                                                    <div class="col-12">
+                                                        <p class="fs-5">@ViewBag.Letter.Salutation</p>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr class="d-flex align-items-start ">
+                                            <td class="main-content" colspan="2">
+                                                <p class="letter-content mb-3 text-ju">@ViewBag.Letter.Body</p>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="width:60%;"></td>
+                                            <td class="fs-5">
+                                                <div class="row" style="text-align: center;">
+                                                    <div class="col-12"><img src="~/images/oc-sign.png" class="w-75"/></div>
+                                                    <div class="col-12">Assistant Coordinator</div>
+                                                    <div class="col-12">Seerat Education System</div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                                <table class="footer-table">
+                                    <tbody>
+
+                                        <tr class="text-center footer-1 bg-white">
+                                            <td colspan="5">
+                                                <p class="letterhead-address pt-3">
+                                                    <i class="fas fa-map-marker-alt"></i> Taj Complex, Naseerabad
+                                                    Road, Satellite Town Block #5, Quetta
+                                                </p>
+                                            </td>
+                                        </tr>
+
+                                        <tr class="letterhead-footer pl-5 pr-5">
+                                            <td class="text-nowrap w-25 pl-5 pr-1">
+                                                <p class="p-1">
+                                                    <i class="fas fa-phone-alt pr-2"></i> +92 81 2441280, +92 81 2671280
+                                                </p>
+                                            </td>
+                                            <td class="text-nowrap w-25 pl-1 pr-1">
+                                                <p class=" p-1"><i class="fas fa-mobile pr-2"></i> 0311 1230007</p>
+                                            </td>
+                                            <td class="text-nowrap w-25 pl-1 pr-1">
+                                                <p class=" p-1"><i class="fas fa-envelope pr-2"></i> info@seeret.education</p>
+                                            </td>
+                                            <td class="text-nowrap w-25 text-start pr-5">
+                                                <p class=" p-1"><i class="fas fa-globe pr-2"></i> www.seerat.education</p>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

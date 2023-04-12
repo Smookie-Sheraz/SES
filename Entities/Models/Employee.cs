@@ -83,5 +83,9 @@ namespace Entities.Models
         public ICollection<STPlanApproval> STPlans { get; set; } = null!;
         public ICollection<Section> Sections { get; set; } = null!;
         public ICollection<Grade> Grades { get; set; } = null!;
+        public ICollection<SchoolLatter> SchoolLatters { get; set; } = null!;
+        public ICollection<SchoolNotice> SchoolNotices { get; set; } = null!;
+        public ICollection<AcademicPlannings> AcademicPlannings { get; set; } = null!;
+        public ICollection<SchoolSection> SchoolSections { get; set; } = null!;
     }
 }

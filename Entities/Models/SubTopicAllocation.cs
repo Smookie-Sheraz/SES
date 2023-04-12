@@ -22,6 +22,8 @@ namespace Entities.Models
         public int? SubTopicId { get; set; }
         public Section? Section { get; set; }
         public int? SectionId { get; set; }
+        public AcademicPlannings? Plan { get; set; }
+        public int? PlanId { get; set; }
         public bool IsAllocated { get; set; }
         public bool? IsActive { get; set; }
         public DateTime? StartDate { get; set; }

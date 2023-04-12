@@ -25,5 +25,7 @@ namespace Entities.Models
         //[DataType(DataType.Date)]
         public DateTime? DeletedOn { get; set; }
         public ICollection<SubjectAllocation> SubjectAllocations { get; set; } = null!;
+        public ICollection<Diary> Diaries { get; set; } = null!;
+        public ICollection<Test> Tests { get; set; } = null!;
     }
 }

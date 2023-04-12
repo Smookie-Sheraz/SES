@@ -48,7 +48,7 @@ namespace myWebApp.ViewModels.HumanResource
         [Required(ErrorMessage = "{0} is Required!")]
         [StringLength(15, ErrorMessage = "{0} can't exceed {1} characters")]
         [Remote("CNICExist", "Validations", ErrorMessage = "{0} Already Exist")]
-        public string CNICNo { get; set; }
+        public string CNIC { get; set; }
         //[Display(Name = "CNIC Issue Date")]
         //[Required(ErrorMessage = "{0} is required")]
         //[DataType(DataType.Date)]

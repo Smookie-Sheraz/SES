@@ -8,10 +8,11 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using myWebApp.ViewModels;
 using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using myWebApp.ViewModels.Student;
+using System.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
-
-// Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
@@ -22,7 +23,9 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.AccessDeniedPath = "/Auth/AccessDenied";
         //options.Cookie.Expiration = TimeSpan.FromMinutes(1);
     });
-
+builder.Services.AddTransient<IEmailSender, EmailSender>();
+// Configure email sending options
+builder.Services.Configure<EmailSenderOptions>(builder.Configuration.GetSection("EmailSenderOptions"));
 //builder.Services.AddAuthorization(options =>
 //{
 //    options.AddPolicy("MyPolicy", policy =>
@@ -134,6 +137,43 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("Planner.Update", policy => policy.RequireClaim("Permission", "Planner.Update"));
     options.AddPolicy("Planner.Delete", policy => policy.RequireClaim("Permission", "Planner.Delete"));
     options.AddPolicy("Academic Planning", policy => policy.RequireClaim("Permission", "Academic Planning"));
+    options.AddPolicy("Parent.Create", policy => policy.RequireClaim("Permission", "Parent.Create"));
+    options.AddPolicy("Parent.Read", policy => policy.RequireClaim("Permission", "Parent.Read"));
+    options.AddPolicy("Parent.Update", policy => policy.RequireClaim("Permission", "Parent.Update"));
+    options.AddPolicy("Parent.Delete", policy => policy.RequireClaim("Permission", "Parent.Delete"));
+    options.AddPolicy("Parent.Dashboard", policy => policy.RequireClaim("Permission", "Parent.Dashboard"));
+    options.AddPolicy("Student.Create", policy => policy.RequireClaim("Permission", "Student.Create"));
+    options.AddPolicy("Student.Read", policy => policy.RequireClaim("Permission", "Student.Read"));
+    options.AddPolicy("Student.Update", policy => policy.RequireClaim("Permission", "Student.Update"));
+    options.AddPolicy("Student.Delete", policy => policy.RequireClaim("Permission", "Student.Delete"));
+    options.AddPolicy("Student.Details", policy => policy.RequireClaim("Permission", "Student.Details"));
+    options.AddPolicy("Student.Dashboard", policy => policy.RequireClaim("Permission", "Student.Dashboard"));
+    options.AddPolicy("Student.Attendance", policy => policy.RequireClaim("Permission", "Student.Attendance"));
+    options.AddPolicy("StudentLeaveApplication", policy => policy.RequireClaim("Permission", "StudentLeaveApplication"));
+    options.AddPolicy("Diary.Create", policy => policy.RequireClaim("Permission", "Diary.Create"));
+    options.AddPolicy("Diary.Read", policy => policy.RequireClaim("Permission", "Diary.Read"));
+    options.AddPolicy("Diary.Update", policy => policy.RequireClaim("Permission", "Diary.Update"));
+    options.AddPolicy("Diary.Delete", policy => policy.RequireClaim("Permission", "Diary.Delete"));
+    options.AddPolicy("ClassTests.Create", policy => policy.RequireClaim("Permission", "ClassTests.Create"));
+    options.AddPolicy("ClassTests.Read", policy => policy.RequireClaim("Permission", "ClassTests.Read"));
+    options.AddPolicy("ClassTests.Update", policy => policy.RequireClaim("Permission", "ClassTests.Update"));
+    options.AddPolicy("ClassTests.Delete", policy => policy.RequireClaim("Permission", "ClassTests.Delete"));
+    options.AddPolicy("AcademicPlannings.Create", policy => policy.RequireClaim("Permission", "AcademicPlannings.Create"));
+    options.AddPolicy("AcademicPlannings.Read", policy => policy.RequireClaim("Permission", "AcademicPlannings.Read"));
+    options.AddPolicy("AcademicPlannings.Update", policy => policy.RequireClaim("Permission", "AcademicPlannings.Update"));
+    options.AddPolicy("AcademicPlannings.Delete", policy => policy.RequireClaim("Permission", "AcademicPlannings.Delete"));
+    options.AddPolicy("ManagementPlanApproving", policy => policy.RequireClaim("Permission", "ManagementPlanApproving"));
+    options.AddPolicy("PlanDetails", policy => policy.RequireClaim("Permission", "PlanDetails"));
+    options.AddPolicy("Letters.Read", policy => policy.RequireClaim("Permission", "Letters.Read"));
+    options.AddPolicy("Letters.Create", policy => policy.RequireClaim("Permission", "Letters.Create"));
+    options.AddPolicy("Letters.Update", policy => policy.RequireClaim("Permission", "Letters.Update"));
+    options.AddPolicy("Letters.Delete", policy => policy.RequireClaim("Permission", "Letters.Delete"));
+    options.AddPolicy("LetterDetails", policy => policy.RequireClaim("Permission", "LetterDetails"));
+    options.AddPolicy("NoticeDetails", policy => policy.RequireClaim("Permission", "NoticeDetails"));
+    options.AddPolicy("Notices.Read", policy => policy.RequireClaim("Permission", "Notices.Read"));
+    options.AddPolicy("Notices.Craete", policy => policy.RequireClaim("Permission", "Notices.Create"));
+    options.AddPolicy("Notices.Update", policy => policy.RequireClaim("Permission", "Notices.Update"));
+    options.AddPolicy("Notices.Delete", policy => policy.RequireClaim("Permission", "Notices.Delete"));
 });
 
 

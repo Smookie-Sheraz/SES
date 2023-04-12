@@ -1,7 +1,7 @@
 ﻿@model myWebApp.ViewModels.AcademicCalendar.SubTopicAllocationVM
 <div class="main-panel">
-   <div class="content-wrapper">
-        @if(Model.TopicId == null)
+    <div class="content-wrapper">
+        @if (Model.TopicId == null)
         {
             <form method="get"
               asp-controller="AcademicCalendar" asp-action="SubTopicAllocation">
@@ -20,6 +20,17 @@
                             </select>
                             <span asp-validation-for="TopicId" class="text-danger"></span>
                         </div>
+                        <div class="form-group">
+                            <label>Plans</label>
+                            <select asp-for="PlanId" class="form-select" aria-label="Default select example">
+                                <option selected>Select Plan Please</option>
+                                @foreach (var Plan in ViewBag.Plans)
+                                {
+                                    <option value="@Plan.AcademicPlanningsId">@Plan.PlanName</option>
+                                }
+                            </select>
+                            <span asp-validation-for="PlanId" class="text-danger"></span>
+                        </div>
                     </div>
                     <div class="col-2 text-center">
                         <button class="btn btn-primary mt-4" type="submit">Find Sub-Topics</button>
@@ -32,6 +43,7 @@
             <form method="post"
               asp-controller="AcademicCalendar" asp-action="SubTopicAllocation">
                 <div class="row">
+                    <input type="hidden" asp-for="PlanId" />
                     <div class="col-12 grid-margin stretch-card">
                         <div class="card">
                             <div class="card-body">
@@ -39,102 +51,106 @@
                                 @*<p class="card-description">
                             The Sub-Topics allocated to the @ViewBag.Month !
                             </p>*@
-                                <div class="table-responsive">
-                                    @if (Model.SubTopics.Any())
-                                    {
-                                        <table class="table table-hover" id="SubTopicsTable">
-                                            <thead>
-                                                <tr>
-                                                    <th colspan="1">Calendar: <label class="badge badge-success">@ViewBag.CalendarName</label></th>
-                                                    <th colspan="1">Term: <label class="badge badge-success">@ViewBag.TermName</label></th>
-                                                    <th colspan="2">Book: <label class="badge badge-success">@ViewBag.BookName</label></th>
-                                                    <th colspan="1">Unit: <label class="badge badge-success">@ViewBag.UnitName</label></th>
-                                                    <th colspan="1">Chapter: <label class="badge badge-success">@ViewBag.ChapterName</label></th>
-                                                </tr>
-                                                <tr>
-                                                    <th>Sub-Topic Name</th>
-                                                    <th>Start Date</th>
-                                                    <th>End Date</th>
-                                                    <th>WB Start Page</th>
-                                                    <th>WB End Page</th>
-                                                    <th>Selection</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <input type="hidden" asp-for="YearId" />
-                                                <input type="hidden" asp-for="TermId" />
-                                                <input type="hidden" asp-for="TopicId" />
-                                                @for (var i = 0; i < Model.SubTopics.Count(); i++)
-                                                {
-                                                    <tr>
-                                                        <td>@Model.SubTopics[i].SubTopicName</td>
-                                                        <td>
-                                                            <div class="form-group">
-                                                                <input type="date" class="form-control text-center" oninput="check(this.id)" asp-for="@Model.SubTopics[i].StartDate" placeholder="Enter Start Date" min="@Convert.ToDateTime(Model.SubTopics[i].TopicStartDate).ToString("yyyy-MM-dd")" max="@Convert.ToDateTime(Model.SubTopics[i].TopicEndDate).ToString("yyyy-MM-dd")">
-                                                                <span asp-validation-for="@Model.SubTopics[i].StartDate" class="text-danger"></span>
-                                                            </div>
-                                                        </td>
-                                                        <td>
-                                                            <div class="form-group">
-                                                                <input type="date" class="form-control text-center" asp-for="@Model.SubTopics[i].EndDate" placeholder="Enter End Date" min="@Convert.ToDateTime(Model.SubTopics[i].TopicStartDate).ToString("yyyy-MM-dd")" max="@Convert.ToDateTime(Model.SubTopics[i].TopicEndDate).ToString("yyyy-MM-dd")">
-                                                                <span asp-validation-for="@Model.SubTopics[i].EndDate" class="text-danger"></span>
-                                                            </div>
-                                                        </td>
-                                                        @if (Model.SubTopics[i].WBMinPage == null || Model.SubTopics[i].WBMaxPage == null)
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="table-responsive">
+                                            @if (Model.SubTopics.Any())
+                                            {
+                                                <table class="table table-hover" id="SubTopicsTable">
+                                                    <thead>
+                                                        <tr>
+                                                            <th colspan="1">Calendar: <label class="badge badge-success">@ViewBag.CalendarName</label></th>
+                                                            <th colspan="1">Term: <label class="badge badge-success">@ViewBag.TermName</label></th>
+                                                            <th colspan="2">Book: <label class="badge badge-success">@ViewBag.BookName</label></th>
+                                                            <th colspan="1">Unit: <label class="badge badge-success">@ViewBag.UnitName</label></th>
+                                                            <th colspan="1">Chapter: <label class="badge badge-success">@ViewBag.ChapterName</label></th>
+                                                        </tr>
+                                                        <tr>
+                                                            <th>Sub-Topic Name</th>
+                                                            <th>Start Date</th>
+                                                            <th>End Date</th>
+                                                            <th>WB Start Page</th>
+                                                            <th>WB End Page</th>
+                                                            <th>Selection</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <input type="hidden" asp-for="YearId" />
+                                                        <input type="hidden" asp-for="TermId" />
+                                                        <input type="hidden" asp-for="TopicId" />
+                                                        @for (var i = 0; i < Model.SubTopics.Count(); i++)
                                                         {
-                                                            <td>
-                                                                <div class="form-group">
-                                                                    <input type="number" disabled min="@Model.SubTopics[i].WBMinPage" max="@Model.SubTopics[i].WBMaxPage" class="form-control text-center" asp-for="@Model.SubTopics[i].WorkBookStartPage" placeholder="Enter Start Page" />
-                                                                    <span asp-validation-for="@Model.SubTopics[i].WorkBookStartPage" class="text-danger"></span>
-                                                                </div>
-                                                            </td>
-                                                            <td>
-                                                                <div class="form-group">
-                                                                    <input type="number" disabled min="@Model.SubTopics[i].WBMinPage" max="@Model.SubTopics[i].WBMaxPage" class="form-control text-center" asp-for="@Model.SubTopics[i].WorkBookEndPage" placeholder="Enter Start End" />
-                                                                    <span asp-validation-for="@Model.SubTopics[i].WorkBookEndPage" class="text-danger"></span>
-                                                                </div>
-                                                            </td>
+                                                            <tr>
+                                                                <td>@Model.SubTopics[i].SubTopicName</td>
+                                                                <td>
+                                                                    <div class="form-group">
+                                                                        <input type="date" class="form-control text-center" oninput="check(this.id)" asp-for="@Model.SubTopics[i].StartDate" placeholder="Enter Start Date" min="@Convert.ToDateTime(Model.SubTopics[i].TopicStartDate).ToString("yyyy-MM-dd")" max="@Convert.ToDateTime(Model.SubTopics[i].TopicEndDate).ToString("yyyy-MM-dd")">
+                                                                        <span asp-validation-for="@Model.SubTopics[i].StartDate" class="text-danger"></span>
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    <div class="form-group">
+                                                                        <input type="date" class="form-control text-center" asp-for="@Model.SubTopics[i].EndDate" placeholder="Enter End Date" min="@Convert.ToDateTime(Model.SubTopics[i].TopicStartDate).ToString("yyyy-MM-dd")" max="@Convert.ToDateTime(Model.SubTopics[i].TopicEndDate).ToString("yyyy-MM-dd")">
+                                                                        <span asp-validation-for="@Model.SubTopics[i].EndDate" class="text-danger"></span>
+                                                                    </div>
+                                                                </td>
+                                                                @if (Model.SubTopics[i].WBMinPage == null || Model.SubTopics[i].WBMaxPage == null)
+                                                                {
+                                                                    <td>
+                                                                        <div class="form-group">
+                                                                            <input type="number" disabled min="@Model.SubTopics[i].WBMinPage" max="@Model.SubTopics[i].WBMaxPage" class="form-control text-center" asp-for="@Model.SubTopics[i].WorkBookStartPage" placeholder="Enter Start Page" />
+                                                                            <span asp-validation-for="@Model.SubTopics[i].WorkBookStartPage" class="text-danger"></span>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="form-group">
+                                                                            <input type="number" disabled min="@Model.SubTopics[i].WBMinPage" max="@Model.SubTopics[i].WBMaxPage" class="form-control text-center" asp-for="@Model.SubTopics[i].WorkBookEndPage" placeholder="Enter Start End" />
+                                                                            <span asp-validation-for="@Model.SubTopics[i].WorkBookEndPage" class="text-danger"></span>
+                                                                        </div>
+                                                                    </td>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <td>
+                                                                        <div class="form-group">
+                                                                            <input type="number" min="@Model.SubTopics[i].WBMinPage" max="@Model.SubTopics[i].WBMaxPage" class="form-control text-center" asp-for="@Model.SubTopics[i].WorkBookStartPage" placeholder="Enter Start Page" />
+                                                                            <span asp-validation-for="@Model.SubTopics[i].WorkBookStartPage" class="text-danger"></span>
+                                                                        </div>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="form-group">
+                                                                            <input type="number" min="@Model.SubTopics[i].WBMinPage" max="@Model.SubTopics[i].WBMaxPage" class="form-control text-center" asp-for="@Model.SubTopics[i].WorkBookEndPage" placeholder="Enter Start End" />
+                                                                            <span asp-validation-for="@Model.SubTopics[i].WorkBookEndPage" class="text-danger"></span>
+                                                                        </div>
+                                                                    </td>
+                                                                }
+                                                                <td>
+                                                                    <div class="form-check">
+                                                                        <label class="form-check-label">
+                                                                            <input type="hidden" asp-for="@Model.SubTopics[i].SubTopicId" />
+                                                                            @if ((bool)Model.SubTopics[i].preAllocation)
+                                                                            {
+                                                                                <input type="checkbox" class="form-check-input" checked asp-for="@Model.SubTopics[i].IsSelected" />
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                <input type="checkbox" class="form-check-input" asp-for="@Model.SubTopics[i].IsSelected" />
+                                                                            }
+                                                                            Select
+                                                                        </label>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
                                                         }
-                                                        else
-                                                        {
-                                                            <td>
-                                                                <div class="form-group">
-                                                                    <input type="number" min="@Model.SubTopics[i].WBMinPage" max="@Model.SubTopics[i].WBMaxPage" class="form-control text-center" asp-for="@Model.SubTopics[i].WorkBookStartPage" placeholder="Enter Start Page" />
-                                                                    <span asp-validation-for="@Model.SubTopics[i].WorkBookStartPage" class="text-danger"></span>
-                                                                </div>
-                                                            </td>
-                                                            <td>
-                                                                <div class="form-group">
-                                                                    <input type="number" min="@Model.SubTopics[i].WBMinPage" max="@Model.SubTopics[i].WBMaxPage" class="form-control text-center" asp-for="@Model.SubTopics[i].WorkBookEndPage" placeholder="Enter Start End" />
-                                                                    <span asp-validation-for="@Model.SubTopics[i].WorkBookEndPage" class="text-danger"></span>
-                                                                </div>
-                                                            </td>
-                                                        }
-                                                        <td>
-                                                            <div class="form-check">
-                                                                <label class="form-check-label">
-                                                                    <input type="hidden" asp-for="@Model.SubTopics[i].SubTopicId" />
-                                                                    @if ((bool)Model.SubTopics[i].preAllocation)
-                                                                    {
-                                                                        <input type="checkbox" class="form-check-input" checked asp-for="@Model.SubTopics[i].IsSelected" />
-                                                                    }
-                                                                    else
-                                                                    {
-                                                                        <input type="checkbox" class="form-check-input" asp-for="@Model.SubTopics[i].IsSelected" />
-                                                                    }
-                                                                    Select
-                                                                </label>
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-                                                }
-                                            </tbody>
-                                        </table>
-                                    }
-                                    else
-                                    {
-                                        <h3>Please Allocate Chapter(s) to The month First!</h3>
-                                    }
+                                                    </tbody>
+                                                </table>
+                                            }
+                                            else
+                                            {
+                                                <h3>Please Allocate Chapter(s) to The month First!</h3>
+                                            }
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -148,17 +164,17 @@
                 </div>
             </form>
         }
-   </div>
+    </div>
 </div>
 @section scripts{
-        <script>
+    <script>
         $(document).ready(function () {
             $('#SubTopicsTable').DataTable({
-                    serverSide: true,
-                    ajax: function(){
+                serverSide: true,
+                ajax: function () {
 
-                    },
-                });
+                },
+            });
         });
-        </script>
+    </script>
 }

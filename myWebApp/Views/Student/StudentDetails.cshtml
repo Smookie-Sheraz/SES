@@ -1,0 +1,147 @@
+﻿@model IEnumerable<Entities.Models.StudentAttendance>
+<div class="main-panel">
+    <div class="content-wrapper">
+        <div class="row">
+            <div class="col-12 grid-margin stretch-card">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Student Details</h4>
+                        @*<p class="card-description">
+                        The User Id is @User.FindFirst("Sid").Value.ToString()  @User.Identity.AuthenticationType
+                        </p>*@
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-responsive">
+                                @*@foreach (var ViewBag.Student in ViewBag.Student)
+                                {*@
+                                    <thead class="text-light bg-primary">
+                                    <tr>
+                                        <th colspan="8">
+                                            <h1 class="text-uppercase fw-bold">Seerat Education System</h1>
+                                        </th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr>
+                                        <th colspan="2" class="text-light bg-primary">Personal Information</th>
+                                        <th colspan="2" class="text-light bg-primary">Academic Information</th>
+                                        <th colspan="3" class="text-light bg-primary">Contact Information</th>
+                                        <td rowspan="3">
+                                            <img src="~/studentsimages/@ViewBag.Student.Picture" alt="Student Picture" style="border-radius:10%; width:128px; height:128px" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>First Name:</td>
+                                        <td>@ViewBag.Student.FName</td>
+                                        <td>Student ID:</td>
+                                        <td>@ViewBag.Student.StudentId</td>
+                                        <td>Address:</td>
+                                        <td colspan="2">@ViewBag.Student.Address</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Last Name:</td>
+                                        <td>@ViewBag.Student.LName</td>
+                                        <td>Status:</td>
+                                        <td>@ViewBag.Student.Status</td>
+                                        <td>Email:</td>
+                                        <td colspan="2">@ViewBag.Student.Email</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Class Name:</td>
+                                        <td colspan="2">@ViewBag.Student.ClassName</td>
+                                        <td>Admission Test Result:</td>
+                                        <td colspan="2">@ViewBag.Student.AdmissionTestResult</td>
+                                        <td>Admitted Session:</td>
+                                        <td>@ViewBag.Student.AdmittedSession</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Parent Name:</td>
+                                        <td colspan="2">@ViewBag.Student.ParentName</td>
+                                        <td>Allergies:</td>
+                                        <td colspan="2">@ViewBag.Student.Allergies</td>
+                                        <td>Blood Group:</td>
+                                        <td>@ViewBag.Student.BloodGroup</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Board/University Name:</td>
+                                        <td colspan="2">@ViewBag.Student.BoardOrUniversityName</td>
+                                        <td>Board/Enrollment No:</td>
+                                        <td colspan="2">@ViewBag.Student.BoardOrEnrollmentNo</td>
+                                        <td>Board Marks Obtained:</td>
+                                        <td>@ViewBag.Student.BoardMarksObtained</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Category:</td>
+                                        <td colspan="2">@ViewBag.Student.Category</td>
+                                        <td>City:</td>
+                                        <td colspan="2">@ViewBag.Student.City</td>
+                                        <td>CNIC:</td>
+                                        <td>@ViewBag.Student.CNIC</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Cast:</td>
+                                        <td colspan="2">@ViewBag.Student.Cast</td>
+                                        <td>Country of Birth:</td>
+                                        <td colspan="2">@ViewBag.Student.CountryOfBirth</td>
+                                        <td>Gender:</td>
+                                        <td>@ViewBag.Student.Gender</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Extra-Curricular Activities:</td>
+                                        <td colspan="9">@ViewBag.Student.ExtraCurricularActivities</td>
+                                    </tr>
+                                </tbody>
+                                @*}*@
+                            </table>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @if (Model.Any())
+        {
+            <div class="row">
+                <div class="col-12 grid-margin stretch-card">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="card-title">Student Attendance</h4>
+                            @*<p class="card-description">
+                        The User Id is @User.FindFirst("Sid").Value.ToString()  @User.Identity.AuthenticationType
+                        </p>*@
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-responsive">
+                                    @*@foreach (var ViewBag.Student in ViewBag.Student)
+                                {*@
+                                    <thead class="text-light bg-primary">
+                                        <tr>
+                                            <th colspan="3">
+                                                <h1 class="text-uppercase fw-bold">Seerat Education System</h1>
+                                            </th>
+                                        </tr>
+                                        <tr>
+                                            <th class="text-light bg-primary">Date</th>
+                                            <th class="text-light bg-primary">Attendance Status</th>
+                                            <th class="text-light bg-primary">Late / On Time</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var attendance in Model)
+                                        {
+                                            <tr>
+                                                <td>@Convert.ToDateTime(attendance.Date).ToString("dd-MMM-yyyy")</td>
+                                                <td>@attendance.AttendanceStatus</td>
+                                                <td>@attendance.LateOrOnTime</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                    @*}*@
+                                </table>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

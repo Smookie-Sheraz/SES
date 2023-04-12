@@ -1,0 +1,36 @@
+﻿@model myWebApp.ViewModels.AcademicCalendar.AcademicPlanningsVM
+@{
+}
+<div class="main-panel">
+    <div class="content-wrapper">
+        <div class="row">
+            <div class="col-12 grid-margin stretch-card">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Update Campus</h4>
+                        @*<p class="card-description">
+                        Please Update Campus and Press the Update Button.
+                        </p>*@
+                        <form class="forms-sample" method="post"
+                              asp-controller="AcademicCalendar" asp-action="UpdateAcademicPlanning">
+                            <div class="row">
+                                <input type="hidden" asp-for="AcademicPlanningsId" />
+                                <div class="col-4">
+                                    <div class="form-group">
+                                        <label asp-for="PlanName">Campus Name</label>
+                                        <input type="text" class="form-control" asp-for="PlanName" placeholder="Enter Campus Name" />
+                                        <span asp-validation-for="PlanName" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <a class="btn btn-light" asp-controller="AcademicCalendar" asp-action="AcademicPlannings">Cancel</a>
+                                    <button type="submit" class="btn btn-primary mr-2">Update</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

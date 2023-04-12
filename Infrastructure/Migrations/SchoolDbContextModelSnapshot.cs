@@ -22,6 +22,62 @@ namespace Infrastructure.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
+            modelBuilder.Entity("Entities.Models.AcademicPlannings", b =>
+                {
+                    b.Property<int>("AcademicPlanningsId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AcademicPlanningsId"), 1L, 1);
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(30)");
+
+                    b.Property<DateTime?>("CreatedDate")
+                        .HasColumnType("date");
+
+                    b.Property<DateTime?>("DeletedOn")
+                        .HasColumnType("date");
+
+                    b.Property<int?>("EmployeeId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("EndDate")
+                        .HasColumnType("date");
+
+                    b.Property<bool?>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<bool?>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("PlanName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PlannedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("StartDate")
+                        .HasColumnType("date");
+
+                    b.HasKey("AcademicPlanningsId")
+                        .HasName("PK_AcademicPlanning");
+
+                    b.HasIndex("EmployeeId");
+
+                    b.ToTable("AcademicPlanning", (string)null);
+                });
+
             modelBuilder.Entity("Entities.Models.ACPlanApproval", b =>
                 {
                     b.Property<int>("ACPlanApprovalId")
@@ -385,6 +441,9 @@ namespace Infrastructure.Migrations
                     b.Property<string>("ModifiedDate")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("PlanId")
+                        .HasColumnType("int");
+
                     b.Property<int?>("SectionId")
                         .HasColumnType("int");
 
@@ -410,6 +469,8 @@ namespace Infrastructure.Migrations
                         .HasName("PK_ChapterAllocation");
 
                     b.HasIndex("ChapterId");
+
+                    b.HasIndex("PlanId");
 
                     b.HasIndex("SectionId");
 
@@ -836,6 +897,69 @@ namespace Infrastructure.Migrations
                     b.ToTable("Setup_Designation", (string)null);
                 });
 
+            modelBuilder.Entity("Entities.Models.Diary", b =>
+                {
+                    b.Property<int>("DiaryId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("DiaryId"), 1L, 1);
+
+                    b.Property<int?>("ClassId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ClassWork")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("CreatedDate")
+                        .HasColumnType("date");
+
+                    b.Property<DateTime?>("Date")
+                        .HasColumnType("date");
+
+                    b.Property<DateTime?>("DeletedOn")
+                        .HasColumnType("date");
+
+                    b.Property<string>("HomeWork")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool?>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<bool?>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("date");
+
+                    b.Property<int?>("SubjectId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("TestId")
+                        .HasColumnType("int");
+
+                    b.HasKey("DiaryId")
+                        .HasName("PK_Diary");
+
+                    b.HasIndex("ClassId");
+
+                    b.HasIndex("SubjectId");
+
+                    b.HasIndex("TestId");
+
+                    b.ToTable("Diary", (string)null);
+                });
+
             modelBuilder.Entity("Entities.Models.Employee", b =>
                 {
                     b.Property<int>("EmployeeId")
@@ -1217,6 +1341,387 @@ namespace Infrastructure.Migrations
                     b.ToTable("Holidays", (string)null);
                 });
 
+            modelBuilder.Entity("Entities.Models.LeaveApplication", b =>
+                {
+                    b.Property<int>("LeaveApplicationId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("LeaveApplicationId"), 1L, 1);
+
+                    b.Property<string>("ApplicationStatus")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("nvarchar(max)")
+                        .HasDefaultValue("Pending");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("CreatedDate")
+                        .HasColumnType("date");
+
+                    b.Property<DateTime?>("DeletedOn")
+                        .HasColumnType("date");
+
+                    b.Property<DateTime?>("EndDate")
+                        .HasColumnType("date");
+
+                    b.Property<bool?>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<bool?>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("Reason")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("StartDate")
+                        .HasColumnType("date");
+
+                    b.Property<int?>("StudentId")
+                        .HasColumnType("int");
+
+                    b.HasKey("LeaveApplicationId")
+                        .HasName("PK_LeaveApplication");
+
+                    b.HasIndex("StudentId");
+
+                    b.ToTable("LeaveApplication", (string)null);
+                });
+
+            modelBuilder.Entity("Entities.Models.Parent", b =>
+                {
+                    b.Property<int>("ParentId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ParentId"), 1L, 1);
+
+                    b.Property<string>("Address")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("AdmissionEmail")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CNIC")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("CreatedDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("DegreeQualification")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DeletedOn")
+                        .HasColumnType("date");
+
+                    b.Property<string>("Designation")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EducationInstituion")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Employer")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FamilyId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FirstContactAddress")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FirstContactEmail")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FirstContactName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FirstContactOfficeNo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FirstContactRelation")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FourthContactAddress")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FourthContactEmail")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FourthContactName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FourthContactOfficeNo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FourthContactRelation")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Gender")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ITSNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("InstituionEndDate")
+                        .HasColumnType("date");
+
+                    b.Property<DateTime?>("InstituionStartDate")
+                        .HasColumnType("date");
+
+                    b.Property<bool?>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("LName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MaritalStatus")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Mobile")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("MotherAddress")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MotherAdmissionEmail")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MotherCNIC")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MotherDegreeQualification")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MotherDesignation")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MotherEducationInstituion")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MotherEmail")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MotherEmployer")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MotherFName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MotherFamilyId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MotherGender")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MotherITSNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("MotherInstituionEndDate")
+                        .HasColumnType("date");
+
+                    b.Property<DateTime?>("MotherInstituionStartDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("MotherLName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MotherMaritalStatus")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MotherMobile")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MotherOccupation")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MotherOfficeAddress")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MotherOfficeNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MotherPassportNo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("MotherPassportValidity")
+                        .HasColumnType("date");
+
+                    b.Property<string>("MotherPassword")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MotherPasswordRepeat")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MotherPhone")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("MotherRegistraionDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("MotherResidentCardNo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MotherSecondAddress")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MotherSecondEmail")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("MotherSecondMobile")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool?>("MotherStatus")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<string>("MotherUsername")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("MotherVaccinationFirstDose")
+                        .HasColumnType("date");
+
+                    b.Property<DateTime?>("MotherVaccinationFourthDose")
+                        .HasColumnType("date");
+
+                    b.Property<DateTime?>("MotherVaccinationSecondDose")
+                        .HasColumnType("date");
+
+                    b.Property<DateTime?>("MotherVaccinationThirdDose")
+                        .HasColumnType("date");
+
+                    b.Property<string>("MotherVisaNo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("MotherVisaValidity")
+                        .HasColumnType("date");
+
+                    b.Property<string>("Occupation")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OfficeAddress")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OfficeNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ParentType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PassportNo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("PassportValidity")
+                        .HasColumnType("date");
+
+                    b.Property<string>("Phone")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("RegistraionDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ResidentCardNo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SecondAddress")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SecondContactAddress")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SecondContactEmail")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SecondContactName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SecondContactOfficeNo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SecondContactRelation")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SecondEmail")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SecondMobile")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool?>("Status")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<string>("ThirdContactAddress")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ThirdContactEmail")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ThirdContactName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ThirdContactOfficeNo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ThirdContactRelation")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Username")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("VaccinationFirstDose")
+                        .HasColumnType("date");
+
+                    b.Property<DateTime?>("VaccinationFourthDose")
+                        .HasColumnType("date");
+
+                    b.Property<DateTime?>("VaccinationSecondDose")
+                        .HasColumnType("date");
+
+                    b.Property<DateTime?>("VaccinationThirdDose")
+                        .HasColumnType("date");
+
+                    b.Property<string>("VisaNo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("VisaValidity")
+                        .HasColumnType("date");
+
+                    b.HasKey("ParentId")
+                        .HasName("PK_Parent");
+
+                    b.ToTable("Parent", (string)null);
+                });
+
             modelBuilder.Entity("Entities.Models.Permissions", b =>
                 {
                     b.Property<int>("PermissionId")
@@ -1260,6 +1765,65 @@ namespace Infrastructure.Migrations
                         .HasName("PK_Permissions");
 
                     b.ToTable("Permissions", (string)null);
+                });
+
+            modelBuilder.Entity("Entities.Models.PlanApproval", b =>
+                {
+                    b.Property<int>("PlanApprovalId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PlanApprovalId"), 1L, 1);
+
+                    b.Property<string>("ApprovingPerson")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ApprovingPersonName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("BookId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DeletedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool?>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<bool?>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("PlanId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Remarks")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Status")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("PlanApprovalId")
+                        .HasName("PK_PlanApproval");
+
+                    b.HasIndex("BookId");
+
+                    b.HasIndex("PlanId");
+
+                    b.ToTable("PlanApproval", (string)null);
                 });
 
             modelBuilder.Entity("Entities.Models.ResourceNoteBook", b =>
@@ -1412,6 +1976,155 @@ namespace Infrastructure.Migrations
                     b.ToTable("Setup_School", (string)null);
                 });
 
+            modelBuilder.Entity("Entities.Models.SchoolLatter", b =>
+                {
+                    b.Property<int>("SchoolLatterId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SchoolLatterId"), 1L, 1);
+
+                    b.Property<string>("Body")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Closing")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("CreatedDate")
+                        .HasColumnType("date");
+
+                    b.Property<DateTime?>("Date")
+                        .HasColumnType("date");
+
+                    b.Property<DateTime?>("DeletedOn")
+                        .HasColumnType("date");
+
+                    b.Property<bool?>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<bool?>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<int?>("IssuingACId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("date");
+
+                    b.Property<int?>("ParentId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ReceiverContact")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ReceiverDesignation")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ReceiverName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Salutation")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SenderContact")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SenderDesignation")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SenderName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("SendingDate")
+                        .HasColumnType("date");
+
+                    b.Property<int?>("StudentId")
+                        .HasColumnType("int");
+
+                    b.HasKey("SchoolLatterId")
+                        .HasName("PK_SchoolLatter");
+
+                    b.HasIndex("IssuingACId");
+
+                    b.HasIndex("ParentId");
+
+                    b.HasIndex("StudentId");
+
+                    b.ToTable("SchoolLatter", (string)null);
+                });
+
+            modelBuilder.Entity("Entities.Models.SchoolNotice", b =>
+                {
+                    b.Property<int>("SchoolNoticeId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SchoolNoticeId"), 1L, 1);
+
+                    b.Property<string>("Body")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("BroadcastDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("CreatedDate")
+                        .HasColumnType("date");
+
+                    b.Property<DateTime?>("Date")
+                        .HasColumnType("date");
+
+                    b.Property<DateTime?>("DeletedOn")
+                        .HasColumnType("date");
+
+                    b.Property<bool?>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<bool?>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<int?>("IssuingACId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("Recipient")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Salutation")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("SchoolNoticeId")
+                        .HasName("PK_SchoolNotice");
+
+                    b.HasIndex("IssuingACId");
+
+                    b.ToTable("SchoolNotice", (string)null);
+                });
+
             modelBuilder.Entity("Entities.Models.SchoolSection", b =>
                 {
                     b.Property<int>("SchoolSectionId")
@@ -1422,6 +2135,9 @@ namespace Infrastructure.Migrations
 
                     b.Property<string>("Abbrevation")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("AssistantCoordinatorId")
+                        .HasColumnType("int");
 
                     b.Property<int?>("CampusId")
                         .HasColumnType("int");
@@ -1477,6 +2193,8 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("SchoolSectionId")
                         .HasName("PK_SchoolSection");
+
+                    b.HasIndex("AssistantCoordinatorId");
 
                     b.HasIndex("CampusId");
 
@@ -1714,6 +2432,304 @@ namespace Infrastructure.Migrations
                     b.HasIndex("YearId");
 
                     b.ToTable("STPlanApproval", (string)null);
+                });
+
+            modelBuilder.Entity("Entities.Models.Student", b =>
+                {
+                    b.Property<int>("StudentId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("StudentId"), 1L, 1);
+
+                    b.Property<string>("Address")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("AdmissionEmail")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("AdmissionTestResult")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("AdmittedClassOrSection")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("AdmittedSession")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Allergies")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("BloodGroup")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("BoardMarksObtained")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("BoardOrEnrollmentNo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("BoardOrUniversityName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CNIC")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CandidateName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CandidateNo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Cast")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Category")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("City")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("ClassId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CountryOfBirth")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("CreatedDate")
+                        .HasColumnType("date");
+
+                    b.Property<DateTime?>("DOB")
+                        .HasColumnType("date");
+
+                    b.Property<DateTime?>("DeletedOn")
+                        .HasColumnType("date");
+
+                    b.Property<string>("ElectricityBillNo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EmergencyContactName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EmergencyContactNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ExtraCurricularActivities")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FromSchool")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Gender")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ITSNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool?>("IgnoreFeeDefaulterRestrictLogin")
+                        .HasColumnType("bit");
+
+                    b.Property<bool?>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("LName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LanguageSpken")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool?>("LoginFeeDefualterRestrictLogin")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Mobile")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ModeOfTransport")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("Nationality")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NationalityType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool?>("OnlyRegisteredNoAdmitted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("PalceOfBirth")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("ParentId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PassportNo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("PassportValidity")
+                        .HasColumnType("date");
+
+                    b.Property<string>("Phone")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Picture")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RegistraionNo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("RegistrationDate")
+                        .HasColumnType("date");
+
+                    b.Property<string>("Religion")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ResidentCardNo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool?>("RestrictLogin")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("RollNo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("ScholarchipAmount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("SeatNo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SecondAddress")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SecondEmail")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool?>("Status")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<string>("StudentRegistraionNo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("TaxPercentage")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ToSchool")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Username")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("VaccinationFirstDose")
+                        .HasColumnType("date");
+
+                    b.Property<DateTime?>("VaccinationFourthDose")
+                        .HasColumnType("date");
+
+                    b.Property<DateTime?>("VaccinationSecondDose")
+                        .HasColumnType("date");
+
+                    b.Property<DateTime?>("VaccinationThirdDose")
+                        .HasColumnType("date");
+
+                    b.Property<DateTime?>("VisaValidity")
+                        .HasColumnType("date");
+
+                    b.Property<string>("WaterBillNo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("StudentId")
+                        .HasName("PK_Student");
+
+                    b.HasIndex("ClassId");
+
+                    b.HasIndex("ParentId");
+
+                    b.ToTable("Student", (string)null);
+                });
+
+            modelBuilder.Entity("Entities.Models.StudentAttendance", b =>
+                {
+                    b.Property<int>("StudentAttendanceId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("StudentAttendanceId"), 1L, 1);
+
+                    b.Property<string>("AttendanceStatus")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("ClassId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("CreatedDate")
+                        .HasColumnType("date");
+
+                    b.Property<DateTime?>("Date")
+                        .HasColumnType("date");
+
+                    b.Property<DateTime?>("DeletedOn")
+                        .HasColumnType("date");
+
+                    b.Property<DateTime?>("EndDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool?>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<bool?>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("LateOrOnTime")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("nvarchar(max)")
+                        .HasDefaultValue("On Time");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("date");
+
+                    b.Property<DateTime?>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("StudentId")
+                        .HasColumnType("int");
+
+                    b.HasKey("StudentAttendanceId")
+                        .HasName("PK_StudentAttendance");
+
+                    b.HasIndex("ClassId");
+
+                    b.HasIndex("StudentId");
+
+                    b.ToTable("StudentAttendance", (string)null);
                 });
 
             modelBuilder.Entity("Entities.Models.SubDepartment", b =>
@@ -1992,6 +3008,9 @@ namespace Infrastructure.Migrations
                     b.Property<string>("ModifiedDate")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("PlanId")
+                        .HasColumnType("int");
+
                     b.Property<int?>("SectionId")
                         .HasColumnType("int");
 
@@ -2018,6 +3037,8 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("SubTopicAllocationId")
                         .HasName("PK_SubTopicAllocation");
+
+                    b.HasIndex("PlanId");
 
                     b.HasIndex("SectionId");
 
@@ -2145,6 +3166,69 @@ namespace Infrastructure.Migrations
                     b.ToTable("Setup_Term", (string)null);
                 });
 
+            modelBuilder.Entity("Entities.Models.Test", b =>
+                {
+                    b.Property<int>("TestId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TestId"), 1L, 1);
+
+                    b.Property<int?>("BookId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ClassId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("CreatedDate")
+                        .HasColumnType("date");
+
+                    b.Property<DateTime?>("DeletedOn")
+                        .HasColumnType("date");
+
+                    b.Property<bool?>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
+
+                    b.Property<bool?>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("date");
+
+                    b.Property<int?>("ObtainedMarks")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("SubjectId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TestTitle")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("TotalMarks")
+                        .HasColumnType("int");
+
+                    b.HasKey("TestId")
+                        .HasName("PK_Test");
+
+                    b.HasIndex("BookId");
+
+                    b.HasIndex("ClassId");
+
+                    b.HasIndex("SubjectId");
+
+                    b.ToTable("Test", (string)null);
+                });
+
             modelBuilder.Entity("Entities.Models.Topic", b =>
                 {
                     b.Property<int>("TopicId")
@@ -2242,6 +3326,9 @@ namespace Infrastructure.Migrations
                     b.Property<string>("ModifiedDate")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("PlanId")
+                        .HasColumnType("int");
+
                     b.Property<int?>("SectionId")
                         .HasColumnType("int");
 
@@ -2273,6 +3360,8 @@ namespace Infrastructure.Migrations
                         .HasName("PK_TopicAllocation");
 
                     b.HasIndex("ChapterId");
+
+                    b.HasIndex("PlanId");
 
                     b.HasIndex("SectionId");
 
@@ -2384,6 +3473,9 @@ namespace Infrastructure.Migrations
                     b.Property<string>("ModifiedDate")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("PlanId")
+                        .HasColumnType("int");
+
                     b.Property<int?>("SectionId")
                         .HasColumnType("int");
 
@@ -2407,6 +3499,8 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("UnitAllocationId")
                         .HasName("PK_UnitAllocation");
+
+                    b.HasIndex("PlanId");
 
                     b.HasIndex("SectionId");
 
@@ -2593,6 +3687,15 @@ namespace Infrastructure.Migrations
                     b.ToTable("Setup_Year", (string)null);
                 });
 
+            modelBuilder.Entity("Entities.Models.AcademicPlannings", b =>
+                {
+                    b.HasOne("Entities.Models.Employee", "Employee")
+                        .WithMany("AcademicPlannings")
+                        .HasForeignKey("EmployeeId");
+
+                    b.Navigation("Employee");
+                });
+
             modelBuilder.Entity("Entities.Models.ACPlanApproval", b =>
                 {
                     b.HasOne("Entities.Models.STPlanApproval", "Plan")
@@ -2680,6 +3783,12 @@ namespace Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.SetNull)
                         .HasConstraintName("FK_ChapterAllocation_ChapterId");
 
+                    b.HasOne("Entities.Models.AcademicPlannings", "Plan")
+                        .WithMany("ChapterAllocations")
+                        .HasForeignKey("PlanId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("FK_ChapterAllocation_PlanId");
+
                     b.HasOne("Entities.Models.Section", "Section")
                         .WithMany("ChapterAllocations")
                         .HasForeignKey("SectionId")
@@ -2705,6 +3814,8 @@ namespace Infrastructure.Migrations
                         .HasConstraintName("FK_ChapterAllocation_WorkBookId");
 
                     b.Navigation("Chapter");
+
+                    b.Navigation("Plan");
 
                     b.Navigation("Section");
 
@@ -2779,6 +3890,33 @@ namespace Infrastructure.Migrations
                         .HasConstraintName("FK_Department_ShooraId");
 
                     b.Navigation("Shoora");
+                });
+
+            modelBuilder.Entity("Entities.Models.Diary", b =>
+                {
+                    b.HasOne("Entities.Models.Section", "Class")
+                        .WithMany("Diaries")
+                        .HasForeignKey("ClassId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("FK_Diary_ClassId");
+
+                    b.HasOne("Entities.Models.Subject", "Subject")
+                        .WithMany("Diaries")
+                        .HasForeignKey("SubjectId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("FK_Diary_SubjectId");
+
+                    b.HasOne("Entities.Models.Test", "Test")
+                        .WithMany("Diaries")
+                        .HasForeignKey("TestId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("FK_Diary_TestId");
+
+                    b.Navigation("Class");
+
+                    b.Navigation("Subject");
+
+                    b.Navigation("Test");
                 });
 
             modelBuilder.Entity("Entities.Models.Employee", b =>
@@ -2914,8 +4052,82 @@ namespace Infrastructure.Migrations
                     b.Navigation("Term");
                 });
 
+            modelBuilder.Entity("Entities.Models.LeaveApplication", b =>
+                {
+                    b.HasOne("Entities.Models.Student", "Student")
+                        .WithMany("LeaveApplications")
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("FK_LeaveApplication_StudentId");
+
+                    b.Navigation("Student");
+                });
+
+            modelBuilder.Entity("Entities.Models.PlanApproval", b =>
+                {
+                    b.HasOne("Entities.Models.Book", "BookPlan")
+                        .WithMany("Plans")
+                        .HasForeignKey("BookId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("FK_PlanApproval_BookId");
+
+                    b.HasOne("Entities.Models.AcademicPlannings", "Plan")
+                        .WithMany("PlanApprovals")
+                        .HasForeignKey("PlanId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("FK_PlanApproval_PlanId");
+
+                    b.Navigation("BookPlan");
+
+                    b.Navigation("Plan");
+                });
+
+            modelBuilder.Entity("Entities.Models.SchoolLatter", b =>
+                {
+                    b.HasOne("Entities.Models.Employee", "IssuingAC")
+                        .WithMany("SchoolLatters")
+                        .HasForeignKey("IssuingACId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("FK_SchoolLetter_IssuingACId");
+
+                    b.HasOne("Entities.Models.Parent", "Parent")
+                        .WithMany("SchoolLatters")
+                        .HasForeignKey("ParentId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("FK_SchoolLetter_ParentId");
+
+                    b.HasOne("Entities.Models.Student", "Student")
+                        .WithMany("SchoolLatters")
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("FK_SchoolLetter_StudentId");
+
+                    b.Navigation("IssuingAC");
+
+                    b.Navigation("Parent");
+
+                    b.Navigation("Student");
+                });
+
+            modelBuilder.Entity("Entities.Models.SchoolNotice", b =>
+                {
+                    b.HasOne("Entities.Models.Employee", "IssuingAC")
+                        .WithMany("SchoolNotices")
+                        .HasForeignKey("IssuingACId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("FK_SchoolNotice_IssuingACId");
+
+                    b.Navigation("IssuingAC");
+                });
+
             modelBuilder.Entity("Entities.Models.SchoolSection", b =>
                 {
+                    b.HasOne("Entities.Models.Employee", "AssistantCoordinator")
+                        .WithMany("SchoolSections")
+                        .HasForeignKey("AssistantCoordinatorId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("FK_SchoolSection_AssistantCoordinatorId");
+
                     b.HasOne("Entities.Models.Campus", "Campus")
                         .WithMany("sections")
                         .HasForeignKey("CampusId")
@@ -2927,6 +4139,8 @@ namespace Infrastructure.Migrations
                         .HasForeignKey("SchoolId")
                         .OnDelete(DeleteBehavior.SetNull)
                         .HasConstraintName("FK_SchoolSection_SchoolId");
+
+                    b.Navigation("AssistantCoordinator");
 
                     b.Navigation("Campus");
 
@@ -3020,6 +4234,44 @@ namespace Infrastructure.Migrations
                     b.Navigation("Year");
                 });
 
+            modelBuilder.Entity("Entities.Models.Student", b =>
+                {
+                    b.HasOne("Entities.Models.Section", "Class")
+                        .WithMany("Students")
+                        .HasForeignKey("ClassId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("FK_Student_ClassId");
+
+                    b.HasOne("Entities.Models.Parent", "Parent")
+                        .WithMany("Students")
+                        .HasForeignKey("ParentId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("FK_Student_ParentId");
+
+                    b.Navigation("Class");
+
+                    b.Navigation("Parent");
+                });
+
+            modelBuilder.Entity("Entities.Models.StudentAttendance", b =>
+                {
+                    b.HasOne("Entities.Models.Section", "Class")
+                        .WithMany("StudentAttendances")
+                        .HasForeignKey("ClassId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("FK_StudentAttendance_ClassId");
+
+                    b.HasOne("Entities.Models.Student", "Student")
+                        .WithMany("StudentAttendances")
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("FK_StudentAttendance_StudentId");
+
+                    b.Navigation("Class");
+
+                    b.Navigation("Student");
+                });
+
             modelBuilder.Entity("Entities.Models.SubDepartment", b =>
                 {
                     b.HasOne("Entities.Models.Head", "Head")
@@ -3098,6 +4350,12 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Entities.Models.SubTopicAllocation", b =>
                 {
+                    b.HasOne("Entities.Models.AcademicPlannings", "Plan")
+                        .WithMany("SubTopicAllocations")
+                        .HasForeignKey("PlanId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("FK_SubTopicAllocation_PlanId");
+
                     b.HasOne("Entities.Models.Section", "Section")
                         .WithMany("SubTopicAllocations")
                         .HasForeignKey("SectionId")
@@ -3128,6 +4386,8 @@ namespace Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.SetNull)
                         .HasConstraintName("FK_SubTopicAllocation_WorkBookId");
 
+                    b.Navigation("Plan");
+
                     b.Navigation("Section");
 
                     b.Navigation("SubTopic");
@@ -3150,6 +4410,33 @@ namespace Infrastructure.Migrations
                     b.Navigation("Year");
                 });
 
+            modelBuilder.Entity("Entities.Models.Test", b =>
+                {
+                    b.HasOne("Entities.Models.Book", "Book")
+                        .WithMany("Tests")
+                        .HasForeignKey("BookId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("FK_Test_BookId");
+
+                    b.HasOne("Entities.Models.Section", "Class")
+                        .WithMany("Tests")
+                        .HasForeignKey("ClassId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("FK_Test_ClassId");
+
+                    b.HasOne("Entities.Models.Subject", "Subject")
+                        .WithMany("Tests")
+                        .HasForeignKey("SubjectId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("FK_Test_SubjectId");
+
+                    b.Navigation("Book");
+
+                    b.Navigation("Class");
+
+                    b.Navigation("Subject");
+                });
+
             modelBuilder.Entity("Entities.Models.Topic", b =>
                 {
                     b.HasOne("Entities.Models.Chapter", "Chapter")
@@ -3168,6 +4455,12 @@ namespace Infrastructure.Migrations
                         .HasForeignKey("ChapterId")
                         .OnDelete(DeleteBehavior.SetNull)
                         .HasConstraintName("FK_TopicAllocation_ChapterId");
+
+                    b.HasOne("Entities.Models.AcademicPlannings", "Plan")
+                        .WithMany("TopicAllocations")
+                        .HasForeignKey("PlanId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("FK_TopicAllocation_PlanId");
 
                     b.HasOne("Entities.Models.Section", "Section")
                         .WithMany("TopicAllocations")
@@ -3201,6 +4494,8 @@ namespace Infrastructure.Migrations
 
                     b.Navigation("Chapter");
 
+                    b.Navigation("Plan");
+
                     b.Navigation("Section");
 
                     b.Navigation("TeachingMethodology");
@@ -3225,6 +4520,12 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Entities.Models.UnitAllocation", b =>
                 {
+                    b.HasOne("Entities.Models.AcademicPlannings", "Plan")
+                        .WithMany("UnitAllocations")
+                        .HasForeignKey("PlanId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .HasConstraintName("FK_UnitAllocation_PlanId");
+
                     b.HasOne("Entities.Models.Section", "Section")
                         .WithMany("UnitAllocations")
                         .HasForeignKey("SectionId")
@@ -3248,6 +4549,8 @@ namespace Infrastructure.Migrations
                         .HasForeignKey("WorkBookId")
                         .OnDelete(DeleteBehavior.SetNull)
                         .HasConstraintName("FK_UnitAllocation_WorkBookId");
+
+                    b.Navigation("Plan");
 
                     b.Navigation("Section");
 
@@ -3277,17 +4580,34 @@ namespace Infrastructure.Migrations
                     b.Navigation("Role");
                 });
 
+            modelBuilder.Entity("Entities.Models.AcademicPlannings", b =>
+                {
+                    b.Navigation("ChapterAllocations");
+
+                    b.Navigation("PlanApprovals");
+
+                    b.Navigation("SubTopicAllocations");
+
+                    b.Navigation("TopicAllocations");
+
+                    b.Navigation("UnitAllocations");
+                });
+
             modelBuilder.Entity("Entities.Models.Book", b =>
                 {
                     b.Navigation("BookAllocations");
 
                     b.Navigation("ChapterAllocations");
 
+                    b.Navigation("Plans");
+
                     b.Navigation("STPlans");
 
                     b.Navigation("SubTopicAllocations");
 
                     b.Navigation("SubjectTeacherAllocations");
+
+                    b.Navigation("Tests");
 
                     b.Navigation("TopicAllocations");
 
@@ -3335,11 +4655,19 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Entities.Models.Employee", b =>
                 {
+                    b.Navigation("AcademicPlannings");
+
                     b.Navigation("Grades");
 
                     b.Navigation("Heads");
 
                     b.Navigation("STPlans");
+
+                    b.Navigation("SchoolLatters");
+
+                    b.Navigation("SchoolNotices");
+
+                    b.Navigation("SchoolSections");
 
                     b.Navigation("Sections");
 
@@ -3363,6 +4691,13 @@ namespace Infrastructure.Migrations
             modelBuilder.Entity("Entities.Models.Head", b =>
                 {
                     b.Navigation("subDepartments");
+                });
+
+            modelBuilder.Entity("Entities.Models.Parent", b =>
+                {
+                    b.Navigation("SchoolLatters");
+
+                    b.Navigation("Students");
                 });
 
             modelBuilder.Entity("Entities.Models.Permissions", b =>
@@ -3406,13 +4741,21 @@ namespace Infrastructure.Migrations
 
                     b.Navigation("ChapterAllocations");
 
+                    b.Navigation("Diaries");
+
                     b.Navigation("STPlans");
+
+                    b.Navigation("StudentAttendances");
+
+                    b.Navigation("Students");
 
                     b.Navigation("SubTopicAllocations");
 
                     b.Navigation("SubjectAllocations");
 
                     b.Navigation("SubjectTeacherAllocations");
+
+                    b.Navigation("Tests");
 
                     b.Navigation("TopicAllocations");
 
@@ -3439,6 +4782,15 @@ namespace Infrastructure.Migrations
                     b.Navigation("GMPlans");
                 });
 
+            modelBuilder.Entity("Entities.Models.Student", b =>
+                {
+                    b.Navigation("LeaveApplications");
+
+                    b.Navigation("SchoolLatters");
+
+                    b.Navigation("StudentAttendances");
+                });
+
             modelBuilder.Entity("Entities.Models.SubDepartment", b =>
                 {
                     b.Navigation("Employees");
@@ -3448,7 +4800,11 @@ namespace Infrastructure.Migrations
                 {
                     b.Navigation("Books");
 
+                    b.Navigation("Diaries");
+
                     b.Navigation("SubjectAllocations");
+
+                    b.Navigation("Tests");
                 });
 
             modelBuilder.Entity("Entities.Models.SubTopic", b =>
@@ -3474,6 +4830,11 @@ namespace Infrastructure.Migrations
                     b.Navigation("TopicAllocations");
 
                     b.Navigation("UnitAllocations");
+                });
+
+            modelBuilder.Entity("Entities.Models.Test", b =>
+                {
+                    b.Navigation("Diaries");
                 });
 
             modelBuilder.Entity("Entities.Models.Topic", b =>

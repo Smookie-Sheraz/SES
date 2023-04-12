@@ -58,6 +58,16 @@ namespace Infrastructure.Data
         public DbSet<ACPlanApproval> ACPlanApproval { get; set; }
         public DbSet<DCPlanApproval> DCPlanApproval { get; set; }
         public DbSet<DAPlanApproval> DAPlanApproval { get; set; }
+        public DbSet<PlanApproval> PlanApproval { get; set; }
+        public DbSet<AcademicPlannings> AcademicPlannings { get; set; }
+        public DbSet<Student> Students { get; set; }
+        public DbSet<Parent> Parents { get; set; }
+        public DbSet<StudentAttendance> StudentAttendance { get; set; }
+        public DbSet<LeaveApplication> LeaveApplications { get; set; }
+        public DbSet<SchoolLatter> SchoolLatters { get; set; }
+        public DbSet<SchoolNotice> SchoolNotices { get; set; }
+        public DbSet<Diary> Diaries { get; set; }
+        public DbSet<Test> Tests { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             //Apply Configurations
@@ -104,6 +114,16 @@ namespace Infrastructure.Data
             modelBuilder.ApplyConfiguration(new ACPlanApprovalConfiguration());
             modelBuilder.ApplyConfiguration(new DCPlanApprovalConfiguration());
             modelBuilder.ApplyConfiguration(new DAPlanApprovalConfiguration());
+            modelBuilder.ApplyConfiguration(new PlanApprovalConfiguration());
+            modelBuilder.ApplyConfiguration(new AcademicPlanningsConfiguration());
+            modelBuilder.ApplyConfiguration(new StudentConfiguration());
+            modelBuilder.ApplyConfiguration(new ParentConfiguration());
+            modelBuilder.ApplyConfiguration(new StudentAttendanceConfiguration());
+            modelBuilder.ApplyConfiguration(new LeaveApplicationConfiguration());
+            modelBuilder.ApplyConfiguration(new SchoolLatterConfiguration());
+            modelBuilder.ApplyConfiguration(new SchoolNoticeConfiguration());
+            modelBuilder.ApplyConfiguration(new TestConfiguration());
+            modelBuilder.ApplyConfiguration(new DiaryConfiguration());
             base.OnModelCreating(modelBuilder);
         }
     }

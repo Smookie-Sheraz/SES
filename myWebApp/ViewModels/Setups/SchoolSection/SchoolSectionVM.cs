@@ -10,6 +10,8 @@ namespace myWebApp.ViewModels.Setups.SchoolSection
         [Display(Name = "School")]
         [Required(ErrorMessage = "{0} is required")]
         public int? SchoolId { get; set; }
+        [Display(Name = "Assistant Coordinator")]
+        public int ACId { get; set; }
         public string? SectionName { get; set; }
         public string? CampusName { get; set; }
         public string? Abbrevation { get; set; }

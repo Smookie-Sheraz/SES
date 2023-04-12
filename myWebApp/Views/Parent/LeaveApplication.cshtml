@@ -1,0 +1,119 @@
+﻿@model myWebApp.ViewModels.Parent.LeaveApplicationVM
+@{
+}
+<div class="main-panel">
+    <div class="content-wrapper">
+        <div class="row">
+            <div class="col-12 grid-margin stretch-card">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Leave Application for @User.FindFirst("UserName")</h4>
+                        @*<p class="card-description">
+                            Please Add The New Topic of @ViewBag.Chapter and Press the Add Button.
+                        </p>*@
+                        <form class="forms-sample" method="post"
+                              asp-controller="Parent" asp-action="LeaveApplication">
+                            <input type="hidden" asp-for="StudentId" />
+                            @*@if (User.HasClaim("Permission", "Topic.Create"))
+                            {*@
+                                @*<h4>Leaves</h4>*@
+                                <div class="row">
+                                    <div class="col-4">
+                                        <div class="form-group">
+                                            <label asp-for="Reason">Reason</label>
+                                            <input type="text" class="form-control" asp-for="Reason" placeholder="Enter Reason" />
+                                            <span asp-validation-for="Reason" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="form-group">
+                                            <label asp-for="StartDate">Start Date</label>
+                                            <input type="date" min="@Model.MinDate" class="form-control" asp-for="StartDate" placeholder="Enter Start Date"/>
+                                            <span asp-validation-for="StartDate" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="form-group">
+                                            <label asp-for="EndDate">End Date</label>
+                                            <input type="date" min="@Model.MinDate" class="form-control" asp-for="EndDate" placeholder="Enter End Date"/>
+                                            <span asp-validation-for="EndDate" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="float-right mt-5">
+                                    <button type="submit" class="btn btn-primary mr-2">Apply</button>
+                                </div>   
+                            @*}*@
+                            <div class="col-12 grid-margin stretch-card">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h4 class="card-title">Leaves History</h4>
+                                        @*<p class="card-description">
+                                            Topic of the Chapter @ViewBag.Chapter
+                                        </p>*@
+                                        <div class="table-responsive">
+                                            <table class="table table-hover table-bordered">
+                                                <thead class="bg-primary text-white">
+                                                    <tr>
+                                                        <th>Actions</th>
+                                                        <th>Reason</th>
+                                                        <th>Start Date</th>
+                                                        <th>End Date</th>
+                                                        <th>Status</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody class="term-data">
+                                                    @foreach (var Topic in ViewBag.Leaves)
+                                                    {
+                                                        <tr>
+                                                           @* @if (User.HasClaim("Permission", "Topic.Update") || User.HasClaim("Permission", "Topic.Delete") || User.HasClaim("Permission", "SubTopic.Update") || User.HasClaim("Permission", "SubTopic.Read") || User.HasClaim("Permission", "SubTopic.Create") || User.HasClaim("Permission", "SubTopic.Delete"))
+                                                        {*@
+                                                            <td class="actions">
+                                                                    @*@if(User.HasClaim("Permission", "SubTopic.Create"))
+                                                                    {
+                                                                            <a class="fa fa-file mr-3" asp-route-id="@Topic.TopicId"  title="Add Sub-Topics" asp-controller="Grade" asp-action="SubTopic" role="button"></a>
+
+                                                                    }
+                                                                    @if(User.HasClaim("Permission", "Topic.Update"))
+                                                                    {
+                                                                    <a class="fa fa-edit mr-3" asp-route-id="@Topic.TopicId" title="Edit Topic" asp-controller="Grade" asp-action="UpdateTopic" role="button"></a>
+                                                                    }*@
+                                                                    @*@if(User.HasClaim("Permission", "Topic.Delete"))
+                                                                    {*@
+                                                                @if (Topic.ApplicationStatus == "Rejected" || Topic.ApplicationStatus == "Pending"){
+                                                                    <a class="fa fa-trash text-danger" title="Delete Topic" onclick="return confirm('Are you sure you want to delete?');" asp-route-LeaveId="@Topic.LeaveApplicationId" asp-route-studentId="@Topic.StudentId" asp-controller="Parent" asp-action="DeleteLeaveApplication" role="button"></a>
+                                                                    }
+                                                            </td>
+                                                            @*}*@
+                                                            <td>@Topic.Reason</td>
+                                                            <td>@Convert.ToDateTime(Topic.StartDate).ToString("dd-MMM-yyyy")</td>
+                                                            <td>@Convert.ToDateTime(Topic.EndDate).ToString("dd-MMM-yyyy")</td>
+                                                            <td>
+                                                                @if (Topic.ApplicationStatus == "Approved")
+                                                            {
+                                                                <label class="badge badge-success">Approved</label>
+                                                            }
+                                                                else if (Topic.ApplicationStatus == "Rejected")
+                                                            {
+                                                                <label class="badge badge-danger">Rejected</label>
+                                                            }
+                                                            else{
+                                                                <label class="badge badge-warning">Pending</label>
+                                                            }
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

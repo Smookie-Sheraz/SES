@@ -44,7 +44,7 @@
                                         </div>
                                     </div>
                                 }
-                                @if (User.IsInRole("Director Academics") || User.IsInRole("Deputy Coordinator") || User.IsInRole("Assistant Coordinator") || User.IsInRole("Grade Manager"))
+                                @if (User.IsInRole("Director Academics") || User.IsInRole("Deputy Coordinator") || User.IsInRole("Assistant Coordinator"))
                                 {
                                     <div class="col-2 text-center">
                                         <div class="form-group">
@@ -58,11 +58,30 @@
                                                         <option value="@sSection.GradeId">@sSection.GradeName</option>
                                                     }
                                                 }
-                                                else if (User.IsInRole("Assistant Coordinator") || (User.IsInRole("Grade Manager")))
+                                                @*else if (User.IsInRole("Assistant Coordinator") || (User.IsInRole("Grade Manager")))
                                                 {
                                                     @foreach (var sSection in ViewBag.Grades)
                                                     {
                                                         <option value="@sSection.GradeId">@sSection.GradeName</option>
+                                                    }
+                                                }*@
+                                            </select>
+                                            <span asp-validation-for="GradeId" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                }
+                                @if (User.IsInRole("Director Academics") || User.IsInRole("Deputy Coordinator") || User.IsInRole("Assistant Coordinator") || User.IsInRole("Grade Manager"))
+                                {
+                                    <div class="col-2 text-center">
+                                        <div class="form-group">
+                                            <label>Classes</label>
+                                            <select asp-for="SectionId" class="form-select" onchange="GetSubjects(this.id)" aria-label="Default select example">
+                                                <option selected>Select Class Please</option>
+                                                @if (Model.SectionId != null)
+                                                {
+                                                    @foreach (var sSection in ViewBag.Sections)
+                                                    {
+                                                        <option value="@sSection.SectionId">@sSection.SectionName</option>
                                                     }
                                                 }
                                             </select>
@@ -111,7 +130,7 @@
                                         <span asp-validation-for="BookId" class="text-danger"></span>
                                     </div>
                                 </div>
-                                <div class="col-2 text-center">
+                                <div class="col-1 text-center">
                                     <button class="btn btn-primary mt-4" type="submit">Find Plan</button>
                                 </div>
                             </div>
@@ -186,7 +205,7 @@
                                                 }
                                             </tr>
                                             <tr>
-                                                <th colspan="3">
+                                                <th colspan="2">
                                                     <div class="row flex-column justify-content-around h-100">
                                                         <div>
                                                             <h4>Teacher Name</h4>
@@ -216,7 +235,7 @@
                                                         </div>
                                                     </div>
                                                 </th>
-                                                <th colspan="3">
+                                                <th colspan="2">
                                                     <div class="row flex-column justify-content-around">
                                                         <div>
                                                             <h4>Term Name</h4>
@@ -226,6 +245,13 @@
                                                         </div>
                                                     </div>
                                                 </th>
+                                                @*<th colspan="2">
+                                                    <div class="row flex-column justify-content-around">
+                                                        <div>
+                                                            <a class="fa fa-file mr-3" title="Add Chapters" asp-route-YearId="@Model." asp-controller="Grade" asp-action="Chapter" role="button"></a>
+                                                        </div>
+                                                    </div>
+                                                </th>*@
                                             </tr>
                                             <tr class="bg-primary">
                                                 <th>Start Date</th>

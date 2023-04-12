@@ -1,0 +1,476 @@
+﻿@model myWebApp.ViewModels.Student.StudentVM
+<div class="main-panel">
+    <div class="content-wrapper">
+        <div class="row">
+            <div class="col-12 grid-margin stretch-card">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Add New Student</h4>
+                        <form class="forms-sample" method="post"
+                              asp-controller="Student" asp-action="AddStudent" enctype="multipart/form-data">
+                              <input type="hidden" asp-for="ParentId" />
+                            <div class="row">
+                                <h3>Primary Information</h3>
+                                <div class="col-12 mt-2">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label asp-for="ClassId">Class</label>
+                                                <select asp-for="ClassId" class="form-select" aria-label="Default select example">
+                                                    <option selected>Select Class Please</option>
+                                                    @foreach (var grades in ViewBag.Classes)
+                                                    {
+                                                        <option value="@grades.SectionId">@grades.ClassName</option>
+                                                    }
+                                                </select>
+                                                <span asp-validation-for="ClassId" class="text-danger"></span>
+                                            </div>
+                                            <div class="form-group">
+                                                <label asp-for="FName">First Name</label>
+                                                <input type="text" class="form-control" asp-for="FName" placeholder="Enter First Name">
+                                                <span asp-validation-for="FName" class="text-danger"></span>
+                                            </div>
+                                            <div class="form-group">
+                                                <label asp-for="LName">Last Name</label>
+                                                <input type="text" class="form-control" asp-for="LName" placeholder="Enter Last Name">
+                                                <span asp-validation-for="LName" class="text-danger"></span>
+                                            </div>
+                                            <div class="form-group">
+                                                <label asp-for="Gender">Gender</label>
+                                                <select asp-for="Gender" class="form-select" aria-label="Default select example">
+                                                    <option selected value="@null">Select Gender Please</option>
+                                                    <option value="Male">Male</option>
+                                                    <option value="Female">Female</option>
+                                                    <option value="Trans Gender">Other</option>
+                                                </select>
+                                                <span asp-validation-for="Gender" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label asp-for="DOB">Date of Birth</label>
+                                                <input type="date" class="form-control" asp-for="DOB" placeholder="Enter DOB">
+                                                <span asp-validation-for="DOB" class="text-danger"></span>
+                                            </div>
+                                            @*<div class="form-group">
+                                                <label asp-for="StudentRegistraionNo">Student Registration Number</label>
+                                                <input type="text" class="form-control" asp-for="StudentRegistraionNo" placeholder="Enter Student Registration Number">
+                                                <span asp-validation-for="StudentRegistraionNo" class="text-danger"></span>
+                                            </div>*@
+                                            <div class="form-group">
+                                                <label asp-for="Phone">Phone</label>
+                                                <input type="text" class="form-control" asp-for="Phone" placeholder="Enter Phone Number">
+                                                <span asp-validation-for="Phone" class="text-danger"></span>
+                                            </div>
+                                            <div class="form-group">
+                                                <label asp-for="Mobile">Mobile</label>
+                                                <input type="text" class="form-control" asp-for="Mobile" placeholder="Enter Mobile Number">
+                                                <span asp-validation-for="Mobile" class="text-danger"></span>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Choose User Image</label>
+                                                <input type="file" class="form-control" asp-for="Picture" />
+                                                <span asp-validation-for="Picture" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label asp-for="EmergencyContactName">Emergency Contact Name</label>
+                                                <input type="text" class="form-control" asp-for="EmergencyContactName" placeholder="Enter Emergency Contact Name">
+                                                <span asp-validation-for="EmergencyContactName" class="text-danger"></span>
+                                            </div>
+                                            <div class="form-group">
+                                                <label asp-for="EmergencyContactNumber">Emergency Contact Number</label>
+                                                <input type="text" class="form-control" asp-for="EmergencyContactNumber" placeholder="Enter Emergency Contact Number">
+                                                <span asp-validation-for="EmergencyContactNumber" class="text-danger"></span>
+                                            </div>
+                                            <div class="form-group">
+                                                <label asp-for="ModeOfTransport">Mode of Transport</label>
+                                                <input type="text" class="form-control" asp-for="ModeOfTransport" placeholder="Enter Mode of Transport">
+                                                <span asp-validation-for="ModeOfTransport" class="text-danger"></span>
+                                            </div>
+                                            <div class="form-group">
+                                                <label asp-for="ToSchool">Transportation To School</label>
+                                                <input type="text" class="form-control" asp-for="ToSchool" placeholder="Enter Transportation To School">
+                                                <span asp-validation-for="ToSchool" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label asp-for="FromSchool">Transportation From School</label>
+                                                <input type="text" class="form-control" asp-for="FromSchool" placeholder="Enter Transportation From School">
+                                                <span asp-validation-for="FromSchool" class="text-danger"></span>
+                                            </div>
+                                            <div class="form-group">
+                                                <label asp-for="Username">Username</label>
+                                                <input type="text" class="form-control" asp-for="Username" placeholder="Enter Username">
+                                                <span asp-validation-for="Username" class="text-danger"></span>
+                                            </div>
+                                            <div class="form-group">
+                                                <label asp-for="Email">Email</label>
+                                                <input type="email" class="form-control" asp-for="Email" placeholder="Enter Email">
+                                                <span asp-validation-for="Email" class="text-danger"></span>
+                                            </div>
+                                            <div class="form-group">
+                                                <label asp-for="Password">Password</label>
+                                                <input type="text" class="form-control" asp-for="Password" placeholder="Enter Password">
+                                                <span asp-validation-for="Password" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label asp-for="PasswordRepeat">Repeat Password</label>
+                                                <input type="text" class="form-control" asp-for="PasswordRepeat" placeholder="Enter Password Again">
+                                                <span asp-validation-for="PasswordRepeat" class="text-danger"></span>
+                                            </div>
+                                            <div class="form-group">
+                                                <label asp-for="RollNo">Roll No</label>
+                                                <input type="text" class="form-control" asp-for="RollNo" placeholder="Enter Roll No">
+                                                <span asp-validation-for="RollNo" class="text-danger"></span>
+                                            </div>
+                                            <div class="form-group">
+                                                <label asp-for="CNIC">CNIC</label>
+                                                <input type="text" class="form-control" asp-for="CNIC" placeholder="Enter CNIC">
+                                                <span asp-validation-for="CNIC" class="text-danger"></span>
+                                            </div>
+                                            <div class="form-group">
+                                                <label asp-for="City">City</label>
+                                                <input type="text" class="form-control" asp-for="City" placeholder="Enter City">
+                                                <span asp-validation-for="City" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label asp-for="Category">Category</label>
+                                                <input type="text" class="form-control" asp-for="Category" placeholder="Enter Category">
+                                                <span asp-validation-for="Category" class="text-danger"></span>
+                                            </div>
+                                            <div class="form-group">
+                                                <label asp-for="Cast">Cast</label>
+                                                <input type="text" class="form-control" asp-for="Cast" placeholder="Enter Cast">
+                                                <span asp-validation-for="Cast" class="text-danger"></span>
+                                            </div>
+                                            <div class="form-group">
+                                                <label asp-for="BloodGroup">Blood Group</label>
+                                                <input type="text" class="form-control" asp-for="BloodGroup" placeholder="Enter Blood Group">
+                                                <span asp-validation-for="BloodGroup" class="text-danger"></span>
+                                            </div>
+                                            <div class="form-group">
+                                                <label asp-for="Religion">Religion</label>
+                                                <input type="text" class="form-control" asp-for="Religion" placeholder="Enter Religion">
+                                                <span asp-validation-for="Religion" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label asp-for="CountryOfBirth">Country of Birth</label>
+                                                <input type="text" class="form-control" asp-for="CountryOfBirth" placeholder="Enter Country of Birth">
+                                                <span asp-validation-for="CountryOfBirth" class="text-danger"></span>
+                                            </div>
+                                            <div class="form-group">
+                                                <label asp-for="Allergies">Allergies</label>
+                                                <input type="text" class="form-control" asp-for="Allergies" placeholder="Enter any allergies">
+                                                <span asp-validation-for="Allergies" class="text-danger"></span>
+                                            </div>
+                                            <div class="form-group">
+                                                <label asp-for="LanguageSpken">Language Spoken</label>
+                                                <input type="text" class="form-control" asp-for="LanguageSpken" placeholder="Enter languages spoken">
+                                                <span asp-validation-for="LanguageSpken" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label asp-for="ExtraCurricularActivities">Extra Curricular Activities</label>
+                                                <input type="text" class="form-control" asp-for="ExtraCurricularActivities" placeholder="Enter any extra curricular activities">
+                                                <span asp-validation-for="ExtraCurricularActivities" class="text-danger"></span>
+                                            </div>
+                                            <div class="form-group">
+                                                <label asp-for="Address">Address</label>
+                                                <input type="text" class="form-control" asp-for="Address" placeholder="Enter Address">
+                                                <span asp-validation-for="Address" class="text-danger"></span>
+                                            </div>
+                                            <div class="form-group">
+                                                <label asp-for="ParentCNIC">Parent CNIC</label>
+                                                <input type="text" class="form-control" oninput="GetParentInfo(this.id)" asp-for="ParentCNIC" placeholder="Enter Parent CNIC">
+                                                <span asp-validation-for="ParentCNIC" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <h3 class="mt5 parent-info d-none">Parent Information</h3>
+                                <div class="col-12 mt-2 parent-info d-none">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label asp-for="ParentType">Parent Type</label>
+                                                <select asp-for="ParentType" class="form-select" aria-label="Default select example">
+                                                    <option selected>Select Parent Type Please</option>
+                                                    <option value="Father">Father</option>
+                                                    <option value="Mother">Mother</option>
+                                                    <option value="Guardian">Guardian</option>
+                                                </select>
+                                                <span asp-validation-for="ClassId" class="text-danger"></span>
+                                            </div>
+                                            <div class="form-group">
+                                                <label asp-for="ParentFName">Parent First Name</label>
+                                                <input type="text" class="form-control" asp-for="ParentFName" placeholder="Enter Parent First Name">
+                                                <span asp-validation-for="ParentFName" class="text-danger"></span>
+                                            </div>
+                                            <div class="form-group">
+                                                <label asp-for="ParentLName">Parent Last Name</label>
+                                                <input type="text" class="form-control" asp-for="ParentLName" placeholder="Enter Parent Last Name">
+                                                <span asp-validation-for="ParentLName" class="text-danger"></span>
+                                            </div>
+                                            <div class="form-group">
+                                                <label asp-for="ParentRegistraionDate">Parent Registraion Date</label>
+                                                <input type="date" class="form-control" asp-for="ParentRegistraionDate" placeholder="Enter Parent Registraion Date">
+                                                <span asp-validation-for="ParentRegistraionDate" class="text-danger"></span>
+                                            </div>
+                                            <div class="form-group">
+                                                <label asp-for="ParentEmployer">Parent Employer</label>
+                                                <input type="text" class="form-control" asp-for="ParentEmployer" placeholder="Enter Parent Employer">
+                                                <span asp-validation-for="ParentEmployer" class="text-danger"></span>
+                                            </div>
+                                            <div class="form-group">
+                                                <label asp-for="ParentEmail">Parent Email</label>
+                                                <input type="text" class="form-control" asp-for="ParentEmail" placeholder="Enter Parent Email">
+                                                <span asp-validation-for="ParentEmail" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label asp-for="ParentPassword">Parent Password</label>
+                                                <input type="text" class="form-control" asp-for="ParentPassword" placeholder="Enter Parent Password">
+                                                <span asp-validation-for="ParentPassword" class="text-danger"></span>
+                                            </div>
+                                            @*<div class="form-group">
+                                                <label asp-for="ParentDepartment">Parent Department</label>
+                                                <input type="text" class="form-control" asp-for="ParentDepartment" placeholder="Enter Parent Department">
+                                                <span asp-validation-for="ParentDepartment" class="text-danger"></span>
+                                            </div>*@
+                                            <div class="form-group">
+                                                <label asp-for="ParentOfficeAddress">Parent Office Address</label>
+                                                <input type="text" class="form-control" asp-for="ParentOfficeAddress" placeholder="Enter Parent Office Address">
+                                                <span asp-validation-for="ParentOfficeAddress" class="text-danger"></span>
+                                            </div>
+                                            <div class="form-group">
+                                                <label asp-for="ParentMobile">Parent Mobile</label>
+                                                <input type="text" class="form-control" asp-for="ParentMobile" placeholder="Enter Parent Mobile">
+                                                <span asp-validation-for="ParentMobile" class="text-danger"></span>
+                                            </div>
+                                            <div class="form-group">
+                                                <label asp-for="ParentOccupation">Parent Occupation</label>
+                                                <input type="text" class="form-control" asp-for="ParentOccupation" placeholder="Enter Parent Occupation">
+                                                <span asp-validation-for="ParentOccupation" class="text-danger"></span>
+                                            </div>
+                                            <div class="form-group">
+                                                <label asp-for="ParentDesignation">Parent Designation</label>
+                                                <input type="text" class="form-control" asp-for="ParentDesignation" placeholder="Enter Parent Designation">
+                                                <span asp-validation-for="ParentDesignation" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <h3 class="mt5">Optional Information</h3>
+                                <div class="col-12 mt-2">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label asp-for="CandidateNo">Candidate Number</label>
+                                                <input type="text" class="form-control" asp-for="CandidateNo" placeholder="Enter Candidate Number">
+                                                <span asp-validation-for="CandidateNo" class="text-danger"></span>
+                                            </div>
+                                            <div class="form-group">
+                                                <label asp-for="CandidateName">Candidate Name</label>
+                                                <input type="text" class="form-control" asp-for="CandidateName" placeholder="Enter Candidate Name">
+                                                <span asp-validation-for="CandidateName" class="text-danger"></span>
+                                            </div>
+                                            <div class="form-group">
+                                                <div class="form-check">
+                                                    <label class="form-check-label">
+                                                        <input type="checkbox" class="form-check-input" asp-for="OnlyRegisteredNoAdmitted" />
+                                                        Only Registered No Admitted
+                                                    </label>
+                                                    <span asp-validation-for="OnlyRegisteredNoAdmitted" class="text-danger"></span>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label asp-for="ITSNumber">ITS Number</label>
+                                                <input type="text" class="form-control" asp-for="ITSNumber" placeholder="Enter ITS Number">
+                                                <span asp-validation-for="ITSNumber" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label asp-for="PassportNo">Passport No</label>
+                                                <input type="text" class="form-control" asp-for="PassportNo" placeholder="Enter Passport No">
+                                                <span asp-validation-for="PassportNo" class="text-danger"></span>
+                                            </div>
+                                            <div class="form-group">
+                                                <label asp-for="PassportValidity">Passport Validity</label>
+                                                <input type="date" class="form-control" asp-for="PassportValidity">
+                                                <span asp-validation-for="PassportValidity" class="text-danger"></span>
+                                            </div>
+                                            <div class="form-group">
+                                                <label asp-for="VisaValidity">Visa Validity</label>
+                                                <input type="date" class="form-control" asp-for="VisaValidity">
+                                                <span asp-validation-for="VisaValidity" class="text-danger"></span>
+                                            </div>
+                                            <div class="form-group">
+                                                <label asp-for="ResidentCardNo">Resident Card No</label>
+                                                <input type="text" class="form-control" asp-for="ResidentCardNo" placeholder="Enter Resident Card No">
+                                                <span asp-validation-for="ResidentCardNo" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label asp-for="ElectricityBillNo">Electricity Bill No</label>
+                                                <input type="text" class="form-control" asp-for="ElectricityBillNo" placeholder="Enter Electricity Bill No">
+                                                <span asp-validation-for="ElectricityBillNo" class="text-danger"></span>
+                                            </div>
+                                            <div class="form-group">
+                                                <label asp-for="WaterBillNo">Water Bill No</label>
+                                                <input type="text" class="form-control" asp-for="WaterBillNo" placeholder="Enter Water Bill No">
+                                                <span asp-validation-for="WaterBillNo" class="text-danger"></span>
+                                            </div>
+                                            <div class="form-group">
+                                                <label asp-for="AdmissionTestResult">Admission Test Result</label>
+                                                <input type="text" class="form-control" asp-for="AdmissionTestResult" placeholder="Enter Admission Test Result">
+                                                <span asp-validation-for="AdmissionTestResult" class="text-danger"></span>
+                                            </div>
+                                            <div class="form-group">
+                                                <label asp-for="SecondAddress">Second Address</label>
+                                                <input type="text" class="form-control" asp-for="SecondAddress" placeholder="Enter Second Address">
+                                                <span asp-validation-for="SecondAddress" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label asp-for="BoardOrEnrollmentNo">Board/Enrollment Number</label>
+                                                <input type="text" class="form-control" asp-for="BoardOrEnrollmentNo" placeholder="Enter Board/Enrollment Number">
+                                                <span asp-validation-for="BoardOrEnrollmentNo" class="text-danger"></span>
+                                            </div>
+                                            <div class="form-group">
+                                                <label asp-for="BoardOrUniversityName">Board/University Name</label>
+                                                <input type="text" class="form-control" asp-for="BoardOrUniversityName" placeholder="Enter Board/University Name">
+                                                <span asp-validation-for="BoardOrUniversityName" class="text-danger"></span>
+                                            </div>
+                                            <div class="form-group">
+                                                <label asp-for="SeatNo">Seat Number</label>
+                                                <input type="text" class="form-control" asp-for="SeatNo" placeholder="Enter Seat Number">
+                                                <span asp-validation-for="SeatNo" class="text-danger"></span>
+                                            </div>
+                                            <div class="form-group">
+                                                <label asp-for="AdmittedSession">Admitted Session</label>
+                                                <input type="text" class="form-control" asp-for="AdmittedSession" placeholder="Enter Admitted Session">
+                                                <span asp-validation-for="AdmittedSession" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label asp-for="AdmittedClassorSection">Admitted Class/Section</label>
+                                                <input type="text" class="form-control" asp-for="AdmittedClassorSection" placeholder="Enter Admitted Class/Section">
+                                                <span asp-validation-for="AdmittedClassorSection" class="text-danger"></span>
+                                            </div>
+                                            <div class="form-group">
+                                                <label asp-for="BoardMarksObtained">Board Marks Obtained</label>
+                                                <input type="number" class="form-control" asp-for="BoardMarksObtained" placeholder="Enter Board Marks Obtained">
+                                                <span asp-validation-for="BoardMarksObtained" class="text-danger"></span>
+                                            </div>
+                                            <div class="form-check">
+                                                <label class="form-check-label">
+                                                    <input type="checkbox" class="form-check-input" asp-for="IgnoreFeeDefaulterRestrictLogin" />
+                                                    Ignore Fee Defaulter Restrict Login
+                                                </label>
+                                                <span asp-validation-for="IgnoreFeeDefaulterRestrictLogin" class="text-danger"></span>
+                                            </div>
+                                            <div class="form-group">
+                                                <label asp-for="PalceOfBirth">Place of Birth</label>
+                                                <input type="text" class="form-control" asp-for="PalceOfBirth" placeholder="Enter Place of Birth">
+                                                <span asp-validation-for="PalceOfBirth" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label asp-for="LoginFeeDefualterRestrictLogin">Login Fee Defaulter Restrict Login</label>
+                                                <select class="form-control" asp-for="LoginFeeDefualterRestrictLogin">
+                                                    <option value="True">Yes</option>
+                                                    <option value="False" selected>No</option>
+                                                </select>
+                                                <span asp-validation-for="LoginFeeDefualterRestrictLogin" class="text-danger"></span>
+                                            </div>
+                                            <div class="form-group">
+                                                <label asp-for="ScholarchipAmount">Scholarship Amount</label>
+                                                <input type="number" class="form-control" asp-for="ScholarchipAmount" placeholder="Enter Scholarship Amount">
+                                                <span asp-validation-for="ScholarchipAmount" class="text-danger"></span>
+                                            </div>
+                                            <div class="form-group">
+                                                <label asp-for="TaxPercentage">Tax Percentage</label>
+                                                <input type="number" class="form-control" asp-for="TaxPercentage" placeholder="Enter Tax Percentage">
+                                                <span asp-validation-for="TaxPercentage" class="text-danger"></span>
+                                            </div>
+                                            <div class="form-group">
+                                                <label asp-for="Nationality">Nationality</label>
+                                                <input type="text" class="form-control" asp-for="Nationality" placeholder="Enter Nationality">
+                                                <span asp-validation-for="Nationality" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label asp-for="NationalityType">Nationality Type</label>
+                                                <input type="text" class="form-control" asp-for="NationalityType" placeholder="Enter Nationality Type">
+                                                <span asp-validation-for="NationalityType" class="text-danger"></span>
+                                            </div>
+                                            <div class="form-group">
+                                                <label asp-for="RestrictLogin">Restrict Login</label>
+                                                <select class="form-control" asp-for="RestrictLogin">
+                                                    <option value="True">Yes</option>
+                                                    <option value="False" selected>No</option>
+                                                </select>
+                                                <span asp-validation-for="RestrictLogin" class="text-danger"></span>
+                                            </div>
+                                            <div class="form-group">
+                                                <label asp-for="VaccinationFirstDose">Date of First Vaccination Dose</label>
+                                                <input type="date" class="form-control" asp-for="VaccinationFirstDose">
+                                                <span asp-validation-for="VaccinationFirstDose" class="text-danger"></span>
+                                            </div>
+                                            <div class="form-group">
+                                                <label asp-for="VaccinationSecondDose">Date of Second Vaccination Dose</label>
+                                                <input type="date" class="form-control" asp-for="VaccinationSecondDose">
+                                                <span asp-validation-for="VaccinationSecondDose" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label asp-for="VaccinationThirdDose">Date of Third Vaccination Dose</label>
+                                                <input type="date" class="form-control" asp-for="VaccinationThirdDose">
+                                                <span asp-validation-for="VaccinationThirdDose" class="text-danger"></span>
+                                            </div>
+                                            <div class="form-group">
+                                                <label asp-for="VaccinationFourthDose">Date of Fourth Vaccination Dose</label>
+                                                <input type="date" class="form-control" asp-for="VaccinationFourthDose">
+                                                <span asp-validation-for="VaccinationFourthDose" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group float-right mt-2">
+                                                <a class="btn btn-light" asp-controller="Student" asp-action="Student">Cancel</a>
+                                                <button type="submit" class="btn btn-primary mr-2">Add</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts{
+   <script src="~/lib/jquery-validate/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/js/custom.js"></script>
+}

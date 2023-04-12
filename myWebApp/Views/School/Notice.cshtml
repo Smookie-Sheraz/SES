@@ -1,0 +1,87 @@
+﻿@model IEnumerable<Entities.Models.SchoolNotice>
+<div class="main-panel">
+    <div class="content-wrapper">
+        <div class="row">
+            <div class="col-12 grid-margin stretch-card">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Students</h4>
+                        <div class="table-responsive">
+                                <table class="table table-hover table-bordered" id="StudentTable">
+                                    <thead class="bg-primary text-white">
+                                        <tr>
+                                        @if (User.HasClaim("Permission", "Notices.Update") || User.HasClaim("Permission", "Notices.Delete"))
+                                            {
+                                                <th>Actions</th>
+                                            }
+                                            <th>Status</th>
+                                            <th>Title</th>
+                                            <th>Recipient</th>
+                                            <th>Date</th>
+                                            <th>View</th>
+                                            @if (User.HasClaim("Permission", "NoticeDetails"))
+                                            {
+                                            <th>Details</th>
+                                            }
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var Notice in Model)
+                                        {
+                                            <tr>
+                                            @if (User.HasClaim("Permission", "Notices.Update") || User.HasClaim("Permission", "Notices.Delete"))
+                                                {
+                                                    <td class="actions">
+                                                @if (User.HasClaim("Permission", "Notices.Update"))
+                                                        {
+                                                <a class="fa fa-edit mr-3" asp-route-NoticeId="@Notice.SchoolNoticeId" asp-controller="School" asp-action="UpdateNotice" role="button"></a>
+                                                        }
+                                                    @if (User.HasClaim("Permission", "Notices.Delete"))
+                                                        {
+                                                        <a class="fa fa-trash text-danger" onclick="return confirm('Are you sure you want to delete?');" asp-route-LetterId="@Notice.SchoolNoticeId" asp-controller="School" asp-action="DeleteNotice" role="button"></a>
+                                                        }
+                                                    </td>
+                                                }
+                                                <td>
+                                                    @if ((bool)Notice.IsActive)
+                                                    {
+                                                        <label class="badge badge-success">Active</label>
+                                                    }
+                                                    else
+                                                    {
+                                                        <label class="badge badge-danger">InActive</label>
+                                                    }
+                                                </td>
+                                                <td>@Notice.Title</td>
+                                                <td>@Notice.Recipient</td>
+                                                <td>@Convert.ToDateTime(Notice.Date).ToString("dd-MMM-yyyy")</td>
+                                                @if (User.HasClaim("Permission", "NoticeDetails"))
+                                                {
+                                                    <td><a target="_blank" asp-controller="School" asp-action="NoticeDetails" asp-route-NoticeId="@Notice.SchoolNoticeId" class="btn btn-outline-info btn-sm">View Notice</a></td>
+                                                }
+                                                @*@if (User.HasClaim("Permission", "Student.Details"))
+                                                {
+                                                <td><a target="_blank" asp-controller="Student" asp-action="StudentDetails" asp-route-StudentId="@employee.StudentId" class="btn btn-outline-info btn-sm">Details</a></td>
+                                                }*@
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            @*}
+                            else
+                            {
+                                <h3>No Data Found!</h3>
+                            }*@
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @*@if (User.HasClaim("Permission", "Student.Create"))
+            {
+                <div class="col-2 offset-10">
+                    <a class="btn btn-primary" asp-controller="Student" asp-action="AddStudent" role="button">Add</a>
+                </div>
+            @*}*@
+        </div>
+    </div>
+</div>

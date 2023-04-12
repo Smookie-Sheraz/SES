@@ -1079,20 +1079,26 @@ namespace myWebApp.Controllers
             {
                 ViewBag.Sections = (await (from a in _db.Grades
                                            from b in _db.Sections
-                                           where b.GradeId == a.GradeId
+                                           join c in _db.Employees on b.ClassTeacherId equals c.EmployeeId into ClassTeacher
+                                           from CT in ClassTeacher.DefaultIfEmpty()
+                                           where b.GradeId == a.GradeId && b.IsActive == true
                                            select new
                                            {
                                                SectionName = b.SectionName,
                                                SectionId = b.SectionId,
                                                IsActive = b.IsActive,
                                                GradeName = a.GradeName,
-                                               ShowDeleteUpdate = a.GradeManagerId == userId ? true : false
+                                               ShowDeleteUpdate = a.GradeManagerId == userId ? true : false,
+                                               ClassTeacher = CT.FName + " " + CT.LName
+
                                            }).ToListAsync());
             }
             else if(!User.IsInRole("Subject Teacher"))
             {
                 ViewBag.Sections = (await (from a in _db.Grades
                                            from b in _db.Sections
+                                           join c in _db.Employees on b.ClassTeacherId equals c.EmployeeId into ClassTeacher
+                                           from CT in ClassTeacher.DefaultIfEmpty()
                                            where b.GradeId == a.GradeId
                                            select new
                                            {
@@ -1100,7 +1106,9 @@ namespace myWebApp.Controllers
                                                SectionId = b.SectionId,
                                                IsActive = b.IsActive,
                                                GradeName = a.GradeName,
-                                               ShowDeleteUpdate = true
+                                               ShowDeleteUpdate = true,
+                                               ClassTeacher = CT.FName + " " + CT.LName
+
                                            }).ToListAsync());
             }
             return View();
@@ -1119,7 +1127,8 @@ namespace myWebApp.Controllers
             var newSection = new Entities.Models.Section
             {
                 SectionName = section.SectionName,
-                GradeId = section.GradeId
+                GradeId = section.GradeId,
+                ClassTeacherId = section.ClassTeacherId
             };
             await _repository.AddAsync(newSection);
             if (await _repository.SaveChanges())
@@ -1147,7 +1156,8 @@ namespace myWebApp.Controllers
                 SectionId = temp.SectionId,
                 SectionName = temp.SectionName,
                 GradeId = (int)temp.GradeId,
-                IsActive = (bool)temp.IsActive
+                IsActive = (bool)temp.IsActive,
+                ClassTeacherId = (int)temp.ClassTeacherId
             };
             return View(section);
         }
@@ -1172,6 +1182,7 @@ namespace myWebApp.Controllers
             temp.SectionName = section.SectionName;
             temp.GradeId = section.GradeId;
             temp.IsActive = section.IsActive;
+            temp.ClassTeacherId = section.ClassTeacherId;
             await _repository.UpdateAsync(temp);
             if (await _repository.SaveChanges())
             {
@@ -1189,7 +1200,8 @@ namespace myWebApp.Controllers
             {
                 return NotFound();
             }
-            await _repository.Delete(temp);
+            temp.IsActive = false;
+            await _repository.UpdateAsync(temp);
             if (await _repository.SaveChanges())
             {
                 return RedirectToAction("Section");
@@ -1487,20 +1499,19 @@ namespace myWebApp.Controllers
 
         #region Dynamic-Data
 
-        //public async Task<JsonResult> GetClassTeachers(int GradeId)
-        //{
-        //    var subjects = (await (from a in _db.Grades
-        //                           from c in _db.Employees
-        //                           where a.GradeId == GradeId && c.SchoolSectionId == a.SchoolSectionId
-        //                           select new
-        //                           {
-        //                               EmployeeId = c.EmployeeId,
-        //                               FName = c.FName,
-        //                               LName = c.LName
-        //                           }).Distinct().ToListAsync());
-        //    return Json(subjects);
-        //}
-
+        public JsonResult GetClassTeachers(int GradeId)
+        {
+            var subjects = (from a in _db.Grades
+                            from c in _db.Employees
+                            where a.GradeId == GradeId && c.SchoolSectionId == a.SchoolSectionId
+                            select new
+                            {
+                                EmployeeId = c.EmployeeId,
+                                FName = c.FName,
+                                LName = c.LName
+                            }).Distinct().ToList();
+            return Json(subjects);
+        }
         #endregion
     }
 }

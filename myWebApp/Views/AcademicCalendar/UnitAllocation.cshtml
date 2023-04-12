@@ -1,36 +1,48 @@
 ﻿@model myWebApp.ViewModels.AcademicCalendar.UnitAllocationVM
 <div class="main-panel">
-   <div class="content-wrapper">
-        @if(Model.BookId == null)
+    <div class="content-wrapper">
+        @if (Model.BookId == null)
         {
-         <form method="get"
-       asp-controller="AcademicCalendar" asp-action="UnitAllocation">
-        <div class="row">
-                <input type="hidden" asp-for="YearId" />
-                <input type="hidden" asp-for="TermId" />
-                <div class="col-2 text-center">
-                    <div class="form-group">
-                        <label>Academic Calendar</label>
-                        <select asp-for="SearchValues" class="form-select" aria-label="Default select example">
-                            <option selected>Select Book Please</option>
-                            @foreach (var sSection in ViewBag.Books)
-                            {
+            <form method="get"
+              asp-controller="AcademicCalendar" asp-action="UnitAllocation">
+                <div class="row">
+                    <input type="hidden" asp-for="YearId" />
+                    <input type="hidden" asp-for="TermId" />
+                    <div class="col-2 text-center">
+                        <div class="form-group">
+                            <label>Academic Calendar</label>
+                            <select asp-for="SearchValues" class="form-select" aria-label="Default select example">
+                                <option selected>Select Book Please</option>
+                                @foreach (var sSection in ViewBag.Books)
+                                {
                                     <option value="@sSection.Value">@sSection.BookName -- @sSection.ClassName</option>
-                            } 
-                        </select>
-                        <span asp-validation-for="BookId" class="text-danger"></span>
+                                }
+                            </select>
+                            <span asp-validation-for="BookId" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label>Plans</label>
+                            <select asp-for="PlanId" class="form-select" aria-label="Default select example">
+                                <option selected>Select Plan Please</option>
+                                @foreach (var Plan in ViewBag.Plans)
+                                {
+                                    <option value="@Plan.AcademicPlanningsId">@Plan.PlanName</option>
+                                }
+                            </select>
+                            <span asp-validation-for="PlanId" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-2 text-center">
+                        <button class="btn btn-primary mt-4" type="submit">Find Units</button>
                     </div>
                 </div>
-                <div class="col-2 text-center">
-                    <button class="btn btn-primary mt-4" type="submit">Find Units</button>
-                </div>
-        </div>
             </form>
         }
         else
         {
             <form method="post"
               asp-controller="AcademicCalendar" asp-action="UnitAllocation">
+              <input type="hidden" asp-for="PlanId"/>
                 <div class="row">
                     <div class="col-12 grid-margin stretch-card">
                         <div class="card">
@@ -39,96 +51,102 @@
                                 @*<p class="card-description">
                             The Units allocated to the @ViewBag.Month !
                             </p>*@
-                                <div class="table-responsive">
-                                    @if (Model.Units.Any())
-                                    {
-                                        <table class="table table-hover" id="UnitsTable">
-                                            <thead>
-                                                <tr>
-                                                    <th colspan="4">Calendar Name: <label class="badge badge-success">@ViewBag.CalendarName</label></th>
-                                                    <th colspan="3">Term Name: <label class="badge badge-success">@ViewBag.TermName</label></th>
-                                                </tr>
-                                                <tr>
-                                                    
-                                                    <th>Unit Name</th>
-                                                    <th>Start Date</th>
-                                                    <th>End Date</th>
-                                                    <th>Workbook</th>
-                                                    <th>WB Star Page</th>
-                                                    <th>WB End Page</th>
-                                                    <th>Selection</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @for (var i = 0; i < Model.Units.Count(); i++)
-                                                {
-                                                    <tr>
-                                                        <td>@Model.Units[i].UnitName</td>
-                                                        <td>
-                                                            <input type="hidden" name="YearId" asp-for="YearId" />
-                                                            <input type="hidden" name="TermId" asp-for="TermId" />
-                                                            <input type="hidden" name="BookId" asp-for="BookId" />
-                                                            <input type="hidden" name="SectionId" asp-for="SectionId" />
-                                                            <div class="form-group">
-                                                                <input type="date" class="form-control text-center" oninput="check(this.id)" asp-for="@Model.Units[i].StartDate" placeholder="Enter Start Date" min="@Convert.ToDateTime(Model.MinDate).ToString("yyyy-MM-dd")" max="@Convert.ToDateTime(Model.MaxDate).ToString("yyyy-MM-dd")">
-                                                                <span asp-validation-for="@Model.Units[i].StartDate" class="text-danger"></span>
-                                                            </div>
-                                                        </td>
-                                                        <td>
-                                                            <div class="form-group">
-                                                                <input type="date" class="form-control text-center" asp-for="@Model.Units[i].EndDate" placeholder="Enter End Date" min="@Convert.ToDateTime(Model.MinDate).ToString("yyyy-MM-dd")" max="@Convert.ToDateTime(Model.MaxDate).ToString("yyyy-MM-dd")">
-                                                                <span asp-validation-for="@Model.Units[i].EndDate" class="text-danger"></span>
-                                                            </div>
-                                                        </td>
-                                                        <td>
-                                                            <div class="form-group">
-                                                                <select asp-for="@Model.Units[i].WorkBookId" class="form-select" onchange="EnterWBPages(this.id)" aria-label="Default select example">
-                                                                    <option value="@null" selected>Select WorkBook Please</option>
-                                                                    @foreach (var grade in ViewBag.WorkBooks)
-                                                                    {
-                                                                        <option value="@grade.BookId">@grade.BookName</option>
-                                                                    }
-                                                                </select>
-                                                                <span asp-validation-for="@Model.Units[i].WorkBookId" class="text-danger"></span>
-                                                            </div>
-                                                        </td>
-                                                        <td>
-                                                            <div class="form-group">
-                                                                <input type="number" disabled class="form-control text-center" asp-for="@Model.Units[i].WorkBookStartPage" placeholder="Enter Start Page" />
-                                                                <span asp-validation-for="@Model.Units[i].WorkBookStartPage" class="text-danger"></span>
-                                                            </div>
-                                                        </td>
-                                                        <td>
-                                                            <div class="form-group">
-                                                                <input type="number" disabled class="form-control text-center" asp-for="@Model.Units[i].WorkBookEndPage" placeholder="Enter Start End" />
-                                                                <span asp-validation-for="@Model.Units[i].WorkBookEndPage" class="text-danger"></span>
-                                                            </div>
-                                                        </td>
-                                                        <td>
-                                                            <div class="form-check">
-                                                                <label class="form-check-label">
-                                                                    <input type="hidden" asp-for="@Model.Units[i].UnitId" />
-                                                                    @if ((bool)Model.Units[i].preAllocation)
-                                                                    {
-                                                                        <input type="checkbox" class="form-check-input" checked asp-for="@Model.Units[i].IsSelected" />
-                                                                    }
-                                                                    else
-                                                                    {
-                                                                        <input type="checkbox" class="form-check-input" asp-for="@Model.Units[i].IsSelected" />
-                                                                    }
-                                                                    Select
-                                                                </label>
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-                                                }
-                                            </tbody>
-                                        </table>
-                                    }
-                                    else
-                                    {
-                                        <h3>No Data Found!</h3>
-                                    }
+                                <div class="row">
+                                    <div class="col-12">
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="table-responsive">
+                                            @if (Model.Units.Any())
+                                            {
+                                                <table class="table table-hover" id="UnitsTable">
+                                                    <thead>
+                                                        <tr>
+                                                            <th colspan="4">Calendar Name: <label class="badge badge-success">@ViewBag.CalendarName</label></th>
+                                                            <th colspan="3">Term Name: <label class="badge badge-success">@ViewBag.TermName</label></th>
+                                                        </tr>
+                                                        <tr>
+
+                                                            <th>Unit Name</th>
+                                                            <th>Start Date</th>
+                                                            <th>End Date</th>
+                                                            <th>Workbook</th>
+                                                            <th>WB Star Page</th>
+                                                            <th>WB End Page</th>
+                                                            <th>Selection</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @for (var i = 0; i < Model.Units.Count(); i++)
+                                                        {
+                                                            <tr>
+                                                                <td>@Model.Units[i].UnitName</td>
+                                                                <td>
+                                                                    <input type="hidden" name="YearId" asp-for="YearId" />
+                                                                    <input type="hidden" name="TermId" asp-for="TermId" />
+                                                                    <input type="hidden" name="BookId" asp-for="BookId" />
+                                                                    <input type="hidden" name="SectionId" asp-for="SectionId" />
+                                                                    <div class="form-group">
+                                                                        <input type="date" class="form-control text-center" oninput="check(this.id)" asp-for="@Model.Units[i].StartDate" placeholder="Enter Start Date" min="@Convert.ToDateTime(Model.MinDate).ToString("yyyy-MM-dd")" max="@Convert.ToDateTime(Model.MaxDate).ToString("yyyy-MM-dd")">
+                                                                        <span asp-validation-for="@Model.Units[i].StartDate" class="text-danger"></span>
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    <div class="form-group">
+                                                                        <input type="date" class="form-control text-center" asp-for="@Model.Units[i].EndDate" placeholder="Enter End Date" min="@Convert.ToDateTime(Model.MinDate).ToString("yyyy-MM-dd")" max="@Convert.ToDateTime(Model.MaxDate).ToString("yyyy-MM-dd")">
+                                                                        <span asp-validation-for="@Model.Units[i].EndDate" class="text-danger"></span>
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    <div class="form-group">
+                                                                        <select asp-for="@Model.Units[i].WorkBookId" class="form-select" onchange="EnterWBPages(this.id)" aria-label="Default select example">
+                                                                            <option value="@null" selected>Select WorkBook Please</option>
+                                                                            @foreach (var grade in ViewBag.WorkBooks)
+                                                                            {
+                                                                                <option value="@grade.BookId">@grade.BookName</option>
+                                                                            }
+                                                                        </select>
+                                                                        <span asp-validation-for="@Model.Units[i].WorkBookId" class="text-danger"></span>
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    <div class="form-group">
+                                                                        <input type="number" disabled class="form-control text-center" asp-for="@Model.Units[i].WorkBookStartPage" placeholder="Enter Start Page" />
+                                                                        <span asp-validation-for="@Model.Units[i].WorkBookStartPage" class="text-danger"></span>
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    <div class="form-group">
+                                                                        <input type="number" disabled class="form-control text-center" asp-for="@Model.Units[i].WorkBookEndPage" placeholder="Enter Start End" />
+                                                                        <span asp-validation-for="@Model.Units[i].WorkBookEndPage" class="text-danger"></span>
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    <div class="form-check">
+                                                                        <label class="form-check-label">
+                                                                            <input type="hidden" asp-for="@Model.Units[i].UnitId" />
+                                                                            @if ((bool)Model.Units[i].preAllocation)
+                                                                            {
+                                                                                <input type="checkbox" class="form-check-input" checked asp-for="@Model.Units[i].IsSelected" />
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                <input type="checkbox" class="form-check-input" asp-for="@Model.Units[i].IsSelected" />
+                                                                            }
+                                                                            Select
+                                                                        </label>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                        }
+                                                    </tbody>
+                                                </table>
+                                            }
+                                            else
+                                            {
+                                                <h3>No Data Found!</h3>
+                                            }
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -142,7 +160,7 @@
                 </div>
             </form>
         }
-   </div>
+    </div>
 </div>
 @*@section scripts{
     <script>
@@ -167,17 +185,17 @@
 }*@
 
 @section scripts{
-            <script>
-            $(document).ready(function () {
-                $('#UnitsTable').DataTable({
-                    //serverSide: true,
-                    ////processing: true
-                    //ajax: function(){
+    <script>
+        $(document).ready(function () {
+            $('#UnitsTable').DataTable({
+                //serverSide: true,
+                ////processing: true
+                //ajax: function(){
 
-                    //},
-                });
-
+                //},
             });
-            </script>
+
+        });
+    </script>
     <script src="~/js/custom.js"></script>
 }

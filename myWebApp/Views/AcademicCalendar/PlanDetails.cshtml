@@ -1,0 +1,190 @@
+﻿@model myWebApp.ViewModels.AcademicCalendar.PlanDetailsVM
+
+<div class="main-panel">
+    <div class="content-wrapper">
+        <div class="row">
+            <div class="col-12 grid-margin stretch-card">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Plan Details</h4>
+                        @if(User.HasClaim("Permission", "ManagementPlanApproving"))
+                        {
+                            <div class="row">
+                                <form class="forms-sample" method="post" asp-controller="AcademicCalendar" asp-action="PlanApprovals">
+                                    <input type="hidden" asp-for="PlanId" />
+                                    <div class="col-4">
+                                        <div class="form-group">
+                                            <label asp-for="PlanRemarks">Remarks</label>
+                                            <textarea class="form-control" asp-for="PlanRemarks" rows="10"></textarea>
+                                            <span asp-validation-for="PlanRemarks" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="form-group mt-2">
+                                            <select asp-for="PlanStatus" class="form-select" aria-label="Default select example">
+                                                <option selected value="@null">Select Status</option>
+                                                <option value="Approved">Approved</option>
+                                                <option value="Rejected">Rejected</option>
+                                            </select>
+                                            <span asp-validation-for="PlanStatus" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="float-right mt-5">
+                                            <button type="submit" class="btn btn-primary mr-2">Execute</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        }
+                        <div class="row">
+                            <div class="col-12" style="overflow-x: scroll;">
+                                <table class="table table-bordered table-hover table-responsive">
+                                    <thead class="text-light bg-primary">
+                                        <tr>
+                                            <th colspan="10">
+                                                <h1 class="text-uppercase fw-bold">Seerat Academic Planner</h1>
+                                            </th>
+                                        </tr>
+                                        <tr>
+                                            <th colspan="2">
+                                                <div class="row flex-column justify-content-around h-100">
+                                                    <div>
+                                                        <h4>Grade Name</h4>
+                                                    </div>
+                                                    <div>
+                                                        <label class="badge badge-success fs-6">@Model.GradeName</label>
+                                                    </div>
+                                                </div>
+                                            </th>
+                                            <th colspan="2">
+                                                <div class="row flex-column justify-content-around h-100">
+                                                    <div>
+                                                        <h4>Subject Name</h4>
+                                                    </div>
+                                                    <div>
+                                                        <label class="badge badge-success fs-6">@Model.SubjectName</label>
+                                                    </div>
+                                                </div>
+                                            </th>
+                                            <th colspan="3">
+                                                <div class="row flex-column justify-content-around h-100">
+                                                    <div>
+                                                        <h4>Textbook</h4>
+                                                    </div>
+                                                    <div>
+                                                        <label class="badge badge-success fs-6">@Model.Textbook</label>
+                                                    </div>
+                                                </div>
+                                            </th>
+                                            @if (Model.Workbook == null)
+                                            {
+                                                <th colspan="3">
+                                                    <div class="row flex-column justify-content-around h-100">
+                                                        <div>
+                                                            <h4>Workbook</h4>
+                                                        </div>
+                                                        <div>
+                                                            <label class="badge badge-success fs-6">No Workbook Planned!</label>
+                                                        </div>
+                                                    </div>
+                                                </th>
+                                            }
+                                            else
+                                            {
+                                                <th colspan="3">
+                                                    <div class="row flex-column justify-content-around h-100">
+                                                        <div>
+                                                            <h4>Workbook</h4>
+                                                        </div>
+                                                        <div>
+                                                            <label class="badge badge-success fs-6">@Model.Workbook</label>
+                                                        </div>
+                                                    </div>
+                                                </th>
+                                            }
+                                        </tr>
+                                        <tr>
+                                            <th colspan="2">
+                                                <div class="row flex-column justify-content-around h-100">
+                                                    <div>
+                                                        <h4>Teacher Name</h4>
+                                                    </div>
+                                                    <div>
+                                                        <label class="badge badge-success fs-6">@Model.TeacherName</label>
+                                                    </div>
+                                                </div>
+                                            </th>
+                                            <th colspan="2">
+                                                <div class="row flex-column justify-content-around h-100">
+                                                    <div>
+                                                        <h4>Class Name</h4>
+                                                    </div>
+                                                    <div>
+                                                        <label class="badge badge-success fs-6">@Model.ClassName</label>
+                                                    </div>
+                                                </div>
+                                            </th>
+                                            <th colspan="2">
+                                                <div class="row flex-column justify-content-around">
+                                                    <div>
+                                                        <h4>Duration</h4>
+                                                    </div>
+                                                    <div>
+                                                        <label class="badge badge-success fs-6">Duration Days</label>
+                                                    </div>
+                                                </div>
+                                            </th>
+                                            <th colspan="2">
+                                                <div class="row flex-column justify-content-around">
+                                                    <div>
+                                                        <h4>Term Name</h4>
+                                                    </div>
+                                                    <div>
+                                                        <label class="badge badge-success fs-6">Term Name</label>
+                                                    </div>
+                                                </div>
+                                            </th>
+                                        </tr>
+                                        <tr class="bg-primary">
+                                            <th>Start Date</th>
+                                            <th>End Date</th>
+                                            <th>Unit</th>
+                                            <th>Chapter</th>
+                                            <th>Topic</th>
+                                            <th>Sub-Topic</th>
+                                            <th>Teaching Methodology</th>
+                                            <th>SLO</th>
+                                            <th>WB Start Page</th>
+                                            <th>WB End Page</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var plan in Model.Plan)
+                                        {
+                                            <tr>
+                                                <td>@plan.StartDate</td>
+                                                <td>@plan.EndDate</td>
+                                                <td>@plan.UnitName</td>
+                                                <td>@plan.ChapterName</td>
+                                                <td>@plan.TopicName</td>
+                                                <td>@plan.SubTopicName</td>
+                                                <td>@plan.TeachingMethodologyName</td>
+                                                <td>@plan.SLO</td>
+                                                <td>@plan.WbStartPage</td>
+                                                <td>@plan.WbEndPage</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script src="~/js/custom.js"></script>
+}

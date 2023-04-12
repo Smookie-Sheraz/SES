@@ -1,0 +1,154 @@
+﻿@model myWebApp.ViewModels.AcademicCalendar.AcademicPlanningsVM
+@{
+}
+<div class="main-panel">
+    <div class="content-wrapper">
+        <div class="row">
+            <div class="col-12 grid-margin stretch-card">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Add New Academic Plan</h4>
+                        @*<p class="card-description">
+                        Please Add The New Adacmic-Calendar Term and Press the Add Button.
+                        </p>*@
+                        <form class="forms-sample" method="post"
+                              asp-controller="AcademicCalendar" asp-action="AcademicPlannings">
+                            <h3>Plan</h3>
+                            @if (User.HasClaim("Permission", "AcademicPlannings.Create"))
+                            {
+                                <div class="row">
+                                    <div class="col-4">
+                                        <div class="form-group">
+                                            <label asp-for="PlanName">Plan Name</label>
+                                            <input type="text" class="form-control" asp-for="PlanName" placeholder="Enter Plan Name">
+                                            <span asp-validation-for="PlanName" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    @*<div class="col-4">
+                                <div class="form-group">
+                                <label asp-for="TermStartDate">Start Date</label>
+                                <input type="date" class="form-control" asp-for="TermStartDate" placeholder="Enter Term Start Date" min="@Convert.ToDateTime(Model.MinDate).ToString("yyyy-MM-dd")" max="@Convert.ToDateTime(Model.MaxDate).ToString("yyyy-MM-dd")">
+                                <span asp-validation-for="TermStartDate" class="text-danger"></span>
+                                </div>
+                                </div>
+                                <div class="col-4">
+                                <div class="form-group">
+                                <label asp-for="TermEndDate">End Date</label>
+                                <input type="date" class="form-control" asp-for="TermEndDate" placeholder="Enter End Start Date" min="@Convert.ToDateTime(Model.MinDate).ToString("yyyy-MM-dd")" max="@Convert.ToDateTime(Model.MaxDate).ToString("yyyy-MM-dd")">
+                                <span asp-validation-for="TermEndDate" class="text-danger"></span>
+                                </div>
+                                </div>
+                                </div>
+                                <div class="row">
+                                <div class="col-4">
+                                <div class="form-group">
+                                <label asp-for="AssessmentDays">Assessment Days</label>
+                                <input type="text" class="form-control" asp-for="AssessmentDays" placeholder="Enter Assessment Days">
+                                <span asp-validation-for="AssessmentDays" class="text-danger"></span>
+                                </div>
+                                </div>
+                                </div>*@
+                                    <div class="float-right mt-5">
+                                        <button type="submit" class="btn btn-primary mr-2">Add Plan</button>
+                                    </div>
+                                </div>
+                            }
+                            <div class="col-12 grid-margin stretch-card">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h4 class="card-title">All-Plans</h4>
+                                        <div class="table-responsive">
+                                            <table class="table table-hover table-bordered">
+                                                <thead class="bg-primary text-white">
+                                                    <tr>
+                                                        @if (User.HasClaim("Permission", "AcademicPlannings.Update") || User.HasClaim("Permission", "AcademicPlannings.Delete"))
+                                                        {
+                                                            <th>Actions</th>
+                                                        }
+                                                        <th>Status</th>
+                                                        <th>Plan Name</th>
+                                                        <th>Planned By</th>
+                                                        <th>Submit for Approval</th>
+                                                        <th>Approval Status</th>
+                                                        <th>Plan Details</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody class="term-data">
+                                                    @foreach (var plan in Model.plans)
+                                                    {
+                                                        if (plan.ApprovingPerson != "Director Academics")
+                                                        {
+
+                                                        }
+                                                        <tr>
+                                                            <td class="actions">
+                                                                @if (User.HasClaim("Permission", "AcademicPlannings.Update"))
+                                                                {
+                                                                    <a class="fa fa-edit mr-3" asp-route-AcademicPlanningId="@plan.AcademicPlanningsId" title="Edit Plan" asp-controller="AcademicCalendar" asp-action="UpdateAcademicPlanning" role="button"></a>
+                                                                }
+                                                                @if (User.HasClaim("Permission", "AcademicPlannings.Delete"))
+                                                                {
+                                                                    <a class="fa fa-trash text-danger" title="Delete Plan" onclick="return confirm('Are you sure you want to delete?');" asp-route-AcademicPlanningId="@plan.AcademicPlanningsId" asp-controller="AcademicCalendar" asp-action="DeleteAcademicPlanning" role="button"></a>
+                                                                }
+                                                            </td>
+                                                            <td>
+                                                                @if ((bool)plan.IsActive)
+                                                                {
+                                                                    <label class="badge badge-success">Active</label>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <label class="badge badge-danger">InActive</label>
+                                                                }
+                                                            </td>
+                                                            <td>@plan.PlanName</td>
+                                                            <td>@plan.PlannedBy</td>
+                                                            <td>
+                                                                @if (plan.ApprovalStatus == "Rejected")
+                                                                {
+                                                                    <a asp-controller="AcademicCalendar" asp-action="PlanApprovalReSubmit" asp-route-PlanId="@plan.AcademicPlanningsId" class="btn btn-primary btn-sm">ReSubmit Plan</a>
+                                                                }
+                                                                else
+                                                                {
+                                                                    @if (!plan.ActiveSubmitPlan)
+                                                                    {
+                                                                        <a asp-controller="AcademicCalendar" asp-action="PlanApprovalSubmit" asp-route-PlanId="@plan.AcademicPlanningsId" class="btn btn-warning btn-sm">Submit Plan</a>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <label class="badge badge-warning">Submitted</label>
+                                                                    }
+                                                                }
+                                                            </td>
+                                                            <td>
+                                                                @if (plan.ApprovalStatus == "Approved")
+                                                                {
+                                                                    <label class="badge badge-success">Approved</label>
+                                                                }
+                                                                else if (plan.ApprovalStatus == "Rejected")
+                                                                {
+                                                                    <label class="badge badge-danger">Rejected</label>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <label class="badge badge-warning">Pending</label>
+                                                                }
+                                                            </td>
+                                                            <td>
+                                                                <a target="_blank" asp-controller="AcademicCalendar" asp-action="PlanDetails" asp-route-PlanId="@plan.AcademicPlanningsId" class="btn btn-outline-info btn-sm">Details</a>
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,92 @@
+﻿<div class="main-panel">
+    <div class="content-wrapper">
+        <div class="row">
+            <div class="col-12 grid-margin stretch-card">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Students</h4>
+                        <div class="table-responsive">
+                                <table class="table table-hover table-bordered" id="StudentTable">
+                                    <thead class="bg-primary text-white">
+                                        <tr>
+                                            @*@if (User.HasClaim("Permission", "Employee.Update") || User.HasClaim("Permission", "Employee.Delete"))
+                                            {*@
+                                                <th>Actions</th>
+                                            @*}*@
+                                            <th>Status</th>
+                                            <th>Student Name</th>
+                                            <th>Parent Name</th>
+                                            <th>Writing AC</th>
+                                            <th>Date</th>
+                                            <th>View</th>
+                                            @*@if (User.HasClaim("Permission", "Student.Details"))
+                                            {
+                                            <th>Details</th>
+                                            }*@
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var employee in ViewBag.Letters)
+                                        {
+                                            <tr>
+                                                @*@if (User.HasClaim("Permission", "Student.Update") || User.HasClaim("Permission", "Student.Delete"))
+                                                {*@
+                                                    <td class="actions">
+                                                        @*@if (User.HasClaim("Permission", "Student.Update"))
+                                                        {*@
+                                                <a class="fa fa-edit mr-3" asp-route-LetterId="@employee.SchoolLetterId" asp-controller="School" asp-action="UpdateLetter" role="button"></a>
+                                                        @*}*@
+                                                       @* @if (User.HasClaim("Permission", "Student.Delete"))
+                                                        {*@
+                                                        <a class="fa fa-trash text-danger" onclick="return confirm('Are you sure you want to delete?');" asp-route-LetterId="@employee.SchoolLetterId" asp-controller="School" asp-action="DeleteLetter" role="button"></a>
+                                                        @*}*@
+                                                    </td>
+                                                }
+                                                <td>
+                                                    @if ((bool)employee.IsActive)
+                                                    {
+                                                        <label class="badge badge-success">Active</label>
+                                                    }
+                                                    else
+                                                    {
+                                                        <label class="badge badge-danger">InActive</label>
+                                                    }
+                                                </td>
+                                                <td>@employee.StudentName</td>
+                                                <td>@employee.ParentName</td>
+                                                <td>@employee.IssuingACName</td>
+                                                <td>@Convert.ToDateTime(employee.Date).ToString("dd-MMM-yyyy")</td>
+                                                <td><a target="_blank" asp-controller="School" asp-action="LetterDetails" asp-route-LetterId="@employee.SchoolLetterId" class="btn btn-outline-info btn-sm">View Letter</a></td>
+                                                @*@if (User.HasClaim("Permission", "Student.Details"))
+                                                {
+                                                <td><a target="_blank" asp-controller="Student" asp-action="StudentDetails" asp-route-StudentId="@employee.StudentId" class="btn btn-outline-info btn-sm">Details</a></td>
+                                                }*@
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            @*}
+                            else
+                            {
+                                <h3>No Data Found!</h3>
+                            }*@
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @*@if (User.HasClaim("Permission", "Student.Create"))
+            {
+                <div class="col-2 offset-10">
+                    <a class="btn btn-primary" asp-controller="Student" asp-action="AddStudent" role="button">Add</a>
+                </div>
+            @*}*@
+        </div>
+    </div>
+</div>
+@*@section scripts{
+    <script>
+        $(document).ready(function () {
+            $('#StudentTable').DataTable();
+        });
+    </script>
+}*@

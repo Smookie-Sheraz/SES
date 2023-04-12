@@ -249,13 +249,95 @@ function EnterWBPages(id) {
 
 //Function to retrieve the School Section if anyone has done planning in any SchoolSection books to the current user
 
-//function GetClassTeachers(id) {
-//    $.get("/Grade/GetClassTeachers", { GradeId: parseInt($(`#${id}`).val(), 10) }, function (data) {
-//        $("#ClassTeacherId").empty();
-//        $("#ClassTeacherId").append("<Option value='0'>" + "---Select Class Teacher Please---" + "</Option>");
-//        $.each(data, function (index, row) {
-//            console.log(row);
-//            $("#ClassTeacherId").append("<Option value='" + row.employeeId + "'>" + row.fName + " " + row.lName + "</Option>")
-//        });
-//    });
-//};
+function GetClassTeachers(id) {
+    //debugger;
+    $.get("/Grade/GetClassTeachers", { GradeId: parseInt($(`#${id}`).val(), 10) }, function (data) {
+        $("#ClassTeacherId").empty();
+        $("#ClassTeacherId").append("<Option value='0'>" + "---Select Class Teacher Please---" + "</Option>");
+        $.each(data, function (index, row) {
+            //console.log(row);
+            $("#ClassTeacherId").append("<Option value='" + row.employeeId + "'>" + row.fName + " " + row.lName + "</Option>")
+        });
+    });
+};
+
+//The following function/calls are used in AcademicActivity Controller
+//Function to retrieve the Subjects of the diary
+
+function GetDiarySubjects(id) {
+    debugger;
+    $.get("/AcademicActivities/GetDiarySubjects", { ClassId: parseInt($(`#${id}`).val(), 10) }, function (data) {
+        $("#SubjectId").empty();
+        $("#SubjectId").append("<Option value='0'>" + "---Select Subject Please---" + "</Option>");
+        $.each(data, function (index, row) {
+            //console.log(row);
+            $("#SubjectId").append("<Option value='" + row.subjectId + "'>" + row.subjectName+ "</Option>")
+        });
+    });
+};
+
+//Function to retrieve the Subjects of the diary
+function GetDiaryTests(id) {
+    //debugger;
+    $.get("/AcademicActivities/GetDiaryTests", { SubjectId: parseInt($(`#${id}`).val(), 10) }, function (data) {
+        $("#TestId").empty();
+        $("#TestId").append("<Option value='0'>" + "---Select Test Please---" + "</Option>");
+        $.each(data, function (index, row) {
+            console.log(row);
+            $("#TestId").append("<Option value='" + row.testId + "'>" + row.testTitle + "</Option>")
+        });
+    });
+};
+
+//Function to retrieve the Subjects of the Test
+
+function GetTestSubjects(id) {
+    debugger;
+    $.get("/AcademicActivities/GetTestSubjects", { ClassId: parseInt($(`#${id}`).val(), 10) }, function (data) {
+        $("#SubjectId").empty();
+        $("#SubjectId").append("<Option value='0'>" + "---Select Subject Please---" + "</Option>");
+        $.each(data, function (index, row) {
+            //console.log(row);
+            $("#SubjectId").append("<Option value='" + row.subjectId + "'>" + row.subjectName + "</Option>")
+        });
+    });
+};
+
+//Function to retrieve the Books of the Test
+function GetTestBooks(id) {
+    //debugger;
+    $.get("/AcademicActivities/GetTestBooks", { SubjectId: parseInt($(`#${id}`).val(), 10) }, function (data) {
+        $("#BookId").empty();
+        $("#BookId").append("<Option value='0'>" + "---Select Book Please---" + "</Option>");
+        $.each(data, function (index, row) {
+            //console.log(row);
+            $("#BookId").append("<Option value='" + row.bookId + "'>" + row.bookName + "</Option>")
+        });
+    });
+};
+
+//---------------
+function GetParentInfo(id){
+    var cnicInput = document.getElementById(id);
+    var parentData = document.getElementsByClassName("parent-info");
+
+    //cnicInput.addEventListener("input", function () {
+        if (cnicInput.value.length === 15) {
+            $.get("/Student/GetParentInfo", { CNICNo: $(`#${id}`).val().toString() }, function (data) {
+                if (data == null) {
+                    for (var i = 0; i < parentData.length; i++) {
+                        parentData[i].classList.remove("d-none");
+                    }
+                    $("#ParentId").val(null);
+                }
+                else {
+                    for (var i = 0; i < parentData.length; i++) {
+                        parentData[i].classList.add("d-none");
+                    }
+                    $("#ParentId").val(data.parentId);
+                }
+            });
+        }
+    /*});*/
+
+}

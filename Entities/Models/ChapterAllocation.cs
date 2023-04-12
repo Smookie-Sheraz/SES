@@ -20,6 +20,8 @@ namespace Entities.Models
         public int? WorkBookId { get; set; }
         public Section? Section { get; set; }
         public int? SectionId { get; set; }
+        public AcademicPlannings? Plan { get; set; }
+        public int? PlanId { get; set; }
         public int? WorkBookStartPage { get; set; }
         public int? WorkBookEndPage { get; set; }
         public bool? IsActive { get; set; }
