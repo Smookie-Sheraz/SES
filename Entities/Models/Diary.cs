@@ -9,7 +9,7 @@ namespace Entities.Models
     {
         public int DiaryId { get; set; }
         public string? ClassWork { get; set; }
-        public int? HomeWork { get; set; }
+        public string? HomeWork { get; set; }
         public bool? IsActive { get; set; }
         public DateTime? Date { get; set; }
         public Test? Test { get; set; }

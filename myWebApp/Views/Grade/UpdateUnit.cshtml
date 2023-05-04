@@ -1,62 +1,62 @@
 ﻿@model Entities.ViewModels.UnitVM
 @{
 }
-       <div class="main-panel">        
-        <div class="content-wrapper">
+<div class="main-panel">
+    <div class="content-wrapper">
         <div class="row">
             <div class="col-12 grid-margin stretch-card">
-              <div class="card">
-                <div class="card-body">
-                  <h4 class="card-title">Update Unit of Book @ViewBag.Book</h4>
-                  @*<p class="card-description">
-                    Please Update Unit of Book @ViewBag.Book and Press the Update Button.
-                  </p>*@
-                  <form class="forms-sample" method="post"
-                  asp-controller="Grade" asp-action="UpdateUnit" asp-route-id="@Model.UnitId" id="my_from">
-                  <input type="hidden" asp-for="UnitId"/>
-                  <input type="hidden" asp-for="BookId"/>
-                    <div class="form-group">
-                      <label asp-for="UnitName">Unit Name</label>
-                      <input type="text" class="form-control" asp-for="UnitName" placeholder="Enter Unit Name">
-                      <span asp-validation-for="UnitName" class="text-danger"></span>
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Update Unit of Book @ViewBag.Book</h4>
+                        @*<p class="card-description">
+                        Please Update Unit of Book @ViewBag.Book and Press the Update Button.
+                        </p>*@
+                        <form class="forms-sample" method="post"
+                              asp-controller="Grade" asp-action="UpdateUnit" asp-route-id="@Model.UnitId" id="my_from">
+                            <input type="hidden" asp-for="UnitId" />
+                            <input type="hidden" asp-for="BookId" />
+                            <div class="form-group">
+                                <label asp-for="UnitName">Unit Name</label>
+                                <input type="text" class="form-control" asp-for="UnitName" placeholder="Enter Unit Name">
+                                <span asp-validation-for="UnitName" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="StartPage">Start Page</label>
+                                <input type="number" class="form-control" asp-for="StartPage" placeholder="Enter Start Page">
+                                <span asp-validation-for="StartPage" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="EndPage">End Page</label>
+                                <input type="number" class="form-control" asp-for="EndPage" placeholder="Enter End Page">
+                                <span asp-validation-for="EndPage" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="SLO">SLO</label>
+                                <textarea class="form-control" asp-for="SLO" rows="6"></textarea>
+                                <span asp-validation-for="SLO" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="IsActive">Chapter Status</label>
+                                <select asp-for="IsActive" class="form-select" aria-label="Default select example">
+                                    <option selected value="@null">Choose Unit Status</option>
+                                    <option value="@true">Active</option>
+                                    <option value="@false">InActive</option>
+                                </select>
+                                <span asp-validation-for="IsActive" class="text-danger"></span>
+                            </div>
+                            <div class="float-right mt-4">
+                                <a class="btn btn-light" asp-controller="Grade" asp-action="Unit" asp-route-id="@Model.BookId">Cancel</a>
+                                @*<label for="submit-btn">Submit</label>*@
+                                <input type="submit" class="btn btn-primary" id="submit-btn" asp-route-id="@Model.UnitId" />
+                                @*<button type="submit" class="btn btn-primary mr-2">Update</button>*@
+                            </div>
+                        </form>
                     </div>
-                    <div class="form-group">
-                      <label asp-for="StartPage">Start Page</label>
-                      <input type="number" class="form-control" asp-for="StartPage" placeholder="Enter Start Page">
-                      <span asp-validation-for="StartPage" class="text-danger"></span>
-                    </div>
-                    <div class="form-group">
-                      <label asp-for="EndPage">End Page</label>
-                      <input type="number" class="form-control" asp-for="EndPage" placeholder="Enter End Page">
-                      <span asp-validation-for="EndPage" class="text-danger"></span>
-                    </div>
-                    <div class="form-group">
-                        <label asp-for="SLO">SLO</label>
-                        <input type="text" class="form-control" asp-for="SLO" placeholder="Enter SLO Please">
-                        <span asp-validation-for="SLO" class="text-danger"></span>
-                    </div>
-                    <div class="form-group">
-                      <label asp-for="IsActive">Chapter Status</label>
-                    <select asp-for="IsActive" class="form-select" aria-label="Default select example">
-                      <option selected value="@null">Choose Unit Status</option>
-                             <option value="@true">Active</option>
-                             <option value="@false">InActive</option>
-                    </select>
-                      <span asp-validation-for="IsActive" class="text-danger"></span>
-                    </div>
-                    <div class="float-right mt-4">
-                    <a class="btn btn-light" asp-controller="Grade" asp-action="Unit" asp-route-id="@Model.BookId">Cancel</a>
-                    @*<label for="submit-btn">Submit</label>*@
-                    <input type="submit" class="btn btn-primary" id="submit-btn" asp-route-id="@Model.UnitId"/>
-                        @*<button type="submit" class="btn btn-primary mr-2">Update</button>*@
-                    </div>
-                  </form>
                 </div>
-              </div>
             </div>
-           </div>
-          </div>
-         </div>
+        </div>
+    </div>
+</div>
 
 @*@section scripts{
                     <script src="~/lib/jquery-validate/jquery.validate.min.js"></script>

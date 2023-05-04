@@ -17,6 +17,9 @@ namespace Infrastructure.Configurations
             builder.Property(p => p.IsActive)
                 .HasColumnType("bit")
                 .HasDefaultValue(true);
+            builder.Property(p => p.IsSchoolOff)
+                .HasColumnType("bit")
+                .HasDefaultValue(false);
             builder.Property(p => p.StartDate)
                 .HasColumnType("date");
             builder.Property(p => p.NoOfHolidays)

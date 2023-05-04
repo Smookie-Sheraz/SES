@@ -17,6 +17,7 @@ namespace myWebApp.ViewModels.AcademicCalendar
         public DateTime? MinDate { get; set; }
         public DateTime? MaxDate { get; set; }
         public int? NoOfHolidays { get; set; }
+        public bool IsSchoolOff { get; set; }
         public List<Holiday>? Holidays { get; set; }
     }
 }

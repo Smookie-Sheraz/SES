@@ -7,7 +7,7 @@
                 <div class="card">
                     <div class="card-body">
                         <h4 class="card-title">Plan Details</h4>
-                        @if(User.HasClaim("Permission", "ManagementPlanApproving"))
+                        @if(User.HasClaim("Permission", "ManagementPlanApproving") && Model.IsApprovedByMe)
                         {
                             <div class="row">
                                 <form class="forms-sample" method="post" asp-controller="AcademicCalendar" asp-action="PlanApprovals">
@@ -131,7 +131,7 @@
                                                         <h4>Duration</h4>
                                                     </div>
                                                     <div>
-                                                        <label class="badge badge-success fs-6">Duration Days</label>
+                                                        <label class="badge badge-success fs-6">@Model.DurationDays</label>
                                                     </div>
                                                 </div>
                                             </th>

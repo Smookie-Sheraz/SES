@@ -30,9 +30,9 @@ namespace myWebApp.Controllers
         //}
         public async Task<JsonResult> UserNameExist(string Email)
         {
-            var Employee = await _db.Employees.Where(x => x.Email == Email).FirstOrDefaultAsync();
-            var Parent = await _db.Parents.Where(x => x.Email == Email).FirstOrDefaultAsync();
-            var Student = await _db.Students.Where(x => x.Email == Email).FirstOrDefaultAsync();
+            var Employee = await _db.Employees.Where(x => x.Email == Email && x.IsActive == true).FirstOrDefaultAsync();
+            var Parent = await _db.Parents.Where(x => x.Email == Email && x.Status == true).FirstOrDefaultAsync();
+            var Student = await _db.Students.Where(x => x.Email == Email && x.Status == true).FirstOrDefaultAsync();
             if (Employee == null && Parent == null && Student == null)
             {
                 return Json(false);
@@ -41,7 +41,7 @@ namespace myWebApp.Controllers
         }
         public async Task<JsonResult> UserEmailExist(string Email)
         {
-            var user = await _db.Users.Where(x => x.Email == Email).FirstOrDefaultAsync();
+            var user = await _db.Users.Where(x => x.Email == Email && x.IsActive == true).FirstOrDefaultAsync();
             if (user != null)
             {
                 if (user.Email == Email)
@@ -54,9 +54,9 @@ namespace myWebApp.Controllers
         }
         public async Task<JsonResult> EmailAlreadyExist(string Email)
         {
-            var Employee = await _db.Employees.Where(x => x.Email == Email).FirstOrDefaultAsync();
-            var Parent = await _db.Parents.Where(x => x.Email == Email).FirstOrDefaultAsync();
-            var Student = await _db.Students.Where(x => x.Email == Email).FirstOrDefaultAsync();
+            var Employee = await _db.Employees.Where(x => x.Email == Email && x.IsActive == true).FirstOrDefaultAsync();
+            var Parent = await _db.Parents.Where(x => x.Email == Email && x.Status == true).FirstOrDefaultAsync();
+            var Student = await _db.Students.Where(x => x.Email == Email && x.Status == true).FirstOrDefaultAsync();
             if (Employee == null && Parent == null && Student == null)
             {
                 return Json(true);
@@ -65,9 +65,9 @@ namespace myWebApp.Controllers
         }
         public async Task<JsonResult> StudentUpdateEmailAlreadyExist(string UpdateEmail, string StudentId)
         {
-            var Employee = await _db.Employees.Where(x => x.Email == UpdateEmail).FirstOrDefaultAsync();
-            var Parent = await _db.Parents.Where(x => x.Email == UpdateEmail).FirstOrDefaultAsync();
-            var Student = await _db.Students.Where(x => x.Email == UpdateEmail).FirstOrDefaultAsync();
+            var Employee = await _db.Employees.Where(x => x.Email == UpdateEmail && x.IsActive == true).FirstOrDefaultAsync();
+            var Parent = await _db.Parents.Where(x => x.Email == UpdateEmail && x.Status == true).FirstOrDefaultAsync();
+            var Student = await _db.Students.Where(x => x.Email == UpdateEmail && x.Status == true).FirstOrDefaultAsync();
             var CurrentStudent = await _db.Students.Where(x => x.StudentId == Convert.ToInt16(StudentId)).FirstOrDefaultAsync();
             if ((Employee == null && Parent == null && Student == null) || CurrentStudent.Email == UpdateEmail)
             {
@@ -77,10 +77,10 @@ namespace myWebApp.Controllers
         }
         public async Task<JsonResult> EmployeeUpdateEmailAlreadyExist(string Email, string EmployeeId)
         {
-            var CurrentEmployee = await _db.Employees.Where(x => x.EmployeeId == Convert.ToInt16(EmployeeId)).FirstOrDefaultAsync();
-            var Employee = await _db.Employees.Where(x => x.Email == Email).FirstOrDefaultAsync();
-            var Parent = await _db.Parents.Where(x => x.Email == Email).FirstOrDefaultAsync();
-            var Student = await _db.Students.Where(x => x.Email == Email).FirstOrDefaultAsync();
+            var CurrentEmployee = await _db.Employees.Where(x => x.EmployeeId == Convert.ToInt16(EmployeeId) && x.IsActive == true).FirstOrDefaultAsync();
+            var Employee = await _db.Employees.Where(x => x.Email == Email && x.IsActive == true).FirstOrDefaultAsync();
+            var Parent = await _db.Parents.Where(x => x.Email == Email && x.Status == true).FirstOrDefaultAsync();
+            var Student = await _db.Students.Where(x => x.Email == Email && x.Status == true).FirstOrDefaultAsync();
             if ((Employee == null && Parent == null && Student == null) || CurrentEmployee.Email == Email)
             {
                 return Json(true);
@@ -89,10 +89,10 @@ namespace myWebApp.Controllers
         }
         public async Task<JsonResult> ParentUpdateEmailAlreadyExist(string ParentId, string ParentUpdateEmail)
         {
-            var Employee = await _db.Employees.Where(x => x.Email == ParentUpdateEmail)?.FirstOrDefaultAsync();
-            var CurrentParent = await _db.Parents.Where(x => x.ParentId == Convert.ToInt16(ParentId))?.FirstOrDefaultAsync();
-            var Parent = await _db.Parents.Where(x => x.Email == ParentUpdateEmail)?.FirstOrDefaultAsync();
-            var Student = await _db.Students.Where(x => x.Email == ParentUpdateEmail)?.FirstOrDefaultAsync();
+            var Employee = await _db.Employees.Where(x => x.Email == ParentUpdateEmail && x.IsActive == true)?.FirstOrDefaultAsync();
+            var CurrentParent = await _db.Parents.Where(x => x.ParentId == Convert.ToInt16(ParentId) && x.Status == true)?.FirstOrDefaultAsync();
+            var Parent = await _db.Parents.Where(x => x.Email == ParentUpdateEmail && x.Status == true)?.FirstOrDefaultAsync();
+            var Student = await _db.Students.Where(x => x.Email == ParentUpdateEmail && x.Status == true)?.FirstOrDefaultAsync();
             if ((Employee == null && Parent == null && Student == null) || CurrentParent?.Email == ParentUpdateEmail)
             {
                 return Json(true);
@@ -101,9 +101,9 @@ namespace myWebApp.Controllers
         }
         public async Task<JsonResult> CNICExist(string CNIC)
         {
-            var Employee = await _db.Employees.Where(x => x.CNICNo == CNIC).FirstOrDefaultAsync();
-            var Parent = await _db.Parents.Where(x => x.CNIC == CNIC).FirstOrDefaultAsync();
-            var Student = await _db.Students.Where(x => x.CNIC == CNIC).FirstOrDefaultAsync();
+            var Employee = await _db.Employees.Where(x => x.CNICNo == CNIC && x.IsActive == true).FirstOrDefaultAsync();
+            var Parent = await _db.Parents.Where(x => x.CNIC == CNIC && x.Status == true).FirstOrDefaultAsync();
+            var Student = await _db.Students.Where(x => x.CNIC == CNIC && x.Status == true).FirstOrDefaultAsync();
             if (Employee == null && Parent == null && Student == null)
             {
                 return Json(true);
@@ -112,10 +112,10 @@ namespace myWebApp.Controllers
         }
         public async Task<JsonResult> UpdateStudentCNICExist(string UpdateCNIC, string StudentId)
         {
-            var CurrentStudent = await _db.Students.Where(x => x.StudentId == Convert.ToInt16(StudentId)).FirstOrDefaultAsync();
-            var Employee = await _db.Employees.Where(x => x.CNICNo == UpdateCNIC).FirstOrDefaultAsync();
-            var Parent = await _db.Parents.Where(x => x.CNIC == UpdateCNIC).FirstOrDefaultAsync();
-            var Student = await _db.Students.Where(x => x.CNIC == UpdateCNIC).FirstOrDefaultAsync();
+            var CurrentStudent = await _db.Students.Where(x => x.StudentId == Convert.ToInt16(StudentId) && x.Status == true).FirstOrDefaultAsync();
+            var Employee = await _db.Employees.Where(x => x.CNICNo == UpdateCNIC && x.IsActive == true).FirstOrDefaultAsync();
+            var Parent = await _db.Parents.Where(x => x.CNIC == UpdateCNIC && x.Status == true).FirstOrDefaultAsync();
+            var Student = await _db.Students.Where(x => x.CNIC == UpdateCNIC && x.Status == true).FirstOrDefaultAsync();
             if ((Employee == null && Parent == null && Student == null) || CurrentStudent.CNIC == UpdateCNIC)
             {
                 return Json(true);
@@ -124,10 +124,10 @@ namespace myWebApp.Controllers
         }
         public async Task<JsonResult> UpdateEmployeeCNICExist(string CNIC, string EmployeeId)
         {
-            var CurrentEmployee = await _db.Employees.Where(x => x.EmployeeId == Convert.ToInt16(EmployeeId)).FirstOrDefaultAsync();
-            var Employee = await _db.Employees.Where(x => x.CNICNo == CNIC).FirstOrDefaultAsync();
-            var Parent = await _db.Parents.Where(x => x.CNIC == CNIC).FirstOrDefaultAsync();
-            var Student = await _db.Students.Where(x => x.CNIC == CNIC).FirstOrDefaultAsync();
+            var CurrentEmployee = await _db.Employees.Where(x => x.EmployeeId == Convert.ToInt16(EmployeeId) && x.IsActive == true).FirstOrDefaultAsync();
+            var Employee = await _db.Employees.Where(x => x.CNICNo == CNIC && x.IsActive == true).FirstOrDefaultAsync();
+            var Parent = await _db.Parents.Where(x => x.CNIC == CNIC && x.Status == true).FirstOrDefaultAsync();
+            var Student = await _db.Students.Where(x => x.CNIC == CNIC && x.Status == true).FirstOrDefaultAsync();
             if ((Employee == null && Parent == null && Student == null) || CurrentEmployee.CNICNo == CNIC)
             {
                 return Json(true);
@@ -136,9 +136,9 @@ namespace myWebApp.Controllers
         }
         public async Task<JsonResult> UpdateParentCNICExist(string UpdateCNIC, string ParentId)
         {
-            var Employee = await _db.Employees.Where(x => x.CNICNo == UpdateCNIC).FirstOrDefaultAsync();
-            var Parent = await _db.Parents.Where(x => x.CNIC == UpdateCNIC).FirstOrDefaultAsync();
-            var Student = await _db.Students.Where(x => x.CNIC == UpdateCNIC).FirstOrDefaultAsync();
+            var Employee = await _db.Employees.Where(x => x.CNICNo == UpdateCNIC && x.IsActive == true).FirstOrDefaultAsync();
+            var Parent = await _db.Parents.Where(x => x.CNIC == UpdateCNIC && x.Status == true).FirstOrDefaultAsync();
+            var Student = await _db.Students.Where(x => x.CNIC == UpdateCNIC && x.Status == true).FirstOrDefaultAsync();
             if ((Employee == null && Parent == null && Student == null) || Parent.CNIC == UpdateCNIC)
             {
                 return Json(true);
@@ -161,8 +161,7 @@ namespace myWebApp.Controllers
         }
         public async Task<JsonResult> ShooraCNICAlreadyExist(string CNICNo)
         {
-            var user = await _db.Shoora.Where(x => x.CNICNo == CNICNo).FirstOrDefaultAsync();
-
+            var user = await _db.Shoora.Where(x => x.CNICNo == CNICNo && x.IsActive == true).FirstOrDefaultAsync();
             if (user != null)
             {
                 if (user.CNICNo == CNICNo)

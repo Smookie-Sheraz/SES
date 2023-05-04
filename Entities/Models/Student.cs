@@ -22,6 +22,7 @@ namespace Entities.Models
         public string? ITSNumber { get; set; }
         public string? Phone { get; set; }
         public string? Mobile { get; set; }
+        public string? WhastAppNo { get; set; }
         public string? ModeOfTransport { get; set; }
         public string? ToSchool { get; set; }
         public string? FromSchool { get; set; }

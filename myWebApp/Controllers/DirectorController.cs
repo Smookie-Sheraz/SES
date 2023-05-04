@@ -148,10 +148,12 @@ namespace Entities.Controllers
                 }
             }
             classes.books = bookLists;
-            ViewBag.Employees = from a in _db.Grades
-                                from b in _db.Sections
+            ViewBag.Employees = from a in _db.SchoolSections
+                                from b in _db.Grades
+                                from c in _db.Sections
                                 from d in _db.Employees
-                                where b.SectionId == id && b.GradeId == a.GradeId && d.SchoolSectionId == a.SchoolSectionId
+                                from e in _db.Roles
+                                where b.SchoolSectionId == a.SchoolSectionId && c.GradeId == b.GradeId && c.SectionId == id && d.SchoolSectionId == a.SchoolSectionId && e.RoleId == d.RoleId && (e.RollName == "Subject Teacher" || e.RollName == "Class Teacher" || e.RollName == "Grade Manager")
                                 select d;
             return View(classes);
         }
@@ -181,7 +183,7 @@ namespace Entities.Controllers
             }
             if(await _repository.SaveChanges())
             {
-                return RedirectToAction("SubjectTeacherAllocation");
+                return RedirectToAction("Section","Grade");
             }
             else
             {
@@ -343,7 +345,7 @@ namespace Entities.Controllers
         public async Task<IActionResult> AddRoles()
         {
             RolesVM roles = new RolesVM();
-            roles.AddUpdatePermissions = await _db.Permissions.Select(x => new myWebApp.ViewModels.Director.Permissions { PermissionId = x.PermissionId, PermissionName = x.PermissionName }).ToListAsync();
+            roles.AddUpdatePermissions = await _db.Permissions.Where(x => x.IsActive == true).Select(x => new myWebApp.ViewModels.Director.Permissions { PermissionId = x.PermissionId, PermissionName = x.PermissionName }).ToListAsync();
             return View(roles);
         }
         [Authorize(Policy = "Roles.Create")]
@@ -389,8 +391,8 @@ namespace Entities.Controllers
             var user = new RolesVM
             {
                 RoleId = temp.RoleId,
-                IsActive = (bool)temp.IsActive,
-                RoleName = temp.RollName
+                //IsActive = (bool)temp.IsActive,
+                //RoleName = temp.RollName
             };
             user.AddUpdatePermissions = await _db.Permissions.Select(x => new myWebApp.ViewModels.Director.Permissions { PermissionId = x.PermissionId, PermissionName = x.PermissionName }).ToListAsync();
             var userPermissions = await _db.UserPermissions.Where(x => x.RoleId == id).ToListAsync();
@@ -411,8 +413,8 @@ namespace Entities.Controllers
         public async Task<IActionResult> UpdateRole(RolesVM role)
         {
             var temp = await _db.Roles.Where(x => x.RoleId == role.RoleId).FirstOrDefaultAsync();
-            temp.RollName = role.RoleName;
-            temp.IsActive = role.IsActive;
+            //temp.RollName = role.RoleName;
+            //temp.IsActive = role.IsActive;
             var oldPermissions = await _db.UserPermissions.Where(x => x.RoleId == temp.RoleId).ToListAsync();
             _db.RemoveRange(oldPermissions);
             var newPermissions = role.AddUpdatePermissions.Where(x => x.isSelected == true).ToList();

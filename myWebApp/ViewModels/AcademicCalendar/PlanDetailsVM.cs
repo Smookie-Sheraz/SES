@@ -14,6 +14,7 @@ namespace myWebApp.ViewModels.AcademicCalendar
         public int? SubjectId { get; set; }
         public int? BookId { get; set; }
         public int? YearId { get; set; }
+        public int? DurationDays { get; set; }
         public int? SchoolSectionId { get; set; }
         public string? GradeName { get; set; }
         public string? SubjectName { get; set; }
@@ -35,5 +36,8 @@ namespace myWebApp.ViewModels.AcademicCalendar
         //This property is used to forward the PlanId
         public string? PlanStatus { get; set; }
         public int? PlanId { get; set; }
+
+        // to check weather a approving person has already approved the plan or not? And according show the approval form
+        public bool IsApprovedByMe { get; set; }
     }
 }

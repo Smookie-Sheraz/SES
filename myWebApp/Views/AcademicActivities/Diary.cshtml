@@ -8,7 +8,7 @@
             <div class="col-12 grid-margin stretch-card">
                 <div class="card">
                     <div class="card-body">
-                        <h4 class="card-title">Gardes</h4>
+                        <h4 class="card-title">Daily Diary</h4>
                         @*<p class="card-description">
                         The Gardes can be added here!
                         </p>*@
@@ -37,11 +37,11 @@
                                             @if (User.HasClaim("Permission", "Diary.Update") || User.HasClaim("Permission", "Diary.Delete"))
                                             {
                                                 <td class="actions">
-                                                    @if (User.HasClaim("Permission", "Diary.Update") && Garde.ShowDeleteUpdate)
+                                                    @if (User.HasClaim("Permission", "Diary.Update"))
                                                     {
                                                         <a class="fa fa-edit mr-3" asp-route-DiaryId="@Garde.DiaryId" asp-controller="AcademicActivities" asp-action="UpdateDiary" role="button"></a>
                                                     }
-                                                    @if (User.HasClaim("Permission", "Diary.Delete") && Garde.ShowDeleteUpdate)
+                                                    @if (User.HasClaim("Permission", "Diary.Delete"))
                                                     {
                                                         <a class="fa fa-trash text-danger" onclick="return confirm('Are you sure you want to delete?');" asp-route-DiaryId="@Garde.DiaryId" asp-controller="AcademicActivities" asp-action="DeleteDiary" role="button"></a>
                                                     }

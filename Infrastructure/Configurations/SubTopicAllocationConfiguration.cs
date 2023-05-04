@@ -24,6 +24,9 @@ namespace Infrastructure.Configurations
             builder.Property(p => p.IsActive)
                 .HasColumnType("bit")
                 .HasDefaultValue(true);
+            builder.Property(p => p.AreSaturdaysOff)
+                .HasColumnType("bit")
+                .HasDefaultValue(true);
             builder.Property(p => p.ModifiedDate)
                 .HasColumnType("nvarchar(max)");
             builder.Property(p => p.CreatedDate)

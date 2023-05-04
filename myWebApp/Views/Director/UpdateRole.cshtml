@@ -13,7 +13,7 @@
                             <div class="row justify-content-between">
                                 <input type="hidden" asp-for="RoleId" />
                                 <div class="col-12 col-md-6 col-lg-3">
-                                    <div class="form-group">
+                                    @*<div class="form-group">
                                         <label asp-for="RoleName">Roll Name</label>
                                         <input type="text" class="form-control" asp-for="RoleName" placeholder="Enter Roll Name" />
                                         <span asp-validation-for="RoleName" class="text-danger"></span>
@@ -24,7 +24,7 @@
                                             <option value="@true">Yes</option>
                                             <option value="@false">No</option>
                                         </select>
-                                    </div>
+                                    </div>*@
                                 </div>
                                 <div class="col-1 mt-4">
                                     <button type="button" class="btn btn-sm btn-success" onclick="SelectAllPermissions()">Select All</button>

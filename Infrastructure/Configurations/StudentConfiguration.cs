@@ -40,6 +40,8 @@ namespace Infrastructure.Configurations
                 .HasColumnType("nvarchar(max)");
             builder.Property(p => p.Mobile)
                 .HasColumnType("nvarchar(max)");
+            builder.Property(p => p.WhastAppNo)
+                .HasColumnType("nvarchar(max)");
             builder.Property(p => p.ModeOfTransport)
                 .HasColumnType("nvarchar(max)");
             builder.Property(p => p.FromSchool)

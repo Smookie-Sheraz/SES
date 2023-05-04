@@ -1,4 +1,7 @@
 ﻿@model myWebApp.ViewModels.AcademicCalendar.UnitAllocationVM
+@section styles{
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.0/themes/smoothness/jquery-ui.css">
+}
 <div class="main-panel">
     <div class="content-wrapper">
         @if (Model.BookId == null)
@@ -8,18 +11,29 @@
                 <div class="row">
                     <input type="hidden" asp-for="YearId" />
                     <input type="hidden" asp-for="TermId" />
-                    <div class="col-2 text-center">
+                    <div class="col-md-3 text-center">
                         <div class="form-group">
-                            <label>Academic Calendar</label>
-                            <select asp-for="SearchValues" class="form-select" aria-label="Default select example">
-                                <option selected>Select Book Please</option>
-                                @foreach (var sSection in ViewBag.Books)
+                            <label asp-for="SectionId">Classes</label>
+                            <select asp-for="SectionId" class="form-select" onchange="GetBooks(this.id)" aria-label="Default select example">
+                                <option selected>Select Class Please</option>
+                                @foreach (var sSection in ViewBag.TeachingClasses)
                                 {
-                                    <option value="@sSection.Value">@sSection.BookName -- @sSection.ClassName</option>
+                                    <option value="@sSection.ClassId">@sSection.ClassName</option>
                                 }
+                            </select>
+                            <span asp-validation-for="SectionId" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-3 text-center">
+                        <div class="form-group">
+                            <label asp-for="BookId">Books</label>
+                            <select asp-for="BookId" class="form-select" aria-label="Default select example">
+                                <option selected>Select Class First!</option>
                             </select>
                             <span asp-validation-for="BookId" class="text-danger"></span>
                         </div>
+                    </div>
+                    <div class="col-md-3 text-center">
                         <div class="form-group">
                             <label>Plans</label>
                             <select asp-for="PlanId" class="form-select" aria-label="Default select example">
@@ -32,17 +46,56 @@
                             <span asp-validation-for="PlanId" class="text-danger"></span>
                         </div>
                     </div>
+                    <div class="col-md-3 text-center">
+                        <div class="form-group">
+                            <div class="form-check">
+                                <label class="form-check-label">
+                                    <input type="hidden" asp-for="AreSaturdaysOff" />
+                                    <input type="checkbox" class="form-check-input" asp-for="AreSaturdaysOff" />
+                                    Are Saturdays Off?
+                                </label>
+                            </div>
+                        </div>
+                    </div>
                     <div class="col-2 text-center">
-                        <button class="btn btn-primary mt-4" type="submit">Find Units</button>
+                        <button class="btn btn-primary btn-sm mt-4" type="submit" onclick="return confirm('You are gonna lose the planning of the current plan if you copy. Are you sure you want to copy?');">Find Units</button>
                     </div>
                 </div>
             </form>
         }
         else
         {
+            @if (Model.IsPlanCopiable)
+            {
+                <form method="post"
+              asp-controller="AcademicCalendar" asp-action="CopyAcademicPlanning">
+                    <div class="row">
+                        <input type="hidden" asp-for="TermId" />
+                        <input type="hidden" asp-for="PlanId" />
+                        <input type="hidden" asp-for="AreSaturdaysOff" />
+                        <div class="col-md-3 text-center">
+                            <div class="form-group">
+                                <label asp-for="CopiedPlanId">Coypiable Plans</label>
+                                <select asp-for="CopiedPlanId" class="form-select" aria-label="Default select example">
+                                    <option selected>Select Plan Please</option>
+                                    @foreach (var Plan in Model.CopyablePlans)
+                                    {
+                                        <option value="@Plan.AcademicPlanningsId">@Plan.PlanName</option>
+                                    }
+                                </select>
+                                <span asp-validation-for="CopiedPlanId" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-2 text-center">
+                            <button class="btn btn-primary btn-sm mt-4" type="submit">Copy</button>
+                        </div>
+                    </div>
+                </form>
+            }
             <form method="post"
               asp-controller="AcademicCalendar" asp-action="UnitAllocation">
-              <input type="hidden" asp-for="PlanId"/>
+                <input type="hidden" asp-for="PlanId" />
+                <input type="hidden" asp-for="AreSaturdaysOff"/>
                 <div class="row">
                     <div class="col-12 grid-margin stretch-card">
                         <div class="card">
@@ -86,13 +139,13 @@
                                                                     <input type="hidden" name="BookId" asp-for="BookId" />
                                                                     <input type="hidden" name="SectionId" asp-for="SectionId" />
                                                                     <div class="form-group">
-                                                                        <input type="date" class="form-control text-center" oninput="check(this.id)" asp-for="@Model.Units[i].StartDate" placeholder="Enter Start Date" min="@Convert.ToDateTime(Model.MinDate).ToString("yyyy-MM-dd")" max="@Convert.ToDateTime(Model.MaxDate).ToString("yyyy-MM-dd")">
+                                                                        <input type="text" class="datepicker" oninput="check(this.id)" asp-for="@Model.Units[i].StartDate" placeholder="Enter Start Date" min="@Convert.ToDateTime(Model.MinDate).ToString("yyyy-MM-dd")" max="@Convert.ToDateTime(Model.MaxDate).ToString("yyyy-MM-dd")">
                                                                         <span asp-validation-for="@Model.Units[i].StartDate" class="text-danger"></span>
                                                                     </div>
                                                                 </td>
                                                                 <td>
                                                                     <div class="form-group">
-                                                                        <input type="date" class="form-control text-center" asp-for="@Model.Units[i].EndDate" placeholder="Enter End Date" min="@Convert.ToDateTime(Model.MinDate).ToString("yyyy-MM-dd")" max="@Convert.ToDateTime(Model.MaxDate).ToString("yyyy-MM-dd")">
+                                                                        <input type="text" class="datepicker" asp-for="@Model.Units[i].EndDate" placeholder="Enter End Date" min="@Convert.ToDateTime(Model.MinDate).ToString("yyyy-MM-dd")" max="@Convert.ToDateTime(Model.MaxDate).ToString("yyyy-MM-dd")">
                                                                         <span asp-validation-for="@Model.Units[i].EndDate" class="text-danger"></span>
                                                                     </div>
                                                                 </td>
@@ -162,29 +215,10 @@
         }
     </div>
 </div>
-@*@section scripts{
-    <script>
-        function check(id){
-            console.log(id);
-            var IdParts = id.split("_");
-            var trNow = parseInt(IdParts[1]);
-            if(trNow > 0){
-                trNow -= 1;
-                var startDateString = document.getElementById(id);
-                var startDate = new Date(startDateString.value.split("-")[0],startDateString.value.split("-")[1] - 1,startDateString.value.split("-")[2]);
-                var endDateId = IdParts[0] +"_"+ trNow.toString() +"__"+ "EndDate";
-                var endDateString = document.getElementById(endDateId);
-                var endDate = new Date(endDateString.value.split("-")[0],endDateString.value.split("-")[1] - 1,endDateString.value.split("-")[2]);
-                if(startDate <= endDate){
-                    alert("The Topic should start after the end of the previos chapter " + endDateString.value);
-                    startDateString.value = endDateString.value;
-                }
-            }
-            }
-    </script>
-}*@
 
 @section scripts{
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.0/jquery-ui.min.js"></script>
     <script>
         $(document).ready(function () {
             $('#UnitsTable').DataTable({
@@ -196,6 +230,37 @@
             });
 
         });
+        var areSaturdaysOff = @Html.Raw(Json.Serialize(Model.AreSaturdaysOff));
+        $(function (areSaturdaysOff) {
+            if (areSaturdaysOff == true) {
+                $(".datepicker").each(function () {
+                    var minDate = new Date($(this).attr("min"));
+                    var maxDate = new Date($(this).attr("max"));
+                    $(this).datepicker({
+                        defaultDate: new Date(),
+                        dateFormat: "dd-mm-yy",
+                        beforeShowDay: function (date) {
+                            return [date >= minDate && date <= maxDate && date.getDay() !== 0 && date.getDay() !== 6];
+                        }
+                    });
+                });
+            }
+            else {
+                $(".datepicker").each(function () {
+                    var minDate = new Date($(this).attr("min"));
+                    var maxDate = new Date($(this).attr("max"));
+                    $(this).datepicker({
+                        defaultDate: new Date(),
+                        dateFormat: "dd-mm-yy",
+                        beforeShowDay: function (date) {
+                            return [date >= minDate && date <= maxDate && date.getDay() !== 0];
+                        }
+                    });
+                });
+            }
+        });
+
+
     </script>
     <script src="~/js/custom.js"></script>
 }

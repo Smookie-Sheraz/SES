@@ -1,4 +1,7 @@
 ﻿@model myWebApp.ViewModels.AcademicCalendar.SubTopicAllocationVM
+@section styles{
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.0/themes/smoothness/jquery-ui.css">
+}
 <div class="main-panel">
     <div class="content-wrapper">
         @if (Model.TopicId == null)
@@ -8,18 +11,56 @@
                 <div class="row">
                     <input type="hidden" asp-for="YearId" />
                     <input type="hidden" asp-for="TermId" />
-                    <div class="col-2 text-center">
+                    <div class="col-md-3 text-center">
                         <div class="form-group">
-                            <label>Topics</label>
-                            <select asp-for="TopicId" class="form-select" aria-label="Default select example">
-                                <option selected>Select Chapter Please</option>
-                                @foreach (var sSection in ViewBag.Topics)
+                            <label asp-for="SectionId">Classes</label>
+                            <select asp-for="SectionId" class="form-select" onchange="GetBooks(this.id)" aria-label="Default select example">
+                                <option selected>Select Class Please</option>
+                                @foreach (var sSection in ViewBag.TeachingClasses)
                                 {
-                                    <option value="@sSection.TopicId">@sSection.TopicName -- @sSection.ChapterName</option>
+                                    <option value="@sSection.ClassId">@sSection.ClassName</option>
                                 }
+                            </select>
+                            <span asp-validation-for="SectionId" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-3 text-center">
+                        <div class="form-group">
+                            <label asp-for="BookId">Books</label>
+                            <select asp-for="BookId" class="form-select" onchange="GetUnits(this.id)" aria-label="Default select example">
+                                <option selected>Select Class First!</option>
+                            </select>
+                            <span asp-validation-for="BookId" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-3 text-center">
+                        <div class="form-group">
+                            <label asp-for="UnitId">Units</label>
+                            <select asp-for="UnitId" class="form-select" onchange="GetChapters(this.id)" aria-label="Default select example">
+                                <option selected>Select Book First!</option>
+                            </select>
+                            <span asp-validation-for="UnitId" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-3 text-center">
+                        <div class="form-group">
+                            <label asp-for="ChapterId">Chapter</label>
+                            <select asp-for="ChapterId" class="form-select" onchange="GetTopics(this.id)" aria-label="Default select example">
+                                <option selected>Select Unit First!</option>
+                            </select>
+                            <span asp-validation-for="ChapterId" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-3 text-center">
+                        <div class="form-group">
+                            <label asp-for="TopicId">Topic</label>
+                            <select asp-for="TopicId" class="form-select" aria-label="Default select example">
+                                <option selected>Select Chapter First!</option>
                             </select>
                             <span asp-validation-for="TopicId" class="text-danger"></span>
                         </div>
+                    </div>
+                    <div class="col-md-3 text-center">
                         <div class="form-group">
                             <label>Plans</label>
                             <select asp-for="PlanId" class="form-select" aria-label="Default select example">
@@ -30,6 +71,17 @@
                                 }
                             </select>
                             <span asp-validation-for="PlanId" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-3 text-center">
+                        <div class="form-group">
+                            <div class="form-check">
+                                <label class="form-check-label">
+                                    <input type="hidden" asp-for="AreSaturdaysOff" />
+                                    <input type="checkbox" class="form-check-input" asp-for="AreSaturdaysOff" />
+                                    Are Saturdays Off?
+                                </label>
+                            </div>
                         </div>
                     </div>
                     <div class="col-2 text-center">
@@ -44,6 +96,7 @@
               asp-controller="AcademicCalendar" asp-action="SubTopicAllocation">
                 <div class="row">
                     <input type="hidden" asp-for="PlanId" />
+                    <input type="hidden" asp-for="AreSaturdaysOff" />
                     <div class="col-12 grid-margin stretch-card">
                         <div class="card">
                             <div class="card-body">
@@ -167,6 +220,8 @@
     </div>
 </div>
 @section scripts{
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.0/jquery-ui.min.js"></script>
     <script>
         $(document).ready(function () {
             $('#SubTopicsTable').DataTable({
@@ -176,5 +231,35 @@
                 },
             });
         });
+        var areSaturdaysOff = @Html.Raw(Json.Serialize(Model.AreSaturdaysOff));
+        $(function (areSaturdaysOff) {
+            if (areSaturdaysOff == true) {
+                $(".datepicker").each(function () {
+                    var minDate = new Date($(this).attr("min"));
+                    var maxDate = new Date($(this).attr("max"));
+                    $(this).datepicker({
+                        defaultDate: new Date(),
+                        dateFormat: "dd-mm-yy",
+                        beforeShowDay: function (date) {
+                            return [date >= minDate && date <= maxDate && date.getDay() !== 0 && date.getDay() !== 6];
+                        }
+                    });
+                });
+            }
+            else {
+                $(".datepicker").each(function () {
+                    var minDate = new Date($(this).attr("min"));
+                    var maxDate = new Date($(this).attr("max"));
+                    $(this).datepicker({
+                        defaultDate: new Date(),
+                        dateFormat: "dd-mm-yy",
+                        beforeShowDay: function (date) {
+                            return [date >= minDate && date <= maxDate && date.getDay() !== 0];
+                        }
+                    });
+                });
+            }
+        });
     </script>
+    <script src="~/js/custom.js"></script>
 }

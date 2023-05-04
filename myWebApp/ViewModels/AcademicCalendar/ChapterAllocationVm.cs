@@ -11,8 +11,11 @@ namespace myWebApp.ViewModels.AcademicCalendar
         //public int MonthId { get; set; }
         public int? TermId { get; set; }
         public int? YearId { get; set; }
+        public int? SectionId { get; set; }
+        public int? BookId { get; set; }
         public int? UnitId { get; set; }
         public int? PlanId { get; set; }
+        public bool AreSaturdaysOff { get; set; }
         public DateTime? MinDate { get; set; }
         public DateTime? MaxDate { get; set; }
         public List<ChapterList> Chapters { get; set; }

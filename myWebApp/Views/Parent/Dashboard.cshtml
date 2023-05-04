@@ -18,8 +18,9 @@
                     <li class="list-group-item">Vestibulum at eros</li>
                     </ul>*@
                             <div class="card-body">
-                                <a target="_blank" asp-controller="Student" asp-action="StudentDetails" asp-route-StudentId="@student.StudentId" class="btn btn-outline-info btn-sm">Details</a>
-                                <a target="_blank" asp-controller="Parent" asp-action="LeaveApplication" asp-route-StudentId="@student.StudentId" class="btn btn-outline-info btn-sm">Leave</a>
+                                <a asp-controller="Student" asp-action="StudentDetails" asp-route-StudentId="@student.StudentId" class="btn btn-outline-info btn-sm">Details</a>
+                                <a asp-controller="Parent" asp-action="LeaveApplication" asp-route-StudentId="@student.StudentId" class="btn btn-outline-info btn-sm">Leave</a>
+                                <a asp-controller="AcademicActivities" asp-action="ParentDiary" asp-route-StudentId="@student.StudentId" class="btn btn-outline-info btn-sm">Diary</a>
                             </div>
                         </div>
                     </div>

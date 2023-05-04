@@ -15,6 +15,7 @@ namespace Entities.Models
         public int? TermId { get; set; }
         public int? NoOfHolidays { get; set; }
         public bool? IsActive { get; set; }
+        public bool? IsSchoolOff { get; set; }
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
         //[Display(Name = "Modified Date")]

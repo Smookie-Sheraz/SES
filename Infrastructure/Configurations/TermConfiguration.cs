@@ -46,6 +46,9 @@ namespace Infrastructure.Configurations
             builder.Property(p => p.IsActive)
                 .HasColumnType("bit")
                 .HasDefaultValue(true);
+            builder.Property(p => p.AreSaturdaysOff)
+                .HasColumnType("bit")
+                .HasDefaultValue(false);
             //builder.HasMany(p => p.Months)
             //    .WithOne(p => p.Term)
             //    .IsRequired()

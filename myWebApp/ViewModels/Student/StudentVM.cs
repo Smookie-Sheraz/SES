@@ -25,8 +25,8 @@ namespace myWebApp.ViewModels.Student
         public DateTime? DOB { get; set; }
         public bool OnlyRegisteredNoAdmitted { get; set; }
         public string? ITSNumber { get; set; }
-        [Display(Name = "Phone No ")]
-        [Required(ErrorMessage = "{0} is Required!")]
+        //[Display(Name = "Phone No ")]
+        //[Required(ErrorMessage = "{0} is Required!")]
         public string? Phone { get; set; }
         [Display(Name = "Class Name")]
         [Required(ErrorMessage = "{0} is Required!")]
@@ -34,20 +34,27 @@ namespace myWebApp.ViewModels.Student
         public int? ParentId { get; set; }
         public IFormFile? Picture { get; set; }
         public string? PictureURL { get; set; }
+        [Display(Name = "WhatsApp No")]
+        [Required(ErrorMessage = "{0} is Required!")]
+        [StringLength(11,ErrorMessage ="WhatsApp No Should Must be 11 Digits Long!",MinimumLength = 11)]
+        [RegularExpression(@"^\d{11}$", ErrorMessage = "Please Enter a Valid WhatsApp No!")]
+        public string? WhatsAppNo { get; set; }
         [Display(Name = "Mobile No")]
         [Required(ErrorMessage = "{0} is Required!")]
+        [StringLength(11, ErrorMessage = "Mobile No Should Must be 11 Digits Long!", MinimumLength = 11)]
+        [RegularExpression(@"^\d{11}$", ErrorMessage = "Please Enter a Valid Mobile No!")]
         public string? Mobile { get; set; }
         //[Display(Name = "Mode of Transport")]
         //[Required(ErrorMessage = "{0} is Required!")]
         public string? ModeOfTransport { get; set; }
         public string? ToSchool { get; set; }
         public string? FromSchool { get; set; }
-        [Display(Name = "Address")]
-        [Required(ErrorMessage = "{0} is Required!")]
+        //[Display(Name = "Address")]
+        //[Required(ErrorMessage = "{0} is Required!")]
         public string? Address { get; set; }
-        [Display(Name = "Username")]
-        [Required(ErrorMessage = "{0} is Required!")]
-        public string Username { get; set; }
+        //[Display(Name = "Username")]
+        //[Required(ErrorMessage = "{0} is Required!")]
+        //public string Username { get; set; }
         [Display(Name = "Email")]
         [DataType(DataType.EmailAddress)]
         [Required(ErrorMessage = "{0} is Required!")]
@@ -62,13 +69,13 @@ namespace myWebApp.ViewModels.Student
         public string? SecondEmail { get; set; }
         [DataType(DataType.EmailAddress)]
         public string? AdmissionEmail { get; set; }
-        [Display(Name = "Password")]
-        [Required(ErrorMessage = "{0} is Required!")]
-        public string Password { get; set; }
-        [Display(Name = "Repeat Password")]
-        [Compare("Password",ErrorMessage = "Passowrd Doesn't Match!")]
-        [Required(ErrorMessage = "{0} is Required!")]
-        public string PasswordRepeat { get; set; }
+        //[Display(Name = "Password")]
+        //[Required(ErrorMessage = "{0} is Required!")]
+        //public string Password { get; set; }
+        //[Display(Name = "Repeat Password")]
+        //[Compare("Password",ErrorMessage = "Passowrd Doesn't Match!")]
+        //[Required(ErrorMessage = "{0} is Required!")]
+        //public string PasswordRepeat { get; set; }
         public bool Status { get; set; }
         //[Display(Name = "Roll No")]
         //[Required(ErrorMessage = "{0} is Required!")]
@@ -100,8 +107,10 @@ namespace myWebApp.ViewModels.Student
         //[Display(Name = "Emergency Contact Name")]
         //[Required(ErrorMessage = "{0} is Required!")]
         public string? EmergencyContactName { get; set; }
-        //[Display(Name = "Emergency Contact No")]
-        //[Required(ErrorMessage = "{0} is Required!")]
+        [Display(Name = "Emergency Contact No")]
+        [Required(ErrorMessage = "{0} is Required!")]
+        [StringLength(11, ErrorMessage = "Emergency Contact No Should Must be 11 Digits Long!", MinimumLength = 11)]
+        [RegularExpression(@"^\d{11}$", ErrorMessage = "Please Enter a Valid Emergency Contact No!")]
         public string? EmergencyContactNumber { get; set; }
         //[Display(Name = "Category")]
         //[Required(ErrorMessage = "{0} is Required!")]
@@ -154,8 +163,8 @@ namespace myWebApp.ViewModels.Student
         [Required(ErrorMessage = "{0} is Required!")]
         [StringLength(maximumLength: 15, ErrorMessage = "{0} Can't Be Less Than {1} Characters!", MinimumLength = 15)]
         public string? ParentCNIC { get; set; }
-        [Display(Name = "Parent Mobile No")]
-        [Required(ErrorMessage = "{0} is Required!")]
+        //[Display(Name = "Parent Mobile No")]
+        //[Required(ErrorMessage = "{0} is Required!")]
         public string? ParentMobile { get; set; }
         //[Display(Name = "Parent Occupation")]
         //[Required(ErrorMessage = "{0} is Required!")]
@@ -175,12 +184,12 @@ namespace myWebApp.ViewModels.Student
         [Display(Name = "Parent Email")]
         [Required(ErrorMessage = "{0} is Required!")]
         public string ParentEmail { get; set; }
-        [Display(Name = "Parent Password")]
-        [Required(ErrorMessage = "{0} is Required!")]
-        public string ParentPassword { get; set; }
-        [Display(Name = "Parent Username")]
-        [Required(ErrorMessage = "{0} is Required!")]
-        public string ParentUsername { get; set; }
+        //[Display(Name = "Parent Password")]
+        //[Required(ErrorMessage = "{0} is Required!")]
+        //public string ParentPassword { get; set; }
+        //[Display(Name = "Parent Username")]
+        //[Required(ErrorMessage = "{0} is Required!")]
+        //public string ParentUsername { get; set; }
         [Display(Name = "Email")]
         [DataType(DataType.EmailAddress)]
         [Required(ErrorMessage = "{0} is Required!")]

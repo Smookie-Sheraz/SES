@@ -12,6 +12,8 @@
         public int? EmployeeId { get; set; }
         public string? ApprovingPerson { get; set; }
         public List<AcademicPlanningsVM>? plans { get; set; }
+
+        //to disable the submit plan approval button 
         public bool ActiveSubmitPlan { get; set; } = false;
     }
 }

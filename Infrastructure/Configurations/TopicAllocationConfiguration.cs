@@ -37,6 +37,9 @@ namespace Infrastructure.Configurations
             builder.Property(p => p.IsActive)
                 .HasColumnType("bit")
                 .HasDefaultValue(true);
+            builder.Property(p => p.AreSaturdaysOff)
+                .HasColumnType("bit")
+                .HasDefaultValue(true);
             builder.Property(p => p.WorkBookStartPage)
                 .HasColumnType("int");
             builder.Property(p => p.WorkBookEndPage)

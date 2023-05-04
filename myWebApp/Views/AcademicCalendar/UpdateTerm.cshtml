@@ -1,67 +1,73 @@
 ﻿@model myWebApp.ViewModels.AcademicCalendar.UpdateTermVM
 @{
 }
-       <div class="main-panel">        
-        <div class="content-wrapper">
+<div class="main-panel">
+    <div class="content-wrapper">
         <div class="row">
             <div class="col-12 grid-margin stretch-card">
-              <div class="card">
-                <div class="card-body">
-                  <h4 class="card-title">Update Adacmic-Calendar --Term</h4>
-                  @*<p class="card-description">
-                    Please Update Adacmic-Calendar --Term and Press the Update Button.
-                  </p>*@
-                  <form class="forms-sample" method="post"
-                  asp-controller="AcademicCalendar" asp-action="UpdateTerm">
-                  <input type="hidden" asp-for="TermId"/>
-                      <div class="form-group">
-                      <select asp-for="YearId" class="form-select" aria-label="Default select example">
-                      <option selected>Select Year Please</option>
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Update Adacmic-Calendar --Term</h4>
+                        @*<p class="card-description">
+                        Please Update Adacmic-Calendar --Term and Press the Update Button.
+                        </p>*@
+                        <form class="forms-sample" method="post"
+                              asp-controller="AcademicCalendar" asp-action="UpdateTerm">
+                            <input type="hidden" asp-for="TermId" />
+                            <div class="form-group">
+                                <select asp-for="YearId" class="form-select" aria-label="Default select example">
+                                    <option selected>Select Year Please</option>
                                     @foreach (var year in ViewBag.Years)
                                     {
-                                      <option value="@year.YearId">@year.StartDate</option>
+                                        <option value="@year.YearId">@year.StartDate</option>
                                     }
-                    </select>
-                      <span asp-validation-for="YearId" class="text-danger"></span>
-                    </div>
-                    <div class="form-group">
-                      <label asp-for="TermName">Term Name</label>
-                      <input type="text" class="form-control" asp-for="TermName" placeholder="Enter Start Date">
-                      <span asp-validation-for="TermName" class="text-danger"></span>
-                    </div>
-                    <div class="form-group">
-                      <label asp-for="StartDate">Start Date</label>
-                      <input type="date" class="form-control" asp-for="StartDate" placeholder="Enter Start Date">
-                      <span asp-validation-for="StartDate" class="text-danger"></span>
-                    </div>
-                    <div class="form-group">
-                      <label asp-for="EndDate">End Date</label>
-                      <input type="date" class="form-control" asp-for="EndDate" placeholder="Enter End Date">
-                      <span asp-validation-for="EndDate" class="text-danger"></span>
-                    </div>
-                    <div class="form-group">
-                      <label asp-for="AssessmentDays">Assessment Days</label>
-                      <input type="number" class="form-control" asp-for="AssessmentDays" placeholder="Enter Assessment Days">
-                      <span asp-validation-for="AssessmentDays" class="text-danger"></span>
-                    </div>
-                    <div class="form-group mt-2">
-                            <select asp-for="IsActive" class="form-select" aria-label="Default select example">
-                                <option selected value="@null">Is Term Active</option>
+                                </select>
+                                <span asp-validation-for="YearId" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="TermName">Term Name</label>
+                                <input type="text" class="form-control" asp-for="TermName" placeholder="Enter Start Date">
+                                <span asp-validation-for="TermName" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="StartDate">Start Date</label>
+                                <input type="date" class="form-control" asp-for="StartDate" placeholder="Enter Start Date">
+                                <span asp-validation-for="StartDate" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="EndDate">End Date</label>
+                                <input type="date" class="form-control" asp-for="EndDate" placeholder="Enter End Date">
+                                <span asp-validation-for="EndDate" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="AssessmentDays">Assessment Days</label>
+                                <input type="number" class="form-control" asp-for="AssessmentDays" placeholder="Enter Assessment Days">
+                                <span asp-validation-for="AssessmentDays" class="text-danger"></span>
+                            </div>
+                            <div class="form-check">
+                                <label class="form-check-label">
+                                    <input type="checkbox" class="form-check-input" asp-for="AreSaturdaysOff" />
+                                    Are Saturdays Off?
+                                </label>
+                            </div>
+                            <div class="form-group mt-2">
+                                <select asp-for="IsActive" class="form-select" aria-label="Default select example">
+                                    <option selected value="@null">Is Term Active</option>
                                     <option value="@true">Yes</option>
                                     <option value="@false">No</option>
-                            </select>
-                        </div>
-                    <div class="float-right mt-4">
-                    <a class="btn btn-light" asp-controller="AcademicCalendar" asp-action="Term" asp-route-Id="@Model.YearId">Cancel</a>
-                        <button type="submit" class="btn btn-primary mr-2">Update</button>
+                                </select>
+                            </div>
+                            <div class="float-right mt-4">
+                                <a class="btn btn-light" asp-controller="AcademicCalendar" asp-action="Term" asp-route-Id="@Model.YearId">Cancel</a>
+                                <button type="submit" class="btn btn-primary mr-2">Update</button>
+                            </div>
+                        </form>
                     </div>
-                  </form>
                 </div>
-              </div>
             </div>
-           </div>
-          </div>
-         </div>
+        </div>
+    </div>
+</div>
 
 @*@section scripts{
                     <script src="~/lib/jquery-validate/jquery.validate.min.js"></script>

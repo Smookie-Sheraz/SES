@@ -30,5 +30,6 @@ namespace myWebApp.ViewModels.AcademicCalendar
         //public string Event { get; set; }
         //public DateTime EventDate { get; set; }
         //public int NoOfMonths { get; set; }
+        public bool AreSaturdaysOff { get; set; }
     }
 }

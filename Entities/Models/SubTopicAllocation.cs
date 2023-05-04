@@ -26,6 +26,7 @@ namespace Entities.Models
         public int? PlanId { get; set; }
         public bool IsAllocated { get; set; }
         public bool? IsActive { get; set; }
+        public bool? AreSaturdaysOff { get; set; }
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
         public DateTime? ModifiedDate { get; set; }

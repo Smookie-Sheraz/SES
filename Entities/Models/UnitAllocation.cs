@@ -25,6 +25,7 @@ namespace Entities.Models
         public int? WorkBookStartPage { get; set; }
         public int? WorkBookEndPage { get; set; }
         public bool? IsActive { get; set; }
+        public bool? AreSaturdaysOff { get; set; }
         //[Display(Name = "Modified Date")]
         //[DataType(DataType.Date)]
         public DateTime? ModifiedDate { get; set; }

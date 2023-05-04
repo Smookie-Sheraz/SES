@@ -23,5 +23,6 @@ namespace myWebApp.ViewModels.AcademicCalendar
         public int? AssessmentDays { get; set; }
         [Display(Name = "Status")]
         public bool IsActive { get; set; }
+        public bool AreSaturdaysOff { get; set; }
     }
 }

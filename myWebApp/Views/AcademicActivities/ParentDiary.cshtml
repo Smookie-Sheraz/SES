@@ -1,0 +1,69 @@
+﻿@model myWebApp.ViewModels.AcademicActivities.ParentDiaryVM
+<div class="main-panel">
+    <div class="content-wrapper">
+        @if (Model.DiaryDate == null)
+        {
+            <form method="get"
+              asp-controller="AcademicActivities" asp-action="ParentDiary">
+                <div class="row">
+                    <input type="hidden" asp-for="StudentId" />
+                    <div class="col-2 text-center">
+                        <div class="form-group">
+                            <label asp-for="DiaryDate">Diary Date</label>
+                            <input type="date" class="form-control" asp-for="DiaryDate" min="@Convert.ToDateTime(Model.MinDate).ToString("yyyy-MM-dd")" max="@Convert.ToDateTime(Model.MaxDate).ToString("yyyy-MM-dd")">
+                            <span asp-validation-for="DiaryDate" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-2 text-center">
+                        <button class="btn btn-primary mt-4" type="submit">Find Diary</button>
+                    </div>
+                </div>
+            </form>
+        }
+        else
+        {
+            <div class="row">
+                <div class="col-12 grid-margin stretch-card">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="card-title">Diary: <label class="badge badge-success fs-6">@Convert.ToDateTime(Model.DiaryDate).ToString("dd-MMM-yyyy")</label></h4>
+                            @*<p class="card-description">
+                        The Units allocated to the @ViewBag.Month !
+                        </p>*@
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover table-bordered">
+                                            <thead class="bg-primary text-white">
+                                                <tr>
+                                                    @*@if(User.HasClaim("Permission","Term.Update") || User.HasClaim("Permission","Term.Delete") || User.HasClaim("Permission","Holidays.Read")){
+                                                <th>Actions</th>
+                                                }*@
+                                                    <th>Subject</th>
+                                                    <th>Class Work</th>
+                                                    <th>Home Work</th>
+                                                    <th>Test</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="term-data">
+                                                @foreach (var diary in Model.Diaries)
+                                                {
+                                                    <tr>
+                                                        <td>@diary.SubjectName</td>
+                                                        <td>@diary.ClassWork</td>
+                                                        <td>@diary.SHomeWork</td>
+                                                        <td>@diary.Test</td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

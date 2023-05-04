@@ -235,25 +235,27 @@ namespace myWebApp.Controllers
             ViewBag.ACs = await (from a in _db.Employees
                           from b in _db.Roles
                           where b.RoleId == a.RoleId && b.RollName == "Assistant Coordinator"
-                          select a).FirstOrDefaultAsync();
+                          select a).ToListAsync();
             SchoolSectionVM sSection = new SchoolSectionVM();
-            var sSections = from s in _db.SchoolSections
-                           from c in _db.Campuses
-                           where c.CampusId == s.CampusId
+            sSection.SchoolSections = await (from s in _db.SchoolSections
+                           join c in _db.Campuses on s.CampusId equals c.CampusId into SchoolCampus
+                           from Campus in SchoolCampus.DefaultIfEmpty()
+                           join d in _db.Employees on s.AssistantCoordinatorId equals d.EmployeeId into AssCordinator
+                           from AC in AssCordinator.DefaultIfEmpty()
+                           where s.IsActive == true
                            select new SchoolSectionVM
                            {
                                SectionName = s.SectionName,
                                SchoolSectionId = s.SchoolSectionId,
                                PhoneNo = s.PhoneNo,
-                               Email = s.Email,
-                               CampusName = c.CampusName,
+                               Email = AC.Email,
+                               CampusName = Campus.CampusName,
                                address = s.address,
                                Abbrevation = s.Abbrevation,
-                               SectionHead = s.SectionHead,
+                               SectionHead = AC.FName + " " + AC.LName,
                                SchoolId = s.SchoolId,
                                ACId = (int)s.AssistantCoordinatorId
-                           };
-            sSection.SchoolSections = await sSections.ToListAsync();
+                           }).ToListAsync(); 
             ViewBag.Campuses = await _db.Campuses.ToListAsync();
             ViewBag.Schools = await _db.Schools.ToListAsync();
             return View(sSection);
@@ -293,7 +295,7 @@ namespace myWebApp.Controllers
             ViewBag.ACs = await (from a in _db.Employees
                                  from b in _db.Roles
                                  where b.RoleId == a.RoleId && b.RollName == "Assistant Coordinator"
-                                 select a).FirstOrDefaultAsync();
+                                 select a).ToListAsync();
             var Ssection = new SchoolSectionVM
             {
                 CampusId = temp.CampusId,

@@ -65,9 +65,9 @@ namespace myWebApp.Controllers
                                    {
                                        HomeWork = a.HomeWork,
                                        ClassWork = a.ClassWork,
-                                       Test = test.TestTitle == null ? null:test.TestTitle,
-                                       Subject = subject.SubjectName == null ? null: subject.SubjectName,
-                                       ClassName = grade.GradeName+Class.SectionName,
+                                       Test = test.TestTitle == null ? null : test.TestTitle,
+                                       Subject = subject.SubjectName == null ? null : subject.SubjectName,
+                                       ClassName = grade.GradeName + Class.SectionName,
                                        DiaryId = a.DiaryId,
                                        IsActive = a.IsActive
                                    }).ToListAsync();
@@ -172,9 +172,44 @@ namespace myWebApp.Controllers
             ModelState.AddModelError("", "Error While Saving in Database!");
             return View(DiaryId);
         }
+
+        [Authorize(Policy = "ParentDiary")]
+        [HttpGet]
+        public async Task<IActionResult> ParentDiary(ParentDiaryVM diary, int? StudentId)
+        {
+            if(diary.StudentId == null) diary.StudentId = StudentId;
+            var year = await (from a in _db.Students
+                              from b in _db.SubjectTeacherAllocations
+                              from c in _db.Books
+                              from d in _db.Units
+                              from e in _db.UnitAllocations
+                              from f in _db.terms
+                              from g in _db.years
+                              where a.StudentId == diary.StudentId && b.SectionId == a.ClassId && c.BookId == b.BookId && d.BookId == c.BookId && e.UnitId == d.UnitId && f.TermId == e.TermId && g.YearId == f.YearId
+                              select g).FirstOrDefaultAsync();
+            diary.MinDate = year.StartDate;
+            diary.MaxDate = year.EndDate;
+            if (diary.DiaryDate != null)
+            {
+                diary.Diaries = await (from b in _db.Students
+                                       from c in _db.Diaries
+                                       from d in _db.Tests
+                                       from e in _db.Subjects
+                                       where b.StudentId == diary.StudentId && c.ClassId == b.ClassId && e.SubjectId == c.SubjectId && d.TestId == c.TestId && c.Date == diary.DiaryDate
+                                       select new ParentDiaryVM
+                                       {
+                                           SubjectName = e.SubjectName,
+                                           SHomeWork = c.HomeWork,
+                                           ClassWork = c.ClassWork,
+                                           Test = d.TestTitle,
+                                           DiaryDate = c.Date
+                                       }).Distinct().ToListAsync();
+            }
+            return View(diary);
+        }
         #endregion
 
-        #region Book
+        #region ClassTests
         [Authorize(Policy = "ClassTests.Read")]
         public async Task<IActionResult> Test(int sectionId)
         {
@@ -210,7 +245,7 @@ namespace myWebApp.Controllers
                                      select new
                                      {
                                          SectionId = b.SectionId,
-                                         SectionName =  c.GradeId + b.SectionName
+                                         SectionName = c.GradeId + b.SectionName
                                      }).Distinct().ToListAsync();
             return View();
         }
@@ -314,10 +349,10 @@ namespace myWebApp.Controllers
         {
             int empId = Convert.ToInt16(User.FindFirst(ClaimTypes.Sid)?.Value);
             var subjects = await (from a in _db.SubjectTeacherAllocations
-                                          from b in _db.Books
-                                          from c in _db.Subjects
-                                          where a.EmployeeId == empId && b.BookId == a.BookId && c.SubjectId == b.SubjectId && a.SectionId == ClassId
-                                          select c).Distinct().ToListAsync();
+                                  from b in _db.Books
+                                  from c in _db.Subjects
+                                  where a.EmployeeId == empId && b.BookId == a.BookId && c.SubjectId == b.SubjectId && a.SectionId == ClassId
+                                  select c).Distinct().ToListAsync();
             return Json(subjects);
         }
         public async Task<JsonResult> GetTestBooks(int SubjectId)

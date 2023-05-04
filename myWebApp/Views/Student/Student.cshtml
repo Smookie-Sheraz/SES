@@ -10,6 +10,8 @@
                         @*<p class="card-description">
                         The Employees can be added here!
                         </p>*@
+                        @*<form class="forms-sample" method="post"
+                              asp-controller="Student" asp-action="AcademicPlannings">*@
                         <div class="table-responsive">
                                 <table class="table table-hover table-bordered" id="StudentTable">
                                     <thead class="bg-primary text-white">
@@ -97,11 +99,11 @@
                                                 <td>@employee.ParentName</td>
                                                 @if (User.HasClaim("Permission", "Letters.Create"))
                                                 {
-                                                <td><a target="_blank" asp-controller="School" asp-action="AddLetter" asp-route-StudentId="@employee.StudentId" class="btn btn-outline-info btn-sm">Write Letter</a></td>
+                                                <td><a asp-controller="School" asp-action="AddLetter" asp-route-StudentId="@employee.StudentId" class="btn btn-outline-info btn-sm">Write Letter</a></td>
                                                 }
                                                 @if (User.HasClaim("Permission", "Student.Details"))
                                                 {
-                                                <td><a target="_blank" asp-controller="Student" asp-action="StudentDetails" asp-route-StudentId="@employee.StudentId" class="btn btn-outline-info btn-sm">Details</a></td>
+                                                <td><a asp-controller="Student" asp-action="StudentDetails" asp-route-StudentId="@employee.StudentId" class="btn btn-outline-info btn-sm">Details</a></td>
                                                 }
                                             @*<td>@employee.FatherName</td>
                                                 <td>@employee.SpouseName</td>

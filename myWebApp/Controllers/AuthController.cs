@@ -29,17 +29,18 @@ namespace myWebApp.Controllers
         [HttpGet]
         public async Task< IActionResult >Index()
         {
-            //var permissions = await _db.UserPermissions.Where(x => x.RoleId == 8).ToListAsync();
-            //foreach (var per in permissions)
+            //var roles = from a in _db.Employees
+            //            join b in _db.Roles on a.RoleId equals b.RoleId into empRole
+            //            from role in empRole.DefaultIfEmpty()
+            //            where (role.RollName == 'Assistant Teacher' || role.RollName == 'Grade Manager' || role.RollName == 'Class Teacher') 
+            ////var roles = await _db.Employees.Where(x => x.IsActive == true).ToListAsync();
+            //foreach (var per in roles)
             //{
-            //    var perm = new UserPermissions
-            //    {
-            //        RoleId = 11,
-            //        PermissionId = per.PermissionId
-            //    };
-            //    await _repository.AddAsync(perm);
+            //    per.SchoolSectionId = 1;
             //}
-            await _repository.SaveChanges();
+            //_db.UpdateRange(roles);
+            //await _repository.SaveChanges();
+            var books = await _db.Books.Where(x => x.GradeId == null).ToListAsync();
             ClaimsPrincipal claim = HttpContext.User;
             if (claim.Identity.IsAuthenticated) RedirectToAction("Index", "Director");
             return View();

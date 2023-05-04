@@ -40,6 +40,7 @@ namespace Entities.Models
         //[Display(Name = "Created by")]
         public string? CreatedBy { get; set; }
         public bool? IsDeleted { get; set; }
+        public bool? AreSaturdaysOff { get; set; }
         //[Display(Name = "Created On")]
         //[DataType(DataType.Date)]
         public DateTime? DeletedOn { get; set; }

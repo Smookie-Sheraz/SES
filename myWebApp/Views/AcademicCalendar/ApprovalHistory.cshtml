@@ -1,0 +1,63 @@
+﻿@model IEnumerable<Entities.Models.PlanApproval>
+<div class="main-panel">
+    <div class="content-wrapper">
+        @if (Model.Any())
+        {
+            <div class="row">
+                <div class="col-12 grid-margin stretch-card">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="card-title">Plan Name: <label class="badge badge-success fs-6">@ViewBag.PlanName</label></h4>
+                            @*<p class="card-description">
+                        The Units allocated to the @ViewBag.Month !
+                        </p>*@
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="table-responsive">
+                                        <table class="table table-hover table-bordered">
+                                            <thead class="bg-primary text-white">
+                                                <tr>
+                                                    @*@if(User.HasClaim("Permission","Term.Update") || User.HasClaim("Permission","Term.Delete") || User.HasClaim("Permission","Holidays.Read")){
+                                                <th>Actions</th>
+                                                }*@
+                                                    <th>Active Status</th>
+                                                    <th>Approving Person</th>
+                                                    <th>Approving Person Name</th>
+                                                    <th>Remarks</th>
+                                                    <th>Response Date</th>
+                                                    <th>Approval Status</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="term-data">
+                                                @foreach (var plan in Model)
+                                                {
+                                                    <tr>
+                                                        <td>
+                                                            @if ((bool)plan.IsActive)
+                                                            {
+                                                                <label class="badge badge-success">Active</label>
+                                                            }
+                                                            else
+                                                            {
+                                                                <label class="badge badge-danger">InActive</label>
+                                                            }
+                                                        </td>
+                                                        <td>@plan.ApprovingPerson</td>
+                                                        <td>@plan.ApprovingPersonName</td>
+                                                        <td>@plan.Remarks</td>
+                                                        <td>@Convert.ToDateTime(plan.CreatedDate).ToString("dd-MMM-yyyy")</td>
+                                                        <td>@plan.Status</td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

@@ -1,54 +1,84 @@
 
 //Function to retrieve the School Section if anyone has done planning in any SchoolSection books to the current user
 
-function GetSchoolSections(id) {
-    $.get("/AcademicCalendar/GetSchoolSections", { YearId: parseInt($(`#${id}`).val(), 10) }, function (data) {
-        $("#SchoolSectionId").empty();
-        $("#GradeId").empty();
-        $("#ClassId").empty();
-        $("#BookId").empty();
-        $("#SchoolSectionId").append("<Option value='0'>" + "---Select Section Please---" + "</Option>");
-        $.each(data, function (index, row) {
-            console.log(row);
-            $("#SchoolSectionId").append("<Option value='" + row.schoolSectionId + "'>" + row.sectionName + "</Option>")
-        });
-    });
-};
+//function GetSchoolSections(id) {
+//    $.get("/AcademicCalendar/GetSchoolSections", { YearId: parseInt($(`#${id}`).val(), 10) }, function (data) {
+//        $("#SchoolSectionId").empty();
+//        $("#GradeId").empty();
+//        $("#ClassId").empty();
+//        $("#BookId").empty();
+//        $("#SchoolSectionId").append("<Option value='0'>" + "---Select Section Please---" + "</Option>");
+//        $.each(data, function (index, row) {
+//            console.log(row);
+//            $("#SchoolSectionId").append("<Option value='" + row.schoolSectionId + "'>" + row.sectionName + "</Option>")
+//        });
+//    });
+//};
 
-function GetGrades(id) {
-    $.get("/AcademicCalendar/GetGrades", { SchoolSectionId: parseInt($(`#${id}`).val(), 10) }, function (data) {
-        $("#GradeId").empty();
-        $("#ClassId").empty();
-        $("#BookId").empty();
-        $("#GradeId").append("<Option value='0'>" + "---Select Grade Please---" + "</Option>");
-        $.each(data, function (index, row) {
-            console.log(row);
-            $("#GradeId").append("<Option value='" + row.gradeId + "'>" + row.gradeName + "</Option>")
-        });
-    });
-};
+//function GetGrades(id) {
+//    $.get("/AcademicCalendar/GetGrades", { SchoolSectionId: parseInt($(`#${id}`).val(), 10) }, function (data) {
+//        $("#GradeId").empty();
+//        $("#ClassId").empty();
+//        $("#BookId").empty();
+//        $("#GradeId").append("<Option value='0'>" + "---Select Grade Please---" + "</Option>");
+//        $.each(data, function (index, row) {
+//            console.log(row);
+//            $("#GradeId").append("<Option value='" + row.gradeId + "'>" + row.gradeName + "</Option>")
+//        });
+//    });
+//};
 
-function GetSubjects(id) {
-    $.get("/AcademicCalendar/GetSubjects", { GradeId: parseInt($(`#${id}`).val(), 10) }, function (data) {
-        $("#SubjectId").empty();
-        $("#BookId").empty();
-        $("#SubjectId").append("<Option value='0'>" + "---Select Subject Please---" + "</Option>");
-        $.each(data, function (index, row) {
-            console.log(row);
-            $("#SubjectId").append("<Option value='" + row.subjectId + "'>" + row.subjectName + "</Option>")
-        });
-    });
-};
+//function GetSubjects(id) {
+//    $.get("/AcademicCalendar/GetSubjects", { GradeId: parseInt($(`#${id}`).val(), 10) }, function (data) {
+//        $("#SubjectId").empty();
+//        $("#BookId").empty();
+//        $("#SubjectId").append("<Option value='0'>" + "---Select Subject Please---" + "</Option>");
+//        $.each(data, function (index, row) {
+//            console.log(row);
+//            $("#SubjectId").append("<Option value='" + row.subjectId + "'>" + row.subjectName + "</Option>")
+//        });
+//    });
+//};
+
+//Allocations Dynamic Data
 
 function GetBooks(id) {
-    //debugger;
-    var Grade = $("#GradeId").val();
-    $.get("/AcademicCalendar/GetBooks", { SubjectId: parseInt($(`#${id}`).val(), 10), GradeId: parseInt(Grade, 10) }, function (data) {
+    $.get("/academiccalendar/GetBooks", { SectionId: parseInt($(`#${id}`).val(), 10)}, function (data) {
         $("#BookId").empty();
-        $("#BookId").append("<Option value='0'>" + "---Select Book Please---" + "</Option>");
+        $("#BookId").append("<option value='0'>" + "---Select Book Please---" + "</option>");
         $.each(data, function (index, row) {
-            console.log(row);
-            $("#BookId").append("<Option value='" + row.bookId + "'>" + row.bookName + "</Option>")
+            $("#BookId").append("<option value='" + row.bookId + "'>" + row.bookName + "</option>")
+        });
+    });
+};
+
+function GetUnits(id) {
+    $.get("/academiccalendar/GetUnits", { BookId: parseInt($(`#${id}`).val(), 10) }, function (data) {
+        $("#UnitId").empty();
+        $("#UnitId").append("<option value='0'>" + "---Select Unit Please---" + "</option>");
+        $.each(data, function (index, row) {
+            $("#UnitId").append("<option value='" + row.unitId + "'>" + row.unitName + "</option>")
+        });
+    });
+};
+
+
+function GetChapters(id) {
+    $.get("/academiccalendar/GetChapters", { UnitId: parseInt($(`#${id}`).val(), 10) }, function (data) {
+        $("#ChapterId").empty();
+        $("#ChapterId").append("<option value='0'>" + "---Select Chapter Please---" + "</option>");
+        $.each(data, function (index, row) {
+            $("#ChapterId").append("<option value='" + row.chapterId + "'>" + row.chapterName + "</option>")
+        });
+    });
+};
+
+function GetTopics(id) {
+    $.get("/academiccalendar/GetTopics", { ChapterId: parseInt($(`#${id}`).val(), 10) }, function (data) {
+        $("#TopicId").empty();
+        $("#TopicId").append("<option value='0'>" + "---Select Topic Please---" + "</option>");
+        $.each(data, function (index, row) {
+            $("#TopicId").append("<option value='" + row.topicId + "'>" + row.topicName + "</option>")
         });
     });
 };
@@ -257,6 +287,20 @@ function GetClassTeachers(id) {
         $.each(data, function (index, row) {
             //console.log(row);
             $("#ClassTeacherId").append("<Option value='" + row.employeeId + "'>" + row.fName + " " + row.lName + "</Option>")
+        });
+    });
+};
+
+//Function to retrieve the Grade Managers according to the selected school section
+
+function GetGradeManagers(id) {
+    //debugger;
+    $.get("/Grade/GetGradeManagers", { SectionId: parseInt($(`#${id}`).val(), 10) }, function (data) {
+        $("#GradeManagerId").empty();
+        $("#GradeManagerId").append("<Option value='0'>" + "---Select Grade Manager Please---" + "</Option>");
+        $.each(data, function (index, row) {
+            //console.log(row);
+            $("#GradeManagerId").append("<Option value='" + row.employeeId + "'>" + row.fName + " " + row.lName + "</Option>")
         });
     });
 };

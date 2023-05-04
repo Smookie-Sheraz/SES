@@ -174,6 +174,7 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("Notices.Craete", policy => policy.RequireClaim("Permission", "Notices.Create"));
     options.AddPolicy("Notices.Update", policy => policy.RequireClaim("Permission", "Notices.Update"));
     options.AddPolicy("Notices.Delete", policy => policy.RequireClaim("Permission", "Notices.Delete"));
+    options.AddPolicy("ParentDiary", policy => policy.RequireClaim("Permission", "ParentDiary"));
 });
 
 

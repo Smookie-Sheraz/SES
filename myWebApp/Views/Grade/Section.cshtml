@@ -12,7 +12,7 @@
                   <div class="table-responsive">
 @*                            @if (ViewBag.Sections.Any())
                             {*@
-                                <table class="table table-hover table-bordered">
+                            <table class="table table-hover table-bordered" id="ClassesTable">
                                     <thead class="bg-primary text-white">
                                         <tr>
                                             @if (User.HasClaim("Permission", "Section.Update") || User.HasClaim("Permission", "Section.Delete")){
@@ -20,7 +20,8 @@
                                             }
                                             <th>Status</th>
                                             <th>Grade</th>
-                                            <th>Section Name</th>
+                                            <th>Grade Section</th>
+                                            <th>Class Teacher</th>
                                             @*<th>Section Code</th>*@
                                         </tr>
                                     </thead>
@@ -83,17 +84,10 @@
           </div>
         </div>
 </div>
-@*
 @section scripts{
-        <script>
-            var rows = document.querySelector('.table').getElementsByTagName("tr");
-            for(var i = 1; i <= rows.length; i++){
-                var index = i.toString();
-                document.querySelector(`.table tr:nth-child(${index}) td:nth-child(13)`).innerHTML = document.querySelector(`.table tr:nth-child(${index}) td:nth-child(13)`).innerHTML.split(" ")[0];
-                document.querySelector(`.table tr:nth-child(${index}) td:nth-child(14)`).innerHTML = document.querySelector(`.table tr:nth-child(${index}) td:nth-child(14)`).innerHTML.split(" ")[0];
-                document.querySelector(`.table tr:nth-child(${index}) td:nth-child(15)`).innerHTML = document.querySelector(`.table tr:nth-child(${index}) td:nth-child(15)`).innerHTML.split(" ")[0];
-                document.querySelector(`.table tr:nth-child(${index}) td:nth-child(17)`).innerHTML = document.querySelector(`.table tr:nth-child(${index}) td:nth-child(17)`).innerHTML.split(" ")[0];
-                document.querySelector(`.table tr:nth-child(${index}) td:nth-child(18)`).innerHTML = document.querySelector(`.table tr:nth-child(${index}) td:nth-child(18)`).innerHTML.split(" ")[0];
-                }
-        </script>
-}*@
+    <script>
+        $(document).ready(function () {
+            $('#ClassesTable').DataTable();
+        });
+    </script>
+}
