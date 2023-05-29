@@ -52,5 +52,6 @@ namespace Entities.Models
         public ICollection<STPlanApproval> STPlans { get; set; } = null!;
         public ICollection<PlanApproval> Plans { get; set; } = null!;
         public ICollection<Test> Tests { get; set; } = null!;
+        public ICollection<AcademicPlannings> AcademicPlannings { get; set; } = null!;
     }
 }

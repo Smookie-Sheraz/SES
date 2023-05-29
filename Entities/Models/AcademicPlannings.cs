@@ -16,6 +16,12 @@ namespace Entities.Models
         public bool? IsActive { get; set; }
         public Employee? Employee { get; set; }
         public int? EmployeeId { get; set; }
+        public Section? Class { get; set; }
+        public int? ClassId { get; set; }
+        public Book? Book { get; set; }
+        public int? BookId { get; set; }
+        public Subject? Subject { get; set; }
+        public int? SubjectId { get; set; }
         public DateTime? ModifiedDate { get; set; }
         public string? ModifiedBy { get; set; }
         public DateTime? CreatedDate { get; set; }

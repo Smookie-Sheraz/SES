@@ -16,7 +16,7 @@
                                 <table class="table table-hover table-bordered" id="StudentTable">
                                     <thead class="bg-primary text-white">
                                         <tr>
-                                            @if (User.HasClaim("Permission", "Employee.Update") || User.HasClaim("Permission", "Employee.Delete"))
+                                            @if (User.HasClaim("Permission", "Student.Update") || User.HasClaim("Permission", "Student.Delete"))
                                             {
                                                 <th>Actions</th>
                                             }

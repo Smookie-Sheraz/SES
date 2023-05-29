@@ -12,7 +12,7 @@
                   <div class="table-responsive">
 @*                            @if (ViewBag.Sections.Any())
                             {*@
-                            <table class="table table-hover table-bordered" id="ClassesTable">
+                            <table class="table table-hover table-bordered" id="ClassTable">
                                     <thead class="bg-primary text-white">
                                         <tr>
                                             @if (User.HasClaim("Permission", "Section.Update") || User.HasClaim("Permission", "Section.Delete")){
@@ -38,11 +38,11 @@
                                                         {
                                                         <a class="fa fa-person mr-3" title="Allocate Teacher(s) to This Class Book(s)" asp-route-id="@Sections.SectionId" asp-controller="Director" asp-action="SubjectTeacherAllocation" role="button"></a>
                                                         }
-                                                        @if (User.HasClaim("Permission", "Section.Update") && Sections.ShowDeleteUpdate)
+                                                        @if (User.HasClaim("Permission", "Section.Update"))
                                                         {
                                                         <a class="fa fa-edit mr-3" title="Edit Class" asp-route-id="@Sections.SectionId" asp-controller="Grade" asp-action="UpdateSection" role="button"></a>
                                                         }
-                                                        @if (User.HasClaim("Permission", "Section.Delete") && Sections.ShowDeleteUpdate)
+                                                        @if (User.HasClaim("Permission", "Section.Delete"))
                                                         {
                                                         <a class="fa fa-trash text-danger" title="Delete Class" onclick="return confirm('Are you sure you want to delete?');" asp-route-id="@Sections.SectionId" asp-controller="Grade" asp-action="DeleteSection" role="button"></a>
                                                         }
@@ -87,7 +87,7 @@
 @section scripts{
     <script>
         $(document).ready(function () {
-            $('#ClassesTable').DataTable();
+            $('#ClassTable').DataTable();
         });
     </script>
 }

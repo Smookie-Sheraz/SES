@@ -8,11 +8,13 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.EntityFrameworkCore;
 using myWebApp.ViewModels.AcademicCalendar;
 using Newtonsoft.Json;
+using Org.BouncyCastle.Ocsp;
 using System.Collections.Immutable;
 using System.Data;
 using System.Globalization;
 using System.Numerics;
 using System.Security.Claims;
+using System.Security.Cryptography;
 
 namespace myWebApp.Controllers
 {
@@ -32,7 +34,7 @@ namespace myWebApp.Controllers
         [Authorize(Policy = "Year.Read")]
         public async Task<IActionResult> Year()
         {
-            var allyears = await _repository.GetYears();
+            var allyears = await _db.years.Where(x => x.IsActive == true).ToListAsync();
             return View(allyears);
         }
         [Authorize(Policy = "Year.Create")]
@@ -68,7 +70,7 @@ namespace myWebApp.Controllers
         [HttpGet]
         public async Task<IActionResult> UpdateYear(int id)
         {
-            var year = await _repository.GetYearById(id);
+            var year = await _db.years.Where(x => x.IsActive == true && x.YearId == id).FirstOrDefaultAsync();
             var Year = new UpdateYearVM
             {
                 YearName = year.YearName,
@@ -110,12 +112,14 @@ namespace myWebApp.Controllers
                 {
                     holiday.IsActive = false;
                 }
+                term.IsActive = false;
             }
             if (year == null)
             {
                 return NotFound();
             }
-            await _repository.Delete(year);
+            year.IsActive = false;
+            await _repository.UpdateAsync(year);
             if (await _repository.SaveChanges())
             {
                 return RedirectToAction("Year");
@@ -135,7 +139,7 @@ namespace myWebApp.Controllers
         [HttpGet]
         public async Task<IActionResult> Term(int Id)
         {
-            var year = _db.years.Where(x => x.YearId == Id).FirstOrDefault();
+            var year = _db.years.Where(x => x.YearId == Id && x.IsActive == true).FirstOrDefault();
             //var terms = _db.terms.Where(x => x.YearId == Id).ToList();
             //ViewBag.Terms = terms;
             ViewBag.Year = year?.YearName;
@@ -263,7 +267,7 @@ namespace myWebApp.Controllers
         [HttpGet]
         public async Task<IActionResult> UpdateTerm(int id)
         {
-            ViewBag.Years = await _repository.GetYears();
+            ViewBag.Years = await _db.years.Where(x => x.IsActive == true).ToListAsync();
             var term = await _repository.GetTermById(id);
             var Term = new UpdateTermVM
             {
@@ -369,7 +373,11 @@ namespace myWebApp.Controllers
         [HttpGet]
         public async Task<IActionResult> DeleteTerm(int id, int YearId)
         {
-            var term = await _repository.GetTermById(id);
+            var term = await _db.terms.Where(x => x.IsActive == true).FirstOrDefaultAsync();
+            if (term == null)
+            {
+                return NotFound();
+            }
             var year = _db.years.Where(x => x.YearId == term.YearId).FirstOrDefault();
             var TermHolidays = _db.Holidays.Where(x => x.TermId == id).ToList();
             foreach (var holiday in TermHolidays)
@@ -385,11 +393,8 @@ namespace myWebApp.Controllers
             year.TotalSatSundays -= term.TotalSatSun;
             year.AssesmentDays -= term.AssesmentDays;
             year.TotalAssesWiseSchoolDays -= (term.TotalSchoolDays - term.AssesmentDays);
-            if (term == null)
-            {
-                return NotFound();
-            }
-            await _repository.Delete(term);
+            term.IsActive = false;
+            await _repository.UpdateAsync(term);
             if (await _repository.SaveChanges())
             {
                 return RedirectToAction("Term", new { id = YearId });
@@ -803,12 +808,12 @@ namespace myWebApp.Controllers
         public async Task<IActionResult> DeleteHoliday(int Id, int YearId)
         {
             var holiday = _db.Holidays.Where(x => x.HolidayId == Id).FirstOrDefault();
-            var term = _db.terms.Where(x => x.TermId == holiday.TermId).FirstOrDefault();
-            var year = _db.years.Where(x => x.YearId == YearId).FirstOrDefault();
             if (holiday == null)
             {
                 return NotFound();
             }
+            var term = _db.terms.Where(x => x.TermId == holiday.TermId).FirstOrDefault();
+            var year = _db.years.Where(x => x.YearId == YearId).FirstOrDefault();
             if ((bool)holiday.IsSchoolOff)
             {
                 term.TermHolidays -= holiday.NoOfHolidays;
@@ -836,7 +841,18 @@ namespace myWebApp.Controllers
         public async Task<IActionResult> UnitAllocation(int Id, int YearId, UnitAllocationVM SearchUnit)
         {
             int empId = Convert.ToInt16(User.FindFirst(ClaimTypes.Sid)?.Value);
-            ViewBag.Plans = await _db.AcademicPlannings.Where(x => x.EmployeeId == empId).ToListAsync();
+            ViewBag.Plans = (from a in _db.AcademicPlannings
+                             from b in _db.Sections
+                             from c in _db.Grades
+                             from d in _db.Books
+                             where a.EmployeeId == empId && a.IsActive == true && b.SectionId == a.ClassId && c.GradeId == b.GradeId && d.BookId == a.BookId
+                             select new
+                             {
+                                 PlanId = a.AcademicPlanningsId,
+                                 PlanName = a.PlanName,
+                                 ClassName = c.GradeName + b.SectionName,
+                                 BookName = d.BookName
+                             }).Distinct().ToList();
             SearchUnit.TermId = Id;
             SearchUnit.YearId = YearId;
             ViewBag.WorkBooks = _db.Books.Where(x => x.IsWorkBook == true).ToList();
@@ -850,20 +866,16 @@ namespace myWebApp.Controllers
                                                  ClassId = c.SectionId,
                                                  ClassName = d.GradeName + c.SectionName
                                              }).Distinct().ToListAsync();
-            if (SearchUnit.BookId != null)
+            if (SearchUnit.PlanId != null && SearchUnit.PlanId != 0)
             {
-                SearchUnit.CopyablePlans = await (from a in _db.SubjectTeacherAllocations
-                                                  from b in _db.UnitAllocations
-                                                  from c in _db.Units
-                                                  from e in _db.AcademicPlannings
-                                                  where a.BookId == SearchUnit.BookId && a.EmployeeId == empId && a.SectionId != SearchUnit.SectionId && b.UnitId == c.UnitId && c.BookId == SearchUnit.BookId && e.AcademicPlanningsId == b.PlanId && b.TermId == SearchUnit.TermId
-                                                  select e).Distinct().ToListAsync();
+                var plan = await _db.AcademicPlannings.Where(x => x.AcademicPlanningsId == SearchUnit.PlanId).FirstOrDefaultAsync();
+                SearchUnit.CopyablePlans = await _db.AcademicPlannings.Where(x => x.BookId == plan.BookId && x.EmployeeId == empId && x.ClassId != plan.ClassId && x.IsActive == true).ToListAsync();
                 if (SearchUnit.CopyablePlans.Any())
                 {
                     SearchUnit.IsPlanCopiable = true;
                 }
                 ViewBag.BookName = (await (from a in _db.Books
-                                           where a.BookId == SearchUnit.BookId
+                                           where a.BookId == plan.BookId && a.IsActive == true
                                            select a.BookName).FirstOrDefaultAsync());
                 ViewBag.CalendarName = (await (from a in _db.years
                                                where a.YearId == YearId
@@ -871,21 +883,21 @@ namespace myWebApp.Controllers
                 ViewBag.TermName = (await (from a in _db.terms
                                            where a.TermId == Id
                                            select a.TermName).FirstOrDefaultAsync());
-                var AllUnits = (from b in _db.Books
-                                from c in _db.Units
-                                where b.BookId == SearchUnit.BookId && c.BookId == SearchUnit.BookId
+                var AllUnits = (from c in _db.Units
+                                from d in _db.Books
+                                where c.BookId == plan.BookId && d.BookId == plan.BookId && c.IsActive == true
                                 select new UnitList
                                 {
                                     UnitName = c.UnitName,
                                     UnitId = c.UnitId,
-                                    BookName = b.BookName
-                                }).Distinct();
+                                    BookName = d.BookName
+                                }).Distinct().OrderBy(x => x.UnitName).ToList();
                 var AllocatedUnits = _db.UnitAllocations.Where(x => x.TermId == Id && x.PlanId == SearchUnit.PlanId).ToList();
                 var month = await _repository.GetTermById(Id);
                 ViewBag.Month = month.TermName;
                 SearchUnit.MinDate = month.StartDate;
                 SearchUnit.MaxDate = month.EndDate;
-                SearchUnit.Units = await AllUnits.Select(x => new UnitList { UnitId = x.UnitId, UnitName = x.UnitName, BookName = x.BookName }).ToListAsync();
+                SearchUnit.Units = AllUnits.Select(x => new UnitList { UnitId = x.UnitId, UnitName = x.UnitName, BookName = x.BookName }).ToList();
                 foreach (var unit in SearchUnit.Units)
                 {
                     foreach (var allocatedUnit in AllocatedUnits)
@@ -910,14 +922,13 @@ namespace myWebApp.Controllers
         public async Task<IActionResult> UnitAllocation(UnitAllocationVM data)
         {
             int empId = Convert.ToInt16(User.FindFirst(ClaimTypes.Sid)?.Value);
-            var UnitAllocationsToRemove = (await (from a in _db.UnitAllocations
-                                                  from b in _db.Units
-                                                  where a.TermId == data.TermId && b.UnitId == a.UnitId && b.BookId == data.BookId && a.PlanId == data.PlanId
-                                                  select a).ToListAsync());
+            var UnitAllocationsToRemove = await (from a in _db.UnitAllocations
+                                                 where a.TermId == data.TermId && a.PlanId == data.PlanId && a.UnitId == data.UnitId
+                                                 select a).ToListAsync();
             _db.RemoveRange(UnitAllocationsToRemove);
             await _db.SaveChangesAsync();
             List<UnitAllocation> allocations = new List<UnitAllocation>();
-            var selectedUnits = data.Units.Where(x => x.IsSelected == true).ToList();
+            var selectedUnits = data.Units.Where(x => x.IsSelected == true && x.StartDate != null && x.EndDate != null).ToList();
             var unSelectedUnits = data.Units.Where(x => x.IsSelected == false).ToList();
             if (unSelectedUnits.Any())
             {
@@ -925,6 +936,7 @@ namespace myWebApp.Controllers
                                      from b in _db.UnitAllocations
                                      where b.UnitId == a.UnitId && b.TermId == data.TermId && b.PlanId == data.PlanId
                                      select b;
+                _db.RemoveRange(allocatedUnits);
                 var allocatedChapters = from a in unSelectedUnits
                                         from b in _db.ChapterAllocations
                                         where b.UnitId == a.UnitId && b.TermId == data.TermId && b.PlanId == data.PlanId
@@ -942,6 +954,7 @@ namespace myWebApp.Controllers
                 _db.RemoveRange(allocatedSubtopic);
                 await _db.SaveChangesAsync();
             }
+            int SectionId = (int)await _db.AcademicPlannings.Where(x => x.AcademicPlanningsId == data.PlanId && x.IsActive == true).Select(x => x.ClassId).FirstOrDefaultAsync();
             foreach (var chapter in selectedUnits)
             {
                 var newUnitAllocation = new UnitAllocation
@@ -953,7 +966,7 @@ namespace myWebApp.Controllers
                     WorkBookId = chapter.WorkBookId,
                     WorkBookStartPage = chapter.WorkBookStartPage,
                     WorkBookEndPage = chapter.WorkBookEndPage,
-                    SectionId = data.SectionId,
+                    SectionId = SectionId,
                     PlanId = data.PlanId,
                     AreSaturdaysOff = data.AreSaturdaysOff
                 };
@@ -980,7 +993,18 @@ namespace myWebApp.Controllers
         public async Task<IActionResult> ChapterAllocation(int Id, int YearId, ChapterAllocationVM SearchChapter)
         {
             int empId = Convert.ToInt16(User.FindFirst(ClaimTypes.Sid)?.Value);
-            ViewBag.Plans = await _db.AcademicPlannings.Where(x => x.EmployeeId == empId).ToListAsync();
+            ViewBag.Plans = (from a in _db.AcademicPlannings
+                             from b in _db.Sections
+                             from c in _db.Grades
+                             from d in _db.Books
+                             where a.EmployeeId == empId && a.IsActive == true && b.SectionId == a.ClassId && c.GradeId == b.GradeId && d.BookId == a.BookId
+                             select new
+                             {
+                                 PlanId = a.AcademicPlanningsId,
+                                 PlanName = a.PlanName,
+                                 ClassName = c.GradeName + b.SectionName,
+                                 BookName = d.BookName
+                             }).Distinct().ToList();
             SearchChapter.TermId = Id;
             SearchChapter.YearId = YearId;
             ViewBag.TeachingClasses = await (from a in _db.SubjectTeacherAllocations
@@ -993,7 +1017,7 @@ namespace myWebApp.Controllers
                                                  ClassId = c.SectionId,
                                                  ClassName = d.GradeName + c.SectionName
                                              }).Distinct().ToListAsync();
-            if (SearchChapter.UnitId != null)
+            if (SearchChapter.UnitId != null && SearchChapter.UnitId != 0)
             {
                 ViewBag.UnitName = (await (from a in _db.Units
                                            where a.UnitId == SearchChapter.UnitId
@@ -1008,28 +1032,27 @@ namespace myWebApp.Controllers
                 ViewBag.TermName = (await (from a in _db.terms
                                            where a.TermId == Id
                                            select a.TermName).FirstOrDefaultAsync());
-                var AllChapters = (from a in _db.UnitAllocations
-                                   from chapter in _db.chapters
-                                   from unit in _db.Units
-                                   where chapter.UnitId == SearchChapter.UnitId && unit.UnitId == SearchChapter.UnitId && a.TermId == Id && a.UnitId == SearchChapter.UnitId
-                                   select new ChapterList
-                                   {
-                                       ChapterName = chapter.ChapterName,
-                                       ChapterId = chapter.ChapterId,
-                                       UnitId = (int)chapter.UnitId,
-                                       UnitName = unit.UnitName,
-                                       WBMaxPage = a.WorkBookEndPage,
-                                       WBMinPage = a.WorkBookStartPage
-                                   }).Distinct();
-                var month = await _repository.GetTermById(Id);
-                //List < ChapterList > AllChapters = _db.chapters.Select(x => new ChapterList { ChapterName = x.ChapterName, ChapterId = x.ChapterId }).ToListAsync();
-                //ChapterAllocationVM ChapterVM = new ChapterAllocationVM();
+                var AllChapters = await (from a in _db.UnitAllocations
+                                         from chapter in _db.chapters
+                                         from unit in _db.Units
+                                         where chapter.UnitId == SearchChapter.UnitId && unit.UnitId == SearchChapter.UnitId && a.TermId == Id && a.UnitId == SearchChapter.UnitId
+                                         select new ChapterList
+                                         {
+                                             ChapterName = chapter.ChapterName,
+                                             ChapterId = chapter.ChapterId,
+                                             UnitId = (int)chapter.UnitId,
+                                             UnitName = unit.UnitName,
+                                             WBMaxPage = a.WorkBookEndPage,
+                                             WBMinPage = a.WorkBookStartPage
+                                         }).Distinct().OrderBy(x => x.ChapterName).ToListAsync();
+                ////List < ChapterList > AllChapters = _db.chapters.Select(x => new ChapterList { ChapterName = x.ChapterName, ChapterId = x.ChapterId }).ToListAsync();
+                ////ChapterAllocationVM ChapterVM = new ChapterAllocationVM();
 
-                var ParentUnit = _db.UnitAllocations.Where(x => x.TermId == Id && x.UnitId == SearchChapter.UnitId && x.PlanId == SearchChapter.PlanId).FirstOrDefault();
+                var ParentUnit = await _db.UnitAllocations.Where(x => x.TermId == Id && x.UnitId == SearchChapter.UnitId && x.PlanId == SearchChapter.PlanId && x.IsActive == true).FirstOrDefaultAsync();
                 SearchChapter.MinDate = ParentUnit != null ? ParentUnit.StartDate : DateTime.Now;
                 SearchChapter.MaxDate = ParentUnit != null ? ParentUnit.EndDate : DateTime.Now;
-                SearchChapter.Chapters = await AllChapters.Select(x => new ChapterList { ChapterId = x.ChapterId, ChapterName = x.ChapterName, UnitId = x.UnitId, UnitName = x.UnitName, WBMinPage = x.WBMinPage, WBMaxPage = x.WBMaxPage }).Distinct().ToListAsync();
-                var AllocatedChapters = _db.ChapterAllocations.Where(x => x.TermId == Id && x.PlanId == SearchChapter.PlanId).ToList();
+                SearchChapter.Chapters = AllChapters.Select(x => new ChapterList { ChapterId = x.ChapterId, ChapterName = x.ChapterName, UnitId = x.UnitId, UnitName = x.UnitName, WBMinPage = x.WBMinPage, WBMaxPage = x.WBMaxPage }).Distinct().ToList();
+                var AllocatedChapters = _db.ChapterAllocations.Where(x => x.TermId == Id && x.PlanId == SearchChapter.PlanId).Distinct().ToList();
                 foreach (var chapter in SearchChapter.Chapters)
                 {
                     foreach (var allocatedChapter in AllocatedChapters)
@@ -1045,6 +1068,7 @@ namespace myWebApp.Controllers
                         }
                     }
                 }
+                var month = await _repository.GetTermById(Id);
                 ViewBag.Month = month.TermName;
                 return View(SearchChapter);
             }
@@ -1059,7 +1083,7 @@ namespace myWebApp.Controllers
             _db.RemoveRange(result);
             await _db.SaveChangesAsync();
             List<ChapterAllocation> allocations = new List<ChapterAllocation>();
-            var selectedChapters = data.Chapters.Where(x => x.IsSelected == true).ToList();
+            var selectedChapters = data.Chapters.Where(x => x.IsSelected == true && x.StartDate != null && x.EndDate != null).ToList();
             var unSelectedChapters = data.Chapters.Where(x => x.IsSelected == false).ToList();
             if (unSelectedChapters.Any())
             {
@@ -1110,10 +1134,36 @@ namespace myWebApp.Controllers
         #region TopicAllocation
         [Authorize(Policy = "Academic Planning")]
         [HttpGet]
-        public async Task<IActionResult> TopicAllocation(int Id, int YearId, TopicAllocationVM SearchTopics)
+        public async Task<IActionResult> SearchTopics(int Id, int YearId, TopicAllocationTestVM SearchTopics)
         {
             int empId = Convert.ToInt16(User.FindFirst(ClaimTypes.Sid)?.Value);
-            ViewBag.Plans = await _db.AcademicPlannings.Where(x => x.EmployeeId == empId).ToListAsync();
+            ViewBag.Plans = (from a in _db.AcademicPlannings
+                             from b in _db.Sections
+                             from c in _db.Grades
+                             from d in _db.Books
+                             where a.EmployeeId == empId && a.IsActive == true && b.SectionId == a.ClassId && c.GradeId == b.GradeId && d.BookId == a.BookId
+                             select new
+                             {
+                                 PlanId = a.AcademicPlanningsId,
+                                 PlanName = a.PlanName,
+                                 ClassName = c.GradeName + b.SectionName,
+                                 BookName = d.BookName
+                             }).Distinct().ToList();
+            if (SearchTopics.ChapterId != null && SearchTopics.ChapterId != 0)
+            {
+                ViewBag.Units = await (from a in _db.AcademicPlannings
+                                       from b in _db.Units
+                                       from c in _db.UnitAllocations
+                                       where a.AcademicPlanningsId == SearchTopics.PlanId && b.BookId == a.BookId && c.UnitId == b.UnitId && b.IsActive == true
+                                       select b).OrderBy(x => x.UnitName).Distinct().ToListAsync();
+                ViewBag.Chapters = await (from a in _db.chapters
+                                          from b in _db.UnitAllocations
+                                          from c in _db.Units
+                                          from e in _db.Books
+                                          from f in _db.AcademicPlannings
+                                          where a.UnitId == b.UnitId && c.UnitId == b.UnitId && e.BookId == c.BookId && f.BookId == e.BookId && f.AcademicPlanningsId == SearchTopics.PlanId && f.IsActive == true && a.IsActive == true
+                                          select a).OrderBy(x => x.ChapterName).Distinct().ToListAsync();
+            }
             SearchTopics.TermId = Id;
             SearchTopics.YearId = YearId;
             ViewBag.TeachingClasses = await (from a in _db.SubjectTeacherAllocations
@@ -1126,125 +1176,146 @@ namespace myWebApp.Controllers
                                                  ClassId = c.SectionId,
                                                  ClassName = d.GradeName + c.SectionName
                                              }).Distinct().ToListAsync();
-            //ViewBag.WorkBooks = _db.Books.Where(x => x.IsWorkBook == true).ToListAsync();
-            if (SearchTopics.ChapterId != null)
-            {
-                ViewBag.CalendarName = (await (from a in _db.years
-                                               where a.YearId == YearId
-                                               select a.YearName).FirstOrDefaultAsync());
-                ViewBag.TermName = (await (from a in _db.terms
-                                           where a.TermId == Id
-                                           select a.TermName).FirstOrDefaultAsync());
-                ViewBag.BookName = (await (from a in _db.Books
-                                           from b in _db.Units
-                                           from c in _db.chapters
-                                           where c.ChapterId == SearchTopics.ChapterId && c.UnitId == b.UnitId && a.BookId == b.BookId
-                                           select a.BookName).FirstOrDefaultAsync());
-                ViewBag.UnitName = (await (from b in _db.Units
-                                           from c in _db.chapters
-                                           where c.ChapterId == SearchTopics.ChapterId && c.UnitId == b.UnitId
-                                           select b.UnitName).FirstOrDefaultAsync());
-                ViewBag.ChapterName = (await (from c in _db.chapters
-                                              where c.ChapterId == SearchTopics.ChapterId
-                                              select c.ChapterName).FirstOrDefaultAsync());
-                var chapter = _db.ChapterAllocations.Where(x => x.ChapterId == SearchTopics.ChapterId).FirstOrDefault();
-                //List<TopicList> topics = new List<TopicList>();
-                ////TopicAllocationVM TopicVM = new TopicAllocationVM();
-                //foreach (var chapter in chapters)
-                //{
-                List<TopicList> ChapterTopics = _db.topics.Where(x => x.ChapterId == SearchTopics.ChapterId).Select(x => new TopicList { TopicId = x.TopicId, TopicName = x.TopicName }).Distinct().ToList();
-                foreach (var each in ChapterTopics)
-                {
-                    each.TeachingMethods = await _db.TeachingMethodologies.Select(x => new TopicListTeachingMethods { TeachingMethodologyId = x.TeachingMethodologyId }).ToListAsync();
-                    foreach (var tm in each.TeachingMethods)
-                    {
-                        tm.TopicId = each.TopicId;
-                        tm.WBMaxPage = chapter.WorkBookEndPage;
-                        tm.WBMinPage = chapter.WorkBookStartPage;
-                    }
-                }
-                //topics.AddRange(ChapterTopics);
-                //}
-                SearchTopics.Topics = ChapterTopics;
-                var allocatinos = from t in ChapterTopics
-                                  from allo in _db.TopicAllocations
-                                  where t.TopicId == allo.TopicId && allo.PlanId == SearchTopics.PlanId
-                                  select new
-                                  {
-                                      topic = allo.TopicId,
-                                      startDate = allo.StartDate,
-                                      endDate = allo.EndDate,
-                                      TeachingMethodologyId = allo.TeachingMethodologyId,
-                                      TMethodDesc = allo.TMethodDesc,
-                                      WorkBookId = allo.WorkBookId,
-                                      WorkBookStartPage = allo.WorkBookStartPage,
-                                      WorkBookEndPage = allo.WorkBookEndPage
-                                  };
-                foreach (var topic in ChapterTopics)
-                {
-                    var selectedTopic = _db.TopicAllocations.Where(x => x.TopicId == topic.TopicId).FirstOrDefault();
-                    if (selectedTopic != null)
-                    {
-                        var selectedChapter = _db.ChapterAllocations.Where(x => x.ChapterId == selectedTopic.ChapterId).FirstOrDefault();
-                        topic.ChapterStartDate = selectedChapter?.StartDate;
-                        topic.ChapterEndDate = selectedChapter?.EndDate;
-                    }
-                    else
-                    {
-                        var nonSelectedTopic = _db.topics.Where(x => x.TopicId == topic.TopicId).FirstOrDefault();
-                        var nonSelectedChapter = _db.ChapterAllocations.Where(x => x.ChapterId == nonSelectedTopic.ChapterId).FirstOrDefault();
-                        topic.ChapterStartDate = nonSelectedChapter?.StartDate;
-                        topic.ChapterEndDate = nonSelectedChapter?.EndDate;
-                    }
-                    foreach (var allo in allocatinos)
-                    {
-                        if (topic.TopicId == allo.topic)
-                        {
-                            foreach (var teachingMethod in topic.TeachingMethods)
-                            {
-                                if (teachingMethod.TeachingMethodologyId == allo.TeachingMethodologyId)
-                                {
-                                    teachingMethod.preAllocation = true;
-                                    teachingMethod.StartDate = allo.startDate;
-                                    teachingMethod.EndDate = allo.endDate;
-                                    teachingMethod.TeachingMethodologyId = allo.TeachingMethodologyId;
-                                    teachingMethod.TeachingMethodologyDesc = allo.TMethodDesc;
-                                    teachingMethod.WorkBookId = allo.WorkBookId;
-                                    teachingMethod.WorkBookStartPage = allo.WorkBookStartPage;
-                                    teachingMethod.WorkBookEndPage = allo.WorkBookEndPage;
-                                }
-                            }
-                        }
-                    }
-                }
-                var month = await _repository.GetTermById(Id);
-                ViewBag.Month = month.TermName;
-                var Dates = _db.ChapterAllocations.Where(x => x.TermId == Id && x.ChapterId == SearchTopics.ChapterId && x.PlanId == SearchTopics.PlanId).Select(x => new { StartDate = x.StartDate, EndDate = x.EndDate }).ToList();
-                //if (_db.ChapterAllocations.ToListAsync().Result.Any()) ;
-                var chapAllocation = _db.ChapterAllocations.Where(x => x.TermId == Id).FirstOrDefault();
-                SearchTopics.MinDate = chapAllocation != null ? chapAllocation.StartDate : DateTime.Now;
-                SearchTopics.MaxDate = chapAllocation != null ? chapAllocation.EndDate : DateTime.Now;
-                ViewBag.TMethods = _db.TeachingMethodologies.ToList();
-                return View(SearchTopics);
-            }
+            ViewBag.WorkBooks = await _db.Books.Where(x => x.IsWorkBook == true).ToListAsync();
+            ViewBag.TMethods = await _db.TeachingMethodologies.OrderBy(x => x.TMethodologyName).ToListAsync();
             return View(SearchTopics);
         }
+
+        [Authorize(Policy = "Academic Planning")]
+        [HttpGet]
+        public async Task<IActionResult> TopicAllocation(int Id, int YearId, TopicAllocationTestVM SearchTopics)
+        {
+            int empId = Convert.ToInt16(User.FindFirst(ClaimTypes.Sid)?.Value);
+            //ViewBag.Plans = await (from a in _db.AcademicPlannings
+            //                       from b in _db.Sections
+            //                       from c in _db.Grades
+            //                       from d in _db.Books
+            //                       where a.EmployeeId == empId && a.IsActive == true && b.SectionId == a.ClassId && c.GradeId == b.GradeId && d.BookId == a.BookId
+            //                       select new
+            //                       {
+            //                           PlanId = a.AcademicPlanningsId,
+            //                           PlanName = a.PlanName,
+            //                           ClassName = c.GradeName + b.SectionName,
+            //                           BookName = d.BookName
+            //                       }).Distinct().ToListAsync();
+            //ViewBag.TeachingClasses = await (from a in _db.SubjectTeacherAllocations
+            //                                 from b in _db.Books
+            //                                 from c in _db.Sections
+            //                                 from d in _db.Grades
+            //                                 where a.EmployeeId == empId && b.BookId == a.BookId && c.SectionId == a.SectionId && d.GradeId == c.GradeId
+            //                                 select new
+            //                                 {
+            //                                     ClassId = c.SectionId,
+            //                                     ClassName = d.GradeName + c.SectionName
+            //                                 }).Distinct().ToListAsync();
+            //ViewBag.WorkBooks = await _db.Books.Where(x => x.IsWorkBook == true).ToListAsync();
+            //if (SearchTopics.ChapterId != null)
+            //{
+            ViewBag.CalendarName = (await (from a in _db.years
+                                           where a.YearId == YearId
+                                           select a.YearName).FirstOrDefaultAsync());
+            ViewBag.TermName = (await (from a in _db.terms
+                                       where a.TermId == Id
+                                       select a.TermName).FirstOrDefaultAsync());
+            ViewBag.BookName = (await (from a in _db.Books
+                                       from b in _db.Units
+                                       from c in _db.chapters
+                                       where c.ChapterId == SearchTopics.ChapterId && c.UnitId == b.UnitId && a.BookId == b.BookId
+                                       select a.BookName).FirstOrDefaultAsync());
+            ViewBag.UnitName = (await (from b in _db.Units
+                                       from c in _db.chapters
+                                       where c.ChapterId == SearchTopics.ChapterId && c.UnitId == b.UnitId
+                                       select b.UnitName).FirstOrDefaultAsync());
+            ViewBag.ChapterName = (await (from c in _db.chapters
+                                          where c.ChapterId == SearchTopics.ChapterId
+                                          select c.ChapterName).FirstOrDefaultAsync());
+            ViewBag.TMName = (await (from c in _db.TeachingMethodologies
+                                          where c.TeachingMethodologyId == SearchTopics.TeachingMethodologyId
+                                          select c.TMethodologyName).FirstOrDefaultAsync());
+            var chapter = await _db.ChapterAllocations.Where(x => x.ChapterId == SearchTopics.ChapterId).FirstOrDefaultAsync();
+            //List<TopicList> topics = new List<TopicList>();
+            ////TopicAllocationVM TopicVM = new TopicAllocationVM();
+            //foreach (var chapter in chapters)
+            //{
+            List<TopicListTest> ChapterTopics = await _db.topics.Where(x => x.ChapterId == SearchTopics.ChapterId).Select(x => new TopicListTest { TopicId = x.TopicId, TopicName = x.TopicName }).Distinct().OrderBy(x => x.TopicName).ToListAsync();
+            foreach (var each in ChapterTopics)
+            {
+                each.WBMaxPage = chapter.WorkBookEndPage;
+                each.WBMinPage = chapter.WorkBookStartPage;
+            }
+            //topics.AddRange(ChapterTopics);
+            //}
+            SearchTopics.Topics = ChapterTopics;
+            var allocatinos = (from t in ChapterTopics
+                               from allo in _db.TopicAllocations
+                               where allo.TopicId == t.TopicId && allo.PlanId == SearchTopics.PlanId && allo.TeachingMethodologyId == SearchTopics.TeachingMethodologyId
+                               select new
+                               {
+                                   topic = allo.TopicId,
+                                   startDate = allo.StartDate,
+                                   endDate = allo.EndDate,
+                                   TeachingMethodologyId = allo.TeachingMethodologyId,
+                                   TMethodDesc = allo.TMethodDesc,
+                                   WorkBookId = allo.WorkBookId,
+                                   WorkBookStartPage = allo.WorkBookStartPage,
+                                   WorkBookEndPage = allo.WorkBookEndPage
+                               }).Distinct().ToList();
+            foreach (var topic in ChapterTopics)
+            {
+                //var selectedTopic = _db.TopicAllocations.Where(x => x.TopicId == topic.TopicId).FirstOrDefault();
+                //if (selectedTopic != null)
+                //{
+                //    var selectedChapter = _db.ChapterAllocations.Where(x => x.ChapterId == selectedTopic.ChapterId && x.PlanId == SearchTopics.PlanId && x.TermId == SearchTopics.TermId).FirstOrDefault();
+                //    topic.ChapterStartDate = selectedChapter?.StartDate;
+                //    topic.ChapterEndDate = selectedChapter?.EndDate;
+                //}
+                //else
+                //{
+                //    var nonSelectedTopic = _db.topics.Where(x => x.TopicId == topic.TopicId).FirstOrDefault();
+                //    var nonSelectedChapter = _db.ChapterAllocations.Where(x => x.ChapterId == nonSelectedTopic.ChapterId && x.PlanId == SearchTopics.PlanId && x.TermId == SearchTopics.TermId).FirstOrDefault();
+                //    topic.ChapterStartDate = nonSelectedChapter?.StartDate;
+                //    topic.ChapterEndDate = nonSelectedChapter?.EndDate;
+                //}
+                foreach (var allo in allocatinos)
+                {
+                    if (topic.TopicId == allo.topic)
+                    {
+                        topic.Check = true;
+                        topic.StartDate = allo.startDate;
+                        topic.EndDate = allo.endDate;
+                        topic.TeachingMethodologyDesc = allo.TMethodDesc;
+                        topic.WorkBookId = allo.WorkBookId;
+                        topic.WorkBookStartPage = allo.WorkBookStartPage;
+                        topic.WorkBookEndPage = allo.WorkBookEndPage;
+                    }
+                }
+            }
+            var month = await _repository.GetTermById(SearchTopics.TermId);
+            ViewBag.Month = month.TermName;
+            //var Dates = _db.ChapterAllocations.Where(x => x.TermId == Id && x.ChapterId == SearchTopics.ChapterId).Select(x => new { StartDate = x.StartDate, EndDate = x.EndDate }).ToList();
+            //if (_db.ChapterAllocations.ToListAsync().Result.Any()) ;
+            var chapAllocation = await _db.ChapterAllocations.Where(x => x.TermId == SearchTopics.TermId && x.PlanId == SearchTopics.PlanId && x.ChapterId == SearchTopics.ChapterId).FirstOrDefaultAsync();
+            SearchTopics.MinDate = chapAllocation != null ? chapAllocation.StartDate : DateTime.Now;
+            SearchTopics.MaxDate = chapAllocation != null ? chapAllocation.EndDate : DateTime.Now;
+            return View(SearchTopics);
+            //}
+            //    return View(SearchTopics);
+        }
+
         [Authorize(Policy = "Academic Planning")]
         [HttpPost]
-        public async Task<IActionResult> TopicAllocation(TopicAllocationVM data)
+        public async Task<IActionResult> TopicAllocation(TopicAllocationTestVM data)
         {
             var oldTopics = _db.TopicAllocations
-            .Where(p => p.TermId.Equals(data.TermId) && p.ChapterId == data.ChapterId && p.PlanId == data.PlanId).ToList();
+            .Where(p => p.TermId.Equals(data.TermId) && p.ChapterId == data.ChapterId && p.PlanId == data.PlanId && p.TeachingMethodologyId == data.TeachingMethodologyId).ToList();
             _db.RemoveRange(oldTopics);
             await _db.SaveChangesAsync();
             var test = from a in data.Topics
-                       from b in a.TeachingMethods
-                       where b.IsSelected == true
-                       select b;
+                       where a.Check == true && a.StartDate != null && a.EndDate != null
+                       select a;
             var unSelectedTopics = from c in data.Topics
-                                   from d in c.TeachingMethods
-                                   where d.IsSelected == false
-                                   select d;
+                                   where c.Check == false
+                                   select c;
             if (unSelectedTopics.Any())
             {
                 var subTopics = from a in unSelectedTopics
@@ -1260,7 +1331,6 @@ namespace myWebApp.Controllers
             List<TopicAllocation> allocations = new List<TopicAllocation>();
             foreach (var bid in test)
             {
-                bid.preAllocation = true;
                 var topic = _db.topics.Where(x => x.TopicId == bid.TopicId).FirstOrDefault();
                 var chapter = _db.ChapterAllocations.Where(x => x.ChapterId == topic.ChapterId).FirstOrDefault();
                 var newTopic = new TopicAllocation
@@ -1270,7 +1340,7 @@ namespace myWebApp.Controllers
                     ChapterId = chapter.ChapterId,
                     StartDate = bid.StartDate,
                     EndDate = bid.EndDate,
-                    TeachingMethodologyId = bid.TeachingMethodologyId,
+                    TeachingMethodologyId = data.TeachingMethodologyId,
                     TMethodDesc = bid.TeachingMethodologyDesc,
                     WorkBookId = bid.WorkBookId,
                     WorkBookEndPage = bid.WorkBookEndPage,
@@ -1300,7 +1370,18 @@ namespace myWebApp.Controllers
         public async Task<IActionResult> SubTopicAllocation(int Id, int YearId, SubTopicAllocationVM SearchSubTopics)
         {
             int empId = Convert.ToInt16(User.FindFirst(ClaimTypes.Sid)?.Value);
-            ViewBag.Plans = await _db.AcademicPlannings.Where(x => x.EmployeeId == empId).ToListAsync();
+            ViewBag.Plans = (from a in _db.AcademicPlannings
+                             from b in _db.Sections
+                             from c in _db.Grades
+                             from d in _db.Books
+                             where a.EmployeeId == empId && a.IsActive == true && b.SectionId == a.ClassId && c.GradeId == b.GradeId && d.BookId == a.BookId
+                             select new
+                             {
+                                 PlanId = a.AcademicPlanningsId,
+                                 PlanName = a.PlanName,
+                                 ClassName = c.GradeName + b.SectionName,
+                                 BookName = d.BookName
+                             }).Distinct().ToList();
             //ViewBag.WorkBooks = _db.Books.Where(x => x.IsWorkBook == true).ToListAsync();
             SearchSubTopics.TermId = Id;
             SearchSubTopics.YearId = YearId;
@@ -1314,7 +1395,7 @@ namespace myWebApp.Controllers
                                                  ClassId = c.SectionId,
                                                  ClassName = d.GradeName + c.SectionName
                                              }).Distinct().ToListAsync();
-            if (SearchSubTopics.TopicId != null)
+            if (SearchSubTopics.TopicId != null && SearchSubTopics.TopicId != 0)
             {
                 ViewBag.CalendarName = (await (from a in _db.years
                                                where a.YearId == YearId
@@ -1340,11 +1421,11 @@ namespace myWebApp.Controllers
                 ViewBag.TopicName = (await (from d in _db.topics
                                             where d.TopicId == SearchSubTopics.TopicId
                                             select d.TopicName).FirstOrDefaultAsync());
-                var subTopics = (from a in _db.ChapterAllocations
-                                 from b in _db.TopicAllocations
-                                 from c in _db.subTopics
-                                 where a.TermId == Id && b.ChapterId == a.ChapterId && c.TopicId == b.TopicId && c.TopicId == SearchSubTopics.TopicId
-                                 select c).Distinct();
+                var subTopics = await (from a in _db.ChapterAllocations
+                                       from b in _db.TopicAllocations
+                                       from c in _db.subTopics
+                                       where a.TermId == Id && b.ChapterId == a.ChapterId && c.TopicId == b.TopicId && c.TopicId == SearchSubTopics.TopicId
+                                       select c).Distinct().OrderBy(x => x.SubTopicName).ToListAsync();
                 //SubTopicAllocationVM subTopic = new SubTopicAllocationVM();
                 if (subTopics.Any())
                 {
@@ -1353,13 +1434,14 @@ namespace myWebApp.Controllers
                                              from c in _db.SubTopicAllocations
                                              where a.TermId == Id && b.ChapterId == a.ChapterId && c.TopicId == b.TopicId && c.TopicId == SearchSubTopics.TopicId && c.PlanId == SearchSubTopics.PlanId
                                              select c;
-                    List<SubTopicList> subTopicList = await subTopics.Select(x => new SubTopicList { SubTopicId = x.SubTopicId, SubTopicName = x.SubTopicName }).ToListAsync();
+                    List<SubTopicList> subTopicList = subTopics.Select(x => new SubTopicList { SubTopicId = x.SubTopicId, SubTopicName = x.SubTopicName }).ToList();
                     foreach (var topic in subTopicList)
                     {
                         var selectedSubTopic = _db.subTopics.Where(x => x.SubTopicId == topic.SubTopicId).FirstOrDefault();
-                        var SelectedTopic = _db.TopicAllocations.Where(x => x.TopicId == selectedSubTopic.TopicId).FirstOrDefault();
+                        var SelectedTopic = _db.TopicAllocations.Where(x => x.TopicId == selectedSubTopic.TopicId).OrderBy(x => x.StartDate).FirstOrDefault();
+                        var SelectedTopicEndDate = _db.TopicAllocations.Where(x => x.TopicId == selectedSubTopic.TopicId).OrderByDescending(x => x.EndDate).FirstOrDefault();
                         topic.TopicStartDate = SelectedTopic.StartDate;
-                        topic.TopicEndDate = SelectedTopic.EndDate;
+                        topic.TopicEndDate = SelectedTopicEndDate.EndDate;
                         topic.WBMinPage = SelectedTopic.WorkBookStartPage;
                         topic.WBMaxPage = SelectedTopic.WorkBookEndPage;
                         foreach (var allocated in allocatedSubTopics)
@@ -1378,9 +1460,10 @@ namespace myWebApp.Controllers
                     var month = await _repository.GetTermById(Id);
                     ViewBag.Month = month.TermName;
                     SearchSubTopics.SubTopics = subTopicList;
-                    var ParentTopic = _db.TopicAllocations.Where(x => x.TopicId == SearchSubTopics.TopicId && x.TermId == Id && x.PlanId == SearchSubTopics.PlanId).FirstOrDefault();
-                    SearchSubTopics.MinDate = ParentTopic.StartDate;
-                    SearchSubTopics.MaxDate = ParentTopic.EndDate;
+                    var ParentTopicSDate = _db.TopicAllocations.Where(x => x.TopicId == SearchSubTopics.TopicId && x.TermId == Id && x.PlanId == SearchSubTopics.PlanId).OrderBy(x => x.StartDate).FirstOrDefault();
+                    var ParentTopicEDate = _db.TopicAllocations.Where(x => x.TopicId == SearchSubTopics.TopicId && x.TermId == Id && x.PlanId == SearchSubTopics.PlanId).OrderByDescending(x => x.EndDate).FirstOrDefault();
+                    SearchSubTopics.MinDate = ParentTopicSDate.StartDate;
+                    SearchSubTopics.MaxDate = ParentTopicEDate.EndDate;
                     return View(SearchSubTopics);
                 }
                 else
@@ -1405,7 +1488,7 @@ namespace myWebApp.Controllers
                                select c;
             _db.RemoveRange(oldsubTopics);
             await _db.SaveChangesAsync();
-            var test = data.SubTopics.Where(x => x.IsSelected == true).ToList();
+            var test = data.SubTopics.Where(x => x.IsSelected == true && x.StartDate != null && x.EndDate != null).ToList();
             List<SubTopicAllocation> allocations = new List<SubTopicAllocation>();
             foreach (var bid in test)
             {
@@ -1483,20 +1566,20 @@ namespace myWebApp.Controllers
             }
             foreach (var unit in allocatedUnits)
             {
-                var AllocatedChapters = from a in _db.ChapterAllocations
-                                        join b in _db.chapters on a.ChapterId equals b.ChapterId into chapNames
-                                        from names in chapNames.DefaultIfEmpty()
-                                        where a.UnitId == unit.UnitId && a.PlanId == PlanId
-                                        select new
-                                        {
-                                            ChapterName = names.ChapterName,
-                                            StartDate = a.StartDate,
-                                            EndDate = a.EndDate,
-                                            ChapterId = a.ChapterId,
-                                            WBStartPage = a.WorkBookStartPage,
-                                            WBEndPage = a.WorkBookEndPage,
-                                            SLO = names.SLO
-                                        };
+                var AllocatedChapters = (from a in _db.ChapterAllocations
+                                         join b in _db.chapters on a.ChapterId equals b.ChapterId into chapNames
+                                         from names in chapNames.DefaultIfEmpty()
+                                         where a.UnitId == unit.UnitId && a.PlanId == PlanId
+                                         select new
+                                         {
+                                             ChapterName = names.ChapterName,
+                                             StartDate = a.StartDate,
+                                             EndDate = a.EndDate,
+                                             ChapterId = a.ChapterId,
+                                             WBStartPage = a.WorkBookStartPage,
+                                             WBEndPage = a.WorkBookEndPage,
+                                             SLO = names.SLO
+                                         }).Distinct();
                 if (!AllocatedChapters.Any())
                 {
                     PLanList Unitplan = new PLanList() { StartDate = Convert.ToDateTime(unit.StartDate).ToString("dd-MMM-yyyy"), EndDate = Convert.ToDateTime(unit.EndDate).ToString("dd-MMM-yyyy"), UnitName = unit.UnitName /*, ChapterName = chapter.ChapterName, TopicName = topic.TopicName, TeachingMethodologyName = topic.TeachingMethodology,*/ , WbStartPage = unit.WBStartPage.ToString(), WbEndPage = unit.WBEndPage.ToString(), SLO = unit.SLO };
@@ -1504,22 +1587,23 @@ namespace myWebApp.Controllers
                 }
                 foreach (var chapter in AllocatedChapters)
                 {
-                    var AllocatedTopics = from a in _db.TopicAllocations
-                                          join b in _db.topics on a.TopicId equals b.TopicId into topNames
-                                          from names in topNames.DefaultIfEmpty()
-                                          join c in _db.TeachingMethodologies on a.TeachingMethodologyId equals c.TeachingMethodologyId into TMethods
-                                          from TMethod in TMethods.DefaultIfEmpty()
-                                          where a.ChapterId == chapter.ChapterId && a.PlanId == PlanId
-                                          select new
-                                          {
-                                              TopicName = names.TopicName,
-                                              StartDate = a.StartDate,
-                                              EndDate = a.EndDate,
-                                              TopicId = a.TopicId,
-                                              TeachingMethodology = TMethod.TMethodologyName,
-                                              WBStartPage = a.WorkBookStartPage,
-                                              WBEndPage = a.WorkBookEndPage
-                                          };
+                    var AllocatedTopics = (from a in _db.TopicAllocations
+                                           join b in _db.topics on a.TopicId equals b.TopicId into topNames
+                                           from names in topNames.DefaultIfEmpty()
+                                           join c in _db.TeachingMethodologies on a.TeachingMethodologyId equals c.TeachingMethodologyId into TMethods
+                                           from TMethod in TMethods.DefaultIfEmpty()
+                                           where a.ChapterId == chapter.ChapterId && a.PlanId == PlanId
+                                           select new
+                                           {
+                                               TopicName = names.TopicName,
+                                               StartDate = a.StartDate,
+                                               EndDate = a.EndDate,
+                                               TopicId = a.TopicId,
+                                               TeachingMethodology = TMethod.TMethodologyName,
+                                               WBStartPage = a.WorkBookStartPage,
+                                               WBEndPage = a.WorkBookEndPage,
+                                               TeachingMethodologyDesc = a.TMethodDesc
+                                           }).Distinct();
                     if (!AllocatedTopics.Any())
                     {
                         PLanList Chapterplan = new PLanList() { StartDate = Convert.ToDateTime(chapter.StartDate).ToString("dd-MMM-yyyy"), EndDate = Convert.ToDateTime(chapter.EndDate).ToString("dd-MMM-yyyy"), UnitName = unit.UnitName, ChapterName = chapter.ChapterName, /*TopicName = topic.TopicName, TeachingMethodologyName = topic.TeachingMethodology,*/ WbStartPage = chapter.WBStartPage.ToString(), WbEndPage = chapter.WBEndPage.ToString(), SLO = chapter.SLO };
@@ -1529,28 +1613,28 @@ namespace myWebApp.Controllers
                     {
                         foreach (var topic in AllocatedTopics)
                         {
-                            var subTopics = from a in _db.SubTopicAllocations
-                                            join b in _db.subTopics on a.SubTopicId equals b.SubTopicId into SubtopNames
-                                            from names in SubtopNames.DefaultIfEmpty()
-                                            where a.TopicId == topic.TopicId && a.PlanId == PlanId
-                                            select new
-                                            {
-                                                TopicName = names.SubTopicName,
-                                                StartDate = a.StartDate,
-                                                EndDate = a.EndDate,
-                                                WBStartPage = a.WorkBookStartPage,
-                                                WBEndPage = a.WorkBookEndPage
-                                            };
+                            var subTopics = (from a in _db.SubTopicAllocations
+                                             join b in _db.subTopics on a.SubTopicId equals b.SubTopicId into SubtopNames
+                                             from names in SubtopNames.DefaultIfEmpty()
+                                             where a.TopicId == topic.TopicId && a.PlanId == PlanId
+                                             select new
+                                             {
+                                                 TopicName = names.SubTopicName,
+                                                 StartDate = a.StartDate,
+                                                 EndDate = a.EndDate,
+                                                 WBStartPage = a.WorkBookStartPage,
+                                                 WBEndPage = a.WorkBookEndPage
+                                             }).Distinct();
                             if (!subTopics.Any())
                             {
-                                PLanList TopicPlan = new PLanList() { StartDate = Convert.ToDateTime(topic.StartDate).ToString("dd-MMM-yyyy"), EndDate = Convert.ToDateTime(topic.EndDate).ToString("dd-MMM-yyyy"), UnitName = unit.UnitName, ChapterName = chapter.ChapterName, TopicName = topic.TopicName, TeachingMethodologyName = topic.TeachingMethodology, WbStartPage = topic.WBStartPage.ToString(), WbEndPage = topic.WBEndPage.ToString() };
+                                PLanList TopicPlan = new PLanList() { StartDate = Convert.ToDateTime(topic.StartDate).ToString("dd-MMM-yyyy"), EndDate = Convert.ToDateTime(topic.EndDate).ToString("dd-MMM-yyyy"), UnitName = unit.UnitName, ChapterName = chapter.ChapterName, TopicName = topic.TopicName, TeachingMethodologyName = topic.TeachingMethodology, TeachingMethodologyDesc = topic.TeachingMethodologyDesc, WbStartPage = topic.WBStartPage.ToString(), WbEndPage = topic.WBEndPage.ToString(), SLO = chapter.SLO };
                                 calender.Plan.Add(TopicPlan);
                             }
                             else
                             {
                                 foreach (var stopic in subTopics)
                                 {
-                                    PLanList plan = new PLanList() { StartDate = Convert.ToDateTime(stopic.StartDate).ToString("dd-MMM-yyyy"), EndDate = Convert.ToDateTime(stopic.EndDate).ToString("dd-MMM-yyyy"), UnitName = unit.UnitName, ChapterName = chapter.ChapterName, TopicName = topic.TopicName, TeachingMethodologyName = topic.TeachingMethodology, WbStartPage = stopic.WBStartPage.ToString(), WbEndPage = stopic.WBEndPage.ToString(), SubTopicName = stopic.TopicName };
+                                    PLanList plan = new PLanList() { StartDate = Convert.ToDateTime(stopic.StartDate).ToString("dd-MMM-yyyy"), EndDate = Convert.ToDateTime(stopic.EndDate).ToString("dd-MMM-yyyy"), UnitName = unit.UnitName, ChapterName = chapter.ChapterName, TopicName = topic.TopicName, TeachingMethodologyName = topic.TeachingMethodology, WbStartPage = stopic.WBStartPage.ToString(), WbEndPage = stopic.WBEndPage.ToString(), SubTopicName = stopic.TopicName, SLO = chapter.SLO, TeachingMethodologyDesc = topic.TeachingMethodologyDesc };
                                     calender.Plan.Add(plan);
                                 }
                             }
@@ -1558,44 +1642,58 @@ namespace myWebApp.Controllers
                     }
                 }
             }
+            calender.Plan.OrderBy(x => x.StartDate);
             #endregion
 
-            calender.GradeName = (await (from a in _db.Books
-                                         from b in _db.Grades
-                                         where a.BookId == calender.BookId && b.GradeId == a.GradeId
-                                         select b.GradeName).FirstOrDefaultAsync())?.ToString();
+            //calender.GradeName = (await (from a in _db.Books
+            //                             from b in _db.Grades
+            //                             where a.BookId == calender.BookId && b.GradeId == a.GradeId
+            //                             select b.GradeName).FirstOrDefaultAsync())?.ToString();
 
-            calender.SubjectName = (await (from a in _db.Books
-                                           join b in _db.Subjects on a.SubjectId equals b.SubjectId into bSubject
-                                           from sub in bSubject
-                                           where a.BookId == calender.BookId
-                                           select sub.SubjectName).FirstOrDefaultAsync())?.ToString();
+            calender.SubjectName = (await (from a in _db.AcademicPlannings
+                                           from b in _db.Subjects
+                                           where a.AcademicPlanningsId == PlanId && b.SubjectId == a.SubjectId && b.IsActive == true
+                                           select b.SubjectName).FirstOrDefaultAsync())?.ToString();
             calender.Textbook = _db.Books.Where(x => x.BookId == calender.BookId).FirstOrDefault()?.BookName;
 
-            calender.Workbook = (await (from a in _db.Books
-                                        from b in _db.Grades
-                                        where a.BookId == calender.BookId && b.GradeId == a.BookId && a.IsWorkBook == true
-                                        select a.BookName).FirstOrDefaultAsync())?.ToString();
+            calender.Workbook = (await (from b in _db.UnitAllocations
+                                        from c in _db.Books
+                                        where b.PlanId == PlanId && c.BookId == b.WorkBookId && c.IsWorkBook == true && c.IsActive == true
+                                        select c.BookName).FirstOrDefaultAsync())?.ToString();
 
-            calender.TeacherName = (await (from a in _db.SubjectTeacherAllocations
+            calender.TeacherName = (await (from a in _db.AcademicPlannings
                                            from d in _db.Employees
-                                           where a.BookId == calender.BookId && d.EmployeeId == a.EmployeeId
+                                           where a.AcademicPlanningsId == PlanId && d.EmployeeId == a.EmployeeId
                                            select d.FName + " " + d.LName).FirstOrDefaultAsync())?.ToString();
 
-            calender.ClassName = (await (from a in _db.Books
-                                         from b in _db.Grades
-                                         from c in _db.Sections
-                                         where a.BookId == calender.BookId && b.GradeId == a.GradeId && c.GradeId == b.GradeId
-                                         select c.SectionName).FirstOrDefaultAsync())?.ToString();
-            if ((bool)allocatedUnits.FirstOrDefault().AreSaturdaysOff)
+            calender.ClassName = await (from a in _db.AcademicPlannings
+                                  from b in _db.Sections
+                                  from d in _db.Grades
+                                  where a.AcademicPlanningsId == PlanId && b.SectionId == a.ClassId && d.GradeId == b.GradeId
+                                  select d.GradeName + "-" + b.SectionName).FirstOrDefaultAsync();
+            int weekEndCount = 0;
+            DateTime startDate = Convert.ToDateTime(calender.Plan.OrderBy(x => x.StartDate).FirstOrDefault().StartDate);
+            TimeSpan diff = Convert.ToDateTime(calender.Plan.OrderByDescending(x => x.EndDate).FirstOrDefault().EndDate) - startDate;
+            int days = diff.Days;
+            for (var i = 0; i <= days; i++)
             {
-                calender.DurationDays = CountWeekEnds(Convert.ToDateTime(calender.Plan.FirstOrDefault().StartDate),Convert.ToDateTime(calender.Plan.LastOrDefault().EndDate));
+                var testDate = startDate.AddDays(i);
+                if ((bool)allocatedUnits.FirstOrDefault().AreSaturdaysOff == false)
+                {
+                    if (testDate.DayOfWeek != DayOfWeek.Sunday || testDate.DayOfWeek != DayOfWeek.Saturday)
+                    {
+                        weekEndCount += 1;
+                    }
+                }
+                else
+                {
+                    if (testDate.DayOfWeek != DayOfWeek.Sunday)
+                    {
+                        weekEndCount += 1;
+                    }
+                }
             }
-            else
-            {
-                calender.DurationDays = CountSundays(Convert.ToDateTime(calender.Plan.FirstOrDefault().StartDate), Convert.ToDateTime(calender.Plan.LastOrDefault().EndDate));
-
-            }
+            calender.DurationDays = weekEndCount;
             //calender.totalItems = totalItems;
 
             calender.PlanId = PlanId;
@@ -1614,6 +1712,14 @@ namespace myWebApp.Controllers
             AcademicPlanningsVM plans = new AcademicPlanningsVM();
             int empId = Convert.ToInt16(User.FindFirst(ClaimTypes.Sid)?.Value);
             plans.plans = await (from a in _db.AcademicPlannings
+                                 join b in _db.Sections on a.ClassId equals b.SectionId into PlanClass
+                                 from CPlan in PlanClass.DefaultIfEmpty()
+                                 join c in _db.Grades on CPlan.GradeId equals c.GradeId into PlanGrade
+                                 from PGrade in PlanGrade.DefaultIfEmpty()
+                                 join d in _db.Books on a.BookId equals d.BookId into PlanBook
+                                 from PBook in PlanBook.DefaultIfEmpty()
+                                 join e in _db.Subjects on PBook.SubjectId equals e.SubjectId into PlanSubject
+                                 from PSubject in PlanSubject.DefaultIfEmpty()
                                  where a.EmployeeId == empId && a.IsActive == true
                                  select new AcademicPlanningsVM
                                  {
@@ -1632,9 +1738,22 @@ namespace myWebApp.Controllers
                                              pa.ApprovingPerson == "Director Academics" && pa.Status == "Approved" ? "Approved" :
                                              "Rejected"
                                      ).FirstOrDefault(),
-                                     ActiveSubmitPlan = _db.PlanApproval.Where(x => x.PlanId == a.AcademicPlanningsId).Any()
+                                     ActiveSubmitPlan = _db.PlanApproval.Where(x => x.PlanId == a.AcademicPlanningsId).Any(),
+                                     ClassId = (int)a.ClassId,
+                                     ClassName = PGrade.GradeName + CPlan.SectionName,
+                                     SubjectName = PSubject.SubjectName,
+                                     BookName = PBook.BookName
                                  }
                             ).Distinct().ToListAsync();
+            ViewBag.Classes = (from a in _db.Sections
+                               from b in _db.SubjectTeacherAllocations
+                               from c in _db.Grades
+                               where c.GradeId == a.GradeId && a.SectionId == b.SectionId && b.EmployeeId == empId
+                               select new
+                               {
+                                   SectionId = b.SectionId,
+                                   SectionName = c.GradeName + a.SectionName
+                               }).Distinct().ToList();
             if (!plans.plans.Any())
             {
                 plans.plans = await _db.AcademicPlannings.Where(x => x.EmployeeId == empId && x.IsActive == true).Select(x => new AcademicPlanningsVM { IsActive = x.IsActive, EmployeeId = x.EmployeeId, StartDate = x.StartDate, PlanName = x.PlanName, EndDate = x.EndDate, PlannedBy = x.PlannedBy, AcademicPlanningsId = x.AcademicPlanningsId }).ToListAsync();
@@ -1656,6 +1775,9 @@ namespace myWebApp.Controllers
                     StartDate = plan.StartDate,
                     EndDate = plan.EndDate,
                     PlannedBy = employe.FName + " " + employe.LName,
+                    ClassId = plan.ClassId,
+                    BookId = plan.BookId,
+                    SubjectId = plan.SubjectId
                 };
                 await _repository.AddAsync(AcademicPlanning);
                 if (await _repository.SaveChanges())
@@ -1670,6 +1792,7 @@ namespace myWebApp.Controllers
         [HttpGet]
         public async Task<IActionResult> UpdateAcademicPlanning(int AcademicPlanningId)
         {
+            int empId = Convert.ToInt16(User.FindFirst(ClaimTypes.Sid)?.Value);
             var Dbplan = await _db.AcademicPlannings.Where(x => x.AcademicPlanningsId == AcademicPlanningId).FirstOrDefaultAsync();
             AcademicPlanningsVM plan = new AcademicPlanningsVM
             {
@@ -1677,6 +1800,34 @@ namespace myWebApp.Controllers
                 AcademicPlanningsId = Dbplan.AcademicPlanningsId,
                 IsActive = Dbplan.IsActive
             };
+            plan.ClassId = Dbplan.ClassId == null ? 0 : Dbplan.ClassId;
+            plan.BookId = Dbplan.BookId == null ? 0 : Dbplan.BookId;
+            plan.SubjectId = Dbplan.SubjectId == null ? 0 : Dbplan.SubjectId;
+            ViewBag.Books = await (from a in _db.SubjectTeacherAllocations
+                                   from b in _db.Books
+                                   from c in _db.Subjects
+                                   where a.EmployeeId == empId && b.BookId == a.BookId && c.SubjectId == b.SubjectId && c.SubjectId == Dbplan.SubjectId
+                                   select new
+                                   {
+                                       BookId = b.BookId,
+                                       BookName = b.BookName
+                                   }).Distinct().ToListAsync();
+            ViewBag.Subjects = await (from a in _db.SubjectTeacherAllocations
+                                      join b in _db.Books on a.BookId equals b.BookId into EmpBooks
+                                      from EBs in EmpBooks.DefaultIfEmpty()
+                                      join c in _db.Subjects on EBs.SubjectId equals c.SubjectId into BookSubs
+                                      from BSs in BookSubs.DefaultIfEmpty()
+                                      where a.EmployeeId == empId && a.SectionId == Dbplan.ClassId && BSs.IsActive == true
+                                      select BSs).Distinct().ToListAsync();
+            ViewBag.Classes = (from a in _db.Sections
+                               from b in _db.SubjectTeacherAllocations
+                               from c in _db.Grades
+                               where c.GradeId == a.GradeId && a.SectionId == b.SectionId && b.EmployeeId == empId
+                               select new
+                               {
+                                   SectionId = b.SectionId,
+                                   SectionName = c.GradeName + a.SectionName
+                               }).Distinct().ToList();
             return View(plan);
         }
         [Authorize(Policy = "AcademicPlannings.Update")]
@@ -1687,6 +1838,9 @@ namespace myWebApp.Controllers
             {
                 var temp = await _db.AcademicPlannings.Where(x => x.AcademicPlanningsId == plan.AcademicPlanningsId).FirstOrDefaultAsync();
                 temp.PlanName = plan.PlanName;
+                temp.ClassId = plan.ClassId;
+                temp.BookId = plan.BookId;
+                temp.SubjectId = plan.SubjectId;
                 if (User.IsInRole("Director Academics") || User.IsInRole("Deputy Coordinator"))
                 {
                     temp.IsActive = plan.IsActive;
@@ -1742,7 +1896,7 @@ namespace myWebApp.Controllers
                 await _repository.UpdateAsync(temp);
                 if (await _repository.SaveChanges())
                 {
-                    return RedirectToAction("AcademicPlanning");
+                    return RedirectToAction("AcademicPlannings");
                 }
                 ModelState.AddModelError("", "Error While Saving in Database");
             }
@@ -1865,115 +2019,140 @@ namespace myWebApp.Controllers
         [HttpGet]
         public async Task<IActionResult> PlanApprovalSubmit(int PlanId)
         {
-            if (User.IsInRole("Subject Teacher"))
+            int empId = Convert.ToInt16(User.FindFirst(ClaimTypes.Sid)?.Value);
+            //if (User.IsInRole("Subject Teacher"))
+            //{
+            //int CTID = Convert.ToInt16((from a in _db.UnitAllocations
+            //                            from b in _db.Units
+            //                            from c in _db.Books
+            //                            from d in _db.SubjectTeacherAllocations
+            //                            from e in _db.Sections
+            //                            where a.PlanId == PlanId && b.UnitId == a.UnitId && c.BookId == b.BookId && d.BookId == c.BookId && e.SectionId == d.SectionId
+            //                            select e.ClassTeacherId).FirstOrDefault());
+            if (!User.IsInRole("Deputy Coordinator") && !User.IsInRole("Director Academics"))
             {
-                int CTID = Convert.ToInt16((from a in _db.UnitAllocations
-                                            from b in _db.Units
-                                            from c in _db.Books
-                                            from d in _db.SubjectTeacherAllocations
-                                            from e in _db.Sections
-                                            where a.PlanId == PlanId && b.UnitId == a.UnitId && c.BookId == b.BookId && d.BookId == c.BookId && e.SectionId == d.SectionId
-                                            select e.ClassTeacherId).FirstOrDefault());
-                var ClassTeacher = await _db.Employees.Where(x => x.EmployeeId == CTID).FirstOrDefaultAsync();
+                int ACID = Convert.ToInt16((from a in _db.AcademicPlannings
+                                            from b in _db.Sections
+                                            from c in _db.Grades
+                                            from d in _db.SchoolSections
+                                            where a.AcademicPlanningsId == PlanId && b.SectionId == a.ClassId && c.GradeId == b.GradeId && d.SchoolSectionId == c.SchoolSectionId && a.IsActive == true && b.IsActive == true && c.IsActive == true && d.IsActive == true
+                                            select d.AssistantCoordinatorId).FirstOrDefault());
+                var AC = await _db.Employees.Where(x => x.EmployeeId == ACID).FirstOrDefaultAsync();
                 var PlanApproval = new PlanApproval
                 {
-                    ApprovingPerson = "Class Teacher",
-                    ApprovingPersonName = ClassTeacher?.FName + " " + ClassTeacher?.LName,
+                    ApprovingPerson = "Assistant Coordinator",
+                    ApprovingPersonName = AC?.FName + " " + AC?.LName,
                     PlanId = PlanId,
                     Remarks = "Status Pending",
                     Status = "Pending",
                     CreatedDate = DateTime.Now
                 };
                 await _repository.AddAsync(PlanApproval);
-            }
-            else if (User.IsInRole("Class Teacher"))
-            {
-                int GMID = Convert.ToInt16((from a in _db.UnitAllocations
-                                            from b in _db.Units
-                                            from c in _db.Books
-                                            from d in _db.SubjectTeacherAllocations
-                                            from e in _db.Sections
-                                            from f in _db.Grades
-                                            where a.PlanId == PlanId && b.UnitId == a.UnitId && c.BookId == b.BookId && d.BookId == c.BookId && e.SectionId == d.SectionId && f.GradeId == e.GradeId
-                                            select f.GradeManagerId).FirstOrDefault());
-                var GradeManager = await _db.Employees.Where(x => x.EmployeeId == GMID).FirstOrDefaultAsync();
-                var GMApproval = new PlanApproval
+                if (await _repository.SaveChanges())
                 {
-                    ApprovingPerson = "Grade Manager",
-                    ApprovingPersonName = GradeManager?.FName + " " + GradeManager?.LName,
-                    PlanId = PlanId,
-                    Remarks = "Status Pending (Class Teacher's Plan)",
-                    Status = "Pending",
-                    CreatedDate = DateTime.Now
-                };
-                await _repository.AddAsync(GMApproval);
+                    return RedirectToAction("AcademicPlannings");
+                }
+                ModelState.AddModelError("", "Error While Saving in Database!");
+                return View(PlanId);
             }
-            else if (User.IsInRole("Grade Manager"))
-            {
-                //int CTID = Convert.ToInt16((from a in _db.UnitAllocations
-                //                            from b in _db.Units
-                //                            from c in _db.Books
-                //                            from d in _db.SubjectTeacherAllocations
-                //                            from e in _db.Sections
-                //                            where a.PlanId == PlanId && b.UnitId == a.UnitId && c.BookId == b.BookId && d.BookId == c.BookId && e.SectionId == d.SectionId
-                //                            select e.ClassTeacherId).FirstOrDefault());
-                //var ClassTeacher = await _db.Employees.Where(x => x.SchoolSectionId == CTID).FirstOrDefaultAsync();
-                //var CTSelfApproval = new PlanApproval
-                //{
-                //    ApprovingPerson = "Class Teacher",
-                //    ApprovingPersonName = ClassTeacher?.FName + " " + ClassTeacher?.LName,
-                ////    PlanId = PlanId,
-                //    Remarks = "Self-Approved",
-                //    Status = "Approved",
-                //    CreatedDate = DateTime.Now
-                //};
-                //await _repository.AddAsync(CTSelfApproval);
-                //int GMID = Convert.ToInt16((from a in _db.UnitAllocations
-                //                            from b in _db.Units
-                //                            from c in _db.Books
-                //                            from d in _db.SubjectTeacherAllocations
-                //                            from e in _db.Sections
-                //                            from f in _db.Grades
-                //                            where a.PlanId == PlanId && b.UnitId == a.UnitId && c.BookId == b.BookId && d.BookId == c.BookId && e.SectionId == d.SectionId && f.GradeId == e.GradeId
-                //                            select f.GradeManagerId).FirstOrDefault());
-                //var GradeManager = await _db.Employees.Where(x => x.EmployeeId == GMID).FirstOrDefaultAsync();
-                //var GMSelfApproval = new PlanApproval
-                //{
-                //    ApprovingPerson = "Grade Manager",
-                //    ApprovingPersonName = GradeManager?.FName + " " + GradeManager?.LName,
-                //    PlanId = PlanId,
-                //    Remarks = "Self-Approved",
-                //    Status = "Approved",
-                //    CreatedDate = DateTime.Now
-                //};
-                //await _repository.AddAsync(GMSelfApproval);
-                int ACID = Convert.ToInt16((from a in _db.UnitAllocations
-                                            from b in _db.Units
-                                            from c in _db.Books
-                                            from d in _db.SubjectTeacherAllocations
-                                            from e in _db.Sections
-                                            from f in _db.Grades
-                                            from g in _db.SchoolSections
-                                            where a.PlanId == PlanId && b.UnitId == a.UnitId && c.BookId == b.BookId && d.BookId == c.BookId && e.SectionId == d.SectionId && f.GradeId == e.GradeId && g.SchoolSectionId == f.SchoolSectionId
-                                            select g.AssistantCoordinatorId).FirstOrDefault());
-                var AssCoordinator = await _db.Employees.Where(x => x.EmployeeId == ACID).FirstOrDefaultAsync();
-                var ACPlanApproval = new PlanApproval
-                {
-                    ApprovingPerson = "Assistant Coordinator",
-                    ApprovingPersonName = AssCoordinator?.FName + " " + AssCoordinator?.LName,
-                    PlanId = PlanId,
-                    Remarks = "Status Pending (Grade Manager's Plan)",
-                    Status = "Pending",
-                    CreatedDate = DateTime.Now
-                };
-                await _repository.AddAsync(ACPlanApproval);
-            }
-            if (await _repository.SaveChanges())
-            {
-                return RedirectToAction("AcademicPlannings");
-            }
-            ModelState.AddModelError("", "Error While Saving in Database!");
             return View(PlanId);
+            //}
+            //else if (User.IsInRole("Class Teacher"))
+            //{
+            //    bool IsST = (from a in _db.AcademicPlannings
+            //                 from b in _db.SubjectTeacherAllocations
+            //                 where a.AcademicPlanningsId == PlanId && b.SectionId == a.ClassId && b.EmployeeId == empId
+            //                 select a).Any();
+            //    if (IsST)
+            //    {
+            //        int CTID = Convert.ToInt16((from a in _db.AcademicPlannings
+            //                                    from b in _db.Sections
+            //                                    where a.AcademicPlanningsId == PlanId && b.SectionId == a.ClassId && a.IsActive == true && b.IsActive == true
+            //                                    select b.ClassTeacherId).FirstOrDefault());
+            //        var ClassTeacher = await _db.Employees.Where(x => x.EmployeeId == CTID).FirstOrDefaultAsync();
+            //        var PlanApproval = new PlanApproval
+            //        {
+            //            ApprovingPerson = "Class Teacher",
+            //            ApprovingPersonName = ClassTeacher?.FName + " " + ClassTeacher?.LName,
+            //            PlanId = PlanId,
+            //            Remarks = "Status Pending",
+            //            Status = "Pending",
+            //            CreatedDate = DateTime.Now
+            //        };
+            //        await _repository.AddAsync(PlanApproval);
+            //    }
+            //    else
+            //    {
+            //        int GMID = Convert.ToInt16((from a in _db.UnitAllocations
+            //                                    from b in _db.Units
+            //                                    from c in _db.Books
+            //                                    from d in _db.SubjectTeacherAllocations
+            //                                    from e in _db.Sections
+            //                                    from f in _db.Grades
+            //                                    where a.PlanId == PlanId && b.UnitId == a.UnitId && c.BookId == b.BookId && d.BookId == c.BookId && e.SectionId == d.SectionId && f.GradeId == e.GradeId
+            //                                    select f.GradeManagerId).FirstOrDefault());
+            //        var GradeManager = await _db.Employees.Where(x => x.EmployeeId == GMID).FirstOrDefaultAsync();
+            //        var GMApproval = new PlanApproval
+            //        {
+            //            ApprovingPerson = "Grade Manager",
+            //            ApprovingPersonName = GradeManager?.FName + " " + GradeManager?.LName,
+            //            PlanId = PlanId,
+            //            Remarks = "Status Pending (Class Teacher's Plan)",
+            //            Status = "Pending",
+            //            CreatedDate = DateTime.Now
+            //        };
+            //        await _repository.AddAsync(GMApproval);
+            //    }
+            //}
+            //else if (User.IsInRole("Grade Manager"))
+            //{
+            //    bool IsST = (from a in _db.AcademicPlannings
+            //                 from b in _db.SubjectTeacherAllocations
+            //                 where a.AcademicPlanningsId == PlanId && a.ClassId == b.SectionId && b.EmployeeId == empId
+            //                 select a).Any();
+            //    if (IsST)
+            //    {
+            //        int CTID = Convert.ToInt16((from a in _db.AcademicPlannings
+            //                                    from b in _db.Sections
+            //                                    from c in _db.Grades
+            //                                    where a.AcademicPlanningsId == PlanId && b.SectionId == a.ClassId && b.GradeId == c.GradeId && c.GradeManagerId == empId && a.EmployeeId == empId && a.IsActive == true && b.IsActive == true && c.IsActive == true
+            //                                    select b.ClassTeacherId).FirstOrDefault());
+            //        var ClassTeacher = await _db.Employees.Where(x => x.EmployeeId == CTID).FirstOrDefaultAsync();
+            //        var PlanApproval = new PlanApproval
+            //        {
+            //            ApprovingPerson = "Class Teacher",
+            //            ApprovingPersonName = ClassTeacher?.FName + " " + ClassTeacher?.LName,
+            //            PlanId = PlanId,
+            //            Remarks = "Status Pending",
+            //            Status = "Pending",
+            //            CreatedDate = DateTime.Now
+            //        };
+            //        await _repository.AddAsync(PlanApproval);
+            //    }
+            //    else
+            //    {
+            //        int ACID = Convert.ToInt16((from a in _db.UnitAllocations
+            //                                    from b in _db.Units
+            //                                    from c in _db.Books
+            //                                    from d in _db.SubjectTeacherAllocations
+            //                                    from e in _db.Sections
+            //                                    from f in _db.Grades
+            //                                    from g in _db.SchoolSections
+            //                                    where a.PlanId == PlanId && b.UnitId == a.UnitId && c.BookId == b.BookId && d.BookId == c.BookId && e.SectionId == d.SectionId && f.GradeId == e.GradeId && g.SchoolSectionId == f.SchoolSectionId
+            //                                    select g.AssistantCoordinatorId).FirstOrDefault());
+            //        var AssCoordinator = await _db.Employees.Where(x => x.EmployeeId == ACID).FirstOrDefaultAsync();
+            //        var ACPlanApproval = new PlanApproval
+            //        {
+            //            ApprovingPerson = "Assistant Coordinator",
+            //            ApprovingPersonName = AssCoordinator?.FName + " " + AssCoordinator?.LName,
+            //            PlanId = PlanId,
+            //            Remarks = "Status Pending (Grade Manager's Plan)",
+            //            Status = "Pending",
+            //            CreatedDate = DateTime.Now
+            //        };
+            //        await _repository.AddAsync(ACPlanApproval);
+            //    }
+            //}
         }
         [Authorize(Policy = "AcademicPlannings.Create")]
         [HttpGet]
@@ -2008,7 +2187,7 @@ namespace myWebApp.Controllers
                                        from c in _db.Units
                                        from d in _db.AcademicPlannings
                                        from f in _db.Sections
-                                       where c.BookId == a.BookId && b.UnitId == c.UnitId && d.AcademicPlanningsId == b.PlanId && f.SectionId == a.SectionId && f.ClassTeacherId == empId
+                                       where c.BookId == a.BookId && b.UnitId == c.UnitId && d.AcademicPlanningsId == b.PlanId && f.SectionId == a.SectionId && f.ClassTeacherId == empId && d.IsActive == true
                                        select new
                                        {
                                            Status = (
@@ -2039,7 +2218,7 @@ namespace myWebApp.Controllers
                                        from d in _db.AcademicPlannings
                                        from f in _db.Sections
                                        from g in _db.Grades
-                                       where c.BookId == a.BookId && b.UnitId == c.UnitId && d.AcademicPlanningsId == b.PlanId && f.SectionId == a.SectionId && f.GradeId == g.GradeId && g.GradeManagerId == empId
+                                       where c.BookId == a.BookId && b.UnitId == c.UnitId && d.AcademicPlanningsId == b.PlanId && f.SectionId == a.SectionId && f.GradeId == g.GradeId && g.GradeManagerId == empId && d.IsActive == true
                                        select new
                                        {
                                            Status = (
@@ -2071,7 +2250,7 @@ namespace myWebApp.Controllers
                                        from f in _db.Sections
                                        from g in _db.Grades
                                        from h in _db.SchoolSections
-                                       where c.BookId == a.BookId && b.UnitId == c.UnitId && d.AcademicPlanningsId == b.PlanId && f.SectionId == a.SectionId && f.GradeId == g.GradeId && h.SchoolSectionId == g.SchoolSectionId && h.AssistantCoordinatorId == empId
+                                       where c.BookId == a.BookId && b.UnitId == c.UnitId && d.AcademicPlanningsId == b.PlanId && f.SectionId == a.SectionId && f.GradeId == g.GradeId && h.SchoolSectionId == g.SchoolSectionId && h.AssistantCoordinatorId == empId && d.IsActive == true
                                        select new
                                        {
                                            Status = (
@@ -2103,7 +2282,7 @@ namespace myWebApp.Controllers
                                        from f in _db.Sections
                                        from g in _db.Grades
                                        from h in _db.SchoolSections
-                                       where c.BookId == a.BookId && b.UnitId == c.UnitId && d.AcademicPlanningsId == b.PlanId && f.SectionId == a.SectionId && f.GradeId == g.GradeId && h.SchoolSectionId == g.SchoolSectionId
+                                       where c.BookId == a.BookId && b.UnitId == c.UnitId && d.AcademicPlanningsId == b.PlanId && f.SectionId == a.SectionId && f.GradeId == g.GradeId && h.SchoolSectionId == g.SchoolSectionId && d.IsActive == true
                                        select new
                                        {
                                            Status = (
@@ -2125,17 +2304,6 @@ namespace myWebApp.Controllers
                                                          "Rejected").FirstOrDefault(),
                                            MyApproval = _db.PlanApproval.Where(x => x.PlanId == d.AcademicPlanningsId && x.ApprovingPerson == "Deputy Coordinator").Any()
                                        }).Distinct().ToListAsync();
-                //ViewBag.Plans = await (from a in _db.PlanApproval
-                //                       from b in _db.AcademicPlannings
-                //                       where a.PlanId == b.AcademicPlanningsId && b.IsActive == true && a.ApprovingPerson == "Deputy Coordinator" && (a.Status == "Pending" || a.Status == "Rejected")
-                //                       select new
-                //                       {
-                //                           Status = a.Status,
-                //                           PlanName = b.PlanName,
-                //                           PlannedBy = b.PlannedBy,
-                //                           AcademicPlanningsId = b.AcademicPlanningsId,
-                //                           IsActive = a.IsActive
-                //                       }).ToListAsync();
             }
             else
             {
@@ -2167,18 +2335,7 @@ namespace myWebApp.Controllers
                                                          appr.Status == "Approved" ? "Approved" :
                                                          "Rejected").FirstOrDefault(),
                                            MyApproval = _db.PlanApproval.Where(x => x.PlanId == d.AcademicPlanningsId && x.ApprovingPerson == "Director Academics").Any()
-                                       }).Distinct().ToListAsync();
-                //ViewBag.Plans = await (from a in _db.PlanApproval
-                //                       from b in _db.AcademicPlannings
-                //                       where a.PlanId == b.AcademicPlanningsId && b.IsActive == true && a.Status == "Pending"
-                //                       select new
-                //                       {
-                //                           Status = a.Status,
-                //                           PlanName = b.PlanName,
-                //                           PlannedBy = b.PlannedBy,
-                //                           AcademicPlanningsId = b.AcademicPlanningsId,
-                //                           IsActive = a.IsActive
-                //                       }).ToListAsync();
+                                       }).Distinct().OrderBy(x => x.IsActive).ToListAsync();
             }
             return View();
         }
@@ -2202,14 +2359,11 @@ namespace myWebApp.Controllers
                     };
                     await _repository.AddAsync(approval);
                     prevApprovalRequest.ModifiedBy = User.FindFirst(ClaimTypes.Role)?.Value;
-                    int GMID = Convert.ToInt16((from a in _db.UnitAllocations
-                                                from b in _db.Units
-                                                from c in _db.Books
-                                                from d in _db.SubjectTeacherAllocations
-                                                from e in _db.Sections
-                                                from f in _db.Grades
-                                                where a.PlanId == calendarVM.PlanId && b.UnitId == a.UnitId && c.BookId == b.BookId && d.BookId == c.BookId && e.SectionId == d.SectionId && f.GradeId == e.GradeId
-                                                select f.GradeManagerId).FirstOrDefault());
+                    int GMID = Convert.ToInt16((from a in _db.AcademicPlannings
+                                                from b in _db.Sections
+                                                from c in _db.Grades
+                                                where a.AcademicPlanningsId == calendarVM.PlanId && b.SectionId == a.ClassId && b.GradeId == c.GradeId && a.IsActive == true && b.IsActive == true && c.IsActive == true
+                                                select c.GradeManagerId).FirstOrDefault());
                     var GradeManager = await _db.Employees.Where(x => x.EmployeeId == GMID).FirstOrDefaultAsync();
                     var CTPlanApproval = new PlanApproval
                     {
@@ -2223,7 +2377,7 @@ namespace myWebApp.Controllers
                     await _repository.AddAsync(CTPlanApproval);
                     if (await _repository.SaveChanges())
                     {
-                        return RedirectToAction("AcademicPlannings");
+                        return RedirectToAction("PlanApprovals");
                     }
                     ModelState.AddModelError("", "Error While Saving in Database!");
                 }
@@ -2240,15 +2394,12 @@ namespace myWebApp.Controllers
                         Status = calendarVM.PlanStatus,
                     };
                     await _repository.AddAsync(approval);
-                    int ACID = Convert.ToInt16((from a in _db.UnitAllocations
-                                                from b in _db.Units
-                                                from c in _db.Books
-                                                from d in _db.SubjectTeacherAllocations
-                                                from e in _db.Sections
-                                                from f in _db.Grades
-                                                from g in _db.SchoolSections
-                                                where a.PlanId == calendarVM.PlanId && b.UnitId == a.UnitId && c.BookId == b.BookId && d.BookId == c.BookId && e.SectionId == d.SectionId && f.GradeId == e.GradeId && g.SchoolSectionId == f.SchoolSectionId
-                                                select g.AssistantCoordinatorId).FirstOrDefault());
+                    int ACID = Convert.ToInt16((from a in _db.AcademicPlannings
+                                                from b in _db.Sections
+                                                from c in _db.Grades
+                                                from d in _db.SchoolSections
+                                                where a.AcademicPlanningsId == calendarVM.PlanId && b.SectionId == a.ClassId && b.GradeId == c.GradeId && d.SchoolSectionId == c.SchoolSectionId && d.IsActive == true && a.IsActive == true && b.IsActive == true && c.IsActive == true
+                                                select d.AssistantCoordinatorId).FirstOrDefault());
                     var GradeManager = await _db.Employees.Where(x => x.EmployeeId == ACID).FirstOrDefaultAsync();
                     var GMPlanApproval = new PlanApproval
                     {
@@ -2262,7 +2413,7 @@ namespace myWebApp.Controllers
                     await _repository.AddAsync(GMPlanApproval);
                     if (await _repository.SaveChanges())
                     {
-                        return RedirectToAction("AcademicPlannings");
+                        return RedirectToAction("PlanApprovals");
                     }
                     ModelState.AddModelError("", "Error While Saving in Database!");
                 }
@@ -2296,7 +2447,7 @@ namespace myWebApp.Controllers
                     await _repository.AddAsync(ACPlanApproval);
                     if (await _repository.SaveChanges())
                     {
-                        return RedirectToAction("AcademicPlannings");
+                        return RedirectToAction("PlanApprovals");
                     }
                     ModelState.AddModelError("", "Error While Saving in Database!");
                 }
@@ -2330,7 +2481,7 @@ namespace myWebApp.Controllers
                     await _repository.AddAsync(DCPlanApproval);
                     if (await _repository.SaveChanges())
                     {
-                        return RedirectToAction("AcademicPlannings");
+                        return RedirectToAction("PlanApprovals");
                     }
                     ModelState.AddModelError("", "Error While Saving in Database!");
                 }
@@ -2351,7 +2502,7 @@ namespace myWebApp.Controllers
                     await _repository.UpdateAsync(prevApprovalRequest);
                     if (await _repository.SaveChanges())
                     {
-                        return RedirectToAction("AcademicPlannings");
+                        return RedirectToAction("PlanApprovals");
                     }
                     ModelState.AddModelError("", "Error While Saving in Database!");
                 }
@@ -2370,7 +2521,7 @@ namespace myWebApp.Controllers
             await _repository.AddAsync(ApprovalRequest);
             if (await _repository.SaveChanges())
             {
-                return RedirectToAction("AcademicPlannings");
+                return RedirectToAction("PlanApprovals");
             }
             ModelState.AddModelError("", "Error While Saving in Database!");
             return View(calendarVM);
@@ -2432,15 +2583,7 @@ namespace myWebApp.Controllers
         //                    }).Distinct();
         //    return Json(sections);
         //}
-        //public JsonResult GetSubjects(int SectionId)
-        //{
-        //    var subjects = (from b in _db.Books
-        //                    from c in _db.Units
-        //                    from d in _db.UnitAllocations
-        //                    from f in _db.Sections
-        //                    where f.SectionId == SectionId && f.GradeId == b.GradeId && c.BookId == b.BookId && d.UnitId == c.UnitId).toli
-        //    return Json(subjects);
-        //}
+
         //public JsonResult GetBooks(int SubjectId, int GradeId)
         //{
         //    IQueryable classes;
@@ -2468,13 +2611,13 @@ namespace myWebApp.Controllers
         #endregion
 
         #region Dynamic-Data
-
-        public async Task<JsonResult> GetBooks(int SectionId)
+        public async Task<JsonResult> GetBooks(int SubjectId)
         {
             int empId = Convert.ToInt16(User.FindFirst(ClaimTypes.Sid)?.Value);
             var books = await (from a in _db.SubjectTeacherAllocations
                                from b in _db.Books
-                               where a.SectionId == SectionId && a.EmployeeId == empId && b.BookId == a.BookId
+                               from c in _db.Subjects
+                               where a.EmployeeId == empId && b.BookId == a.BookId && c.SubjectId == b.SubjectId && c.SubjectId == SubjectId && b.IsActive == true
                                select new
                                {
                                    BookId = b.BookId,
@@ -2482,26 +2625,73 @@ namespace myWebApp.Controllers
                                }).Distinct().ToListAsync();
             return Json(books);
         }
-
-        public async Task<JsonResult> GetUnits(int BookId)
+        public async Task<JsonResult> GetUnits(int PlanId)
         {
-            var units = await _db.Units.Where(x => x.BookId == BookId).Distinct().ToListAsync();
+            var units = await (from a in _db.AcademicPlannings
+                               from b in _db.Units
+                               from c in _db.UnitAllocations
+                               where a.AcademicPlanningsId == PlanId && b.BookId == a.BookId && c.UnitId == b.UnitId && b.IsActive == true
+                               select b).OrderBy(x => x.UnitName).Distinct().ToListAsync();
+            //var units = await (from a in _db.AcademicPlannings
+            //                   from c in _db.Units
+            //                   where a.AcademicPlanningsId == PlanId && c.BookId == a.BookId && a.IsActive == true && c.IsActive == true
+            //                   select c).Distinct().ToListAsync();
             return Json(units);
         }
-        public async Task<JsonResult> GetChapters(int UnitId)
+        public async Task<JsonResult> GetChapters(int UnitId, int PlanId)
         {
-            var chapters = await _db.chapters.Where(x => x.UnitId == UnitId).Distinct().ToListAsync();
-            return Json(chapters);
+            int empId = Convert.ToInt16(User.FindFirst(ClaimTypes.Sid)?.Value);
+            var chaps = await (from a in _db.AcademicPlannings
+                               from b in _db.Books
+                               from c in _db.Units
+                               from d in _db.UnitAllocations
+                               from e in _db.chapters
+                               from f in _db.ChapterAllocations
+                               where a.EmployeeId == empId && a.AcademicPlanningsId == PlanId && b.BookId == a.BookId && c.BookId == b.BookId && d.UnitId == c.UnitId && e.UnitId == d.UnitId && f.ChapterId == e.ChapterId && e.UnitId == UnitId && c.IsActive == true && d.IsActive == true && e.IsActive == true
+                               select e).Distinct().OrderBy(x => x.ChapterName).ToListAsync();
+            return Json(chaps);
         }
-        public async Task<JsonResult> GetTopics(int ChapterId)
+        public async Task<JsonResult> GetTopics(int ChapterId, int PlanId, int UnitId)
         {
-            var topics = await _db.topics.Where(x => x.ChapterId == ChapterId).Distinct().ToListAsync();
+            int empId = Convert.ToInt16(User.FindFirst(ClaimTypes.Sid)?.Value);
+            //var topics = await (from z in _db.topics
+            //                      from a in _db.chapters
+            //                      from b in _db.UnitAllocations
+            //                      from c in _db.Units
+            //                      from e in _db.Books
+            //                      from f in _db.AcademicPlannings
+            //                      where z.ChapterId == a.ChapterId && a.UnitId == b.UnitId && c.UnitId == b.UnitId && e.BookId == c.BookId && f.BookId == e.BookId && f.AcademicPlanningsId == plan.AcademicPlanningsId && f.IsActive == true && a.IsActive == true
+            //                      select z).OrderBy(x => x.TopicName).Distinct().ToListAsync();
+            //var topics = await _db.topics.Where(x => x.ChapterId == ChapterId).Distinct().ToListAsync();
+            var topics = await (from a in _db.AcademicPlannings
+                                from b in _db.Books
+                                from c in _db.Units
+                                from d in _db.UnitAllocations
+                                from e in _db.chapters
+                                from f in _db.ChapterAllocations
+                                from g in _db.topics
+                                from h in _db.TopicAllocations
+                                where a.EmployeeId == empId && a.AcademicPlanningsId == PlanId && b.BookId == a.BookId && c.BookId == b.BookId && d.UnitId == c.UnitId && e.UnitId == d.UnitId && f.ChapterId == e.ChapterId && g.ChapterId == f.ChapterId && h.TopicId == g.TopicId && c.UnitId == UnitId && e.ChapterId == ChapterId && c.IsActive == true && d.IsActive == true && e.IsActive == true && g.IsActive == true
+                                select g).Distinct().OrderBy(x => x.TopicName).ToListAsync();
             return Json(topics);
         }
         public async Task<JsonResult> GetSubTopics(int TopicId)
         {
             var SubTopics = await _db.subTopics.Where(x => x.TopicId == TopicId).Distinct().ToListAsync();
             return Json(SubTopics);
+        }
+        public async Task<JsonResult> GetSubjects(int ClasssId)
+        {
+            //var plan = await _db.AcademicPlannings.Where(x => x.AcademicPlanningsId == PlanId).FirstOrDefaultAsync();
+            int empId = Convert.ToInt16(User.FindFirst(ClaimTypes.Sid).Value);
+            var subjects = await (from a in _db.SubjectTeacherAllocations
+                                  join b in _db.Books on a.BookId equals b.BookId into EmpBooks
+                                  from EBs in EmpBooks.DefaultIfEmpty()
+                                  join c in _db.Subjects on EBs.SubjectId equals c.SubjectId into BookSubs
+                                  from BSs in BookSubs.DefaultIfEmpty()
+                                  where a.EmployeeId == empId && a.SectionId == ClasssId && BSs.IsActive == true
+                                  select BSs).Distinct().ToListAsync();
+            return Json(subjects);
         }
         #endregion
     }

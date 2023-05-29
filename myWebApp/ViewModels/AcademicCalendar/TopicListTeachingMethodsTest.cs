@@ -1,15 +1,20 @@
-﻿namespace myWebApp.ViewModels.AcademicCalendar
+﻿using Infrastructure.Data;
+using Infrastructure.Repositories;
+using myWebApp.Controllers;
+using myWebApp.ViewModels.BookAllocation;
+using System.ComponentModel.DataAnnotations;
+
+namespace myWebApp.ViewModels.AcademicCalendar
 {
-    public class TopicListTeachingMethods
+    public class TopicListTeachingMethodsTest
     {
         public int? TopicId { get; set; }
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
         public string? TeachingMethodology { get; set; }
-        public int? TeachingMethodologyId { get; set; }
         public string? TeachingMethodologyDesc { get; set; }
         //public bool IsSelected { get; set; } = false;
-        public string? Check { get; set; } = "No";
+        public bool Check { get; set; } = false;
         //public bool? preAllocation { get; set; } = false;
         public int? WorkBookId { get; set; }
         public int? WorkBookStartPage { get; set; }

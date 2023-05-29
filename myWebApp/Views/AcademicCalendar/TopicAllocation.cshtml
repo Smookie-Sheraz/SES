@@ -1,256 +1,136 @@
-﻿@model myWebApp.ViewModels.AcademicCalendar.TopicAllocationVM
-@section styles{
-    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.0/themes/smoothness/jquery-ui.css">
-}
+﻿@model myWebApp.ViewModels.AcademicCalendar.TopicAllocationTestVM
 <div class="main-panel">
     <div class="content-wrapper">
-        @if (Model.ChapterId == null)
-        {
-            <form method="get"
-              asp-controller="AcademicCalendar" asp-action="TopicAllocation">
-                <div class="row">
-                    <input type="hidden" asp-for="YearId" />
-                    <input type="hidden" asp-for="TermId" />
-                    <div class="col-md-3 text-center">
-                        <div class="form-group">
-                            <label asp-for="SectionId">Classes</label>
-                            <select asp-for="SectionId" class="form-select" onchange="GetBooks(this.id)" aria-label="Default select example">
-                                <option selected>Select Class Please</option>
-                                @foreach (var sSection in ViewBag.TeachingClasses)
-                                {
-                                    <option value="@sSection.ClassId">@sSection.ClassName</option>
-                                }
-                            </select>
-                            <span asp-validation-for="SectionId" class="text-danger"></span>
-                        </div>
-                    </div>
-                    <div class="col-md-3 text-center">
-                        <div class="form-group">
-                            <label asp-for="BookId">Books</label>
-                            <select asp-for="BookId" class="form-select" onchange="GetUnits(this.id)" aria-label="Default select example">
-                                <option selected>Select Class First!</option>
-                            </select>
-                            <span asp-validation-for="BookId" class="text-danger"></span>
-                        </div>
-                    </div>
-                    <div class="col-md-3 text-center">
-                        <div class="form-group">
-                            <label asp-for="UnitId">Units</label>
-                            <select asp-for="UnitId" class="form-select" onchange="GetChapters(this.id)" aria-label="Default select example">
-                                <option selected>Select Book First!</option>
-                            </select>
-                            <span asp-validation-for="UnitId" class="text-danger"></span>
-                        </div>
-                    </div>
-                    <div class="col-md-3 text-center">
-                        <div class="form-group">
-                            <label asp-for="ChapterId">Chapters</label>
-                            <select asp-for="ChapterId" class="form-select" aria-label="Default select example">
-                                <option selected>Select Unit First!</option>
-                            </select>
-                            <span asp-validation-for="ChapterId" class="text-danger"></span>
-                        </div>
-                    </div>
-                    <div class="col-md-3 text-center">
-                        <div class="form-group">
-                            <label>Plans</label>
-                            <select asp-for="PlanId" class="form-select" aria-label="Default select example">
-                                <option selected>Select Plan Please</option>
-                                @foreach (var Plan in ViewBag.Plans)
-                                {
-                                    <option value="@Plan.AcademicPlanningsId">@Plan.PlanName</option>
-                                }
-                            </select>
-                            <span asp-validation-for="PlanId" class="text-danger"></span>
-                        </div>
-                    </div>
-                    <div class="col-md-3 text-center">
-                        <div class="form-group">
-                            <div class="form-check">
-                                <label class="form-check-label">
-                                    <input type="hidden" asp-for="AreSaturdaysOff" />
-                                    <input type="checkbox" class="form-check-input" asp-for="AreSaturdaysOff" />
-                                    Are Saturdays Off?
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-2 text-center">
-                        <button class="btn btn-primary mt-4" type="submit">Find Topics</button>
-                    </div>
-                </div>
-            </form>
-        }
-        else
-        {
-            <form method="post" asp-controller="AcademicCalendar" asp-action="TopicAllocation">
-                <div class="row">
-                    <input type="hidden" asp-for="PlanId" />
-                    <input type="hidden" asp-for="AreSaturdaysOff" />
-                    <div class="col-12 grid-margin stretch-card">
-                        <div class="card">
-                            <div class="card-body">
-                                <h4 class="card-title">Topics of Chapter: <label class="badge badge-success">@ViewBag.ChapterName</label></h4>
-                                @*<p class="card-description">
+        <form method="post" asp-controller="AcademicCalendar" asp-action="TopicAllocation">
+            <div class="row">
+                <input type="hidden" asp-for="PlanId" />
+                <input type="hidden" asp-for="YearId" />
+                <input type="hidden" asp-for="TermId" />
+                <input type="hidden" asp-for="TeachingMethodologyId" />
+                <div class="col-12 grid-margin stretch-card">
+                    <div class="card">
+                        <div class="card-body">
+                            <h4 class="card-title">Topics of Chapter: <label class="badge badge-success">@ViewBag.ChapterName</label></h4>
+                            @*<p class="card-description">
                             The Books allocated to the @ViewBag.Month !
                             </p>*@
-                                <div class="row">
-                                    <div class="col-12">
-                                        <div class="table-responsive">
-                                            @if (Model.Topics.Any())
-                                            {
-                                                <table class="table table-hover" id="TopicsTable">
-                                                    <thead>
-                                                        <tr>
-                                                            <th colspan="2">Book Name: <label class="badge badge-success">@ViewBag.CalendarName</label></th>
-                                                            <th colspan="2">Term Name: <label class="badge badge-success">@ViewBag.TermName</label></th>
-                                                            <th colspan="2">Book Name: <label class="badge badge-success">@ViewBag.BookName</label></th>
-                                                            <th colspan="2">Unit Name: <label class="badge badge-success">@ViewBag.UnitName</label></th>
-                                                        </tr>
-                                                        <tr>
-                                                            @*<th></th>*@
-                                                            <th colspan="7">Topic Name</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        <tr class="d-none">
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="table-responsive">
+                                        @if (Model.Topics.Any())
+                                        {
+                                            <table class="table table-hover" id="TopicsTable">
+                                                <thead>
+                                                    <tr>
+                                                        <th colspan="1">Calendar Name: <label class="badge badge-success">@ViewBag.CalendarName</label></th>
+                                                        <th colspan="1">Term Name: <label class="badge badge-success">@ViewBag.TermName</label></th>
+                                                        <th colspan="2">Book Name: <label class="badge badge-success">@ViewBag.BookName</label></th>
+                                                        <th colspan="2">Unit Name: <label class="badge badge-success">@ViewBag.UnitName</label></th>
+                                                        <th colspan="1">Teaching Methodology Name: <label class="badge badge-success">@ViewBag.TMName</label></th>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Topic Name</th>
+                                                        <th>Start Date</th>
+                                                        <th>End Date</th>
+                                                        @*<th>Teaching Method</th>*@
+                                                        <th>Teaching Method Description</th>
+                                                        <th>WB Start Page</th>
+                                                        <th>WB End Page</th>
+                                                        <th>Selection</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr class="d-none">
+                                                        <td colspan="7">
+                                                            <input type="hidden" asp-for="YearId" />
+                                                            <input type="hidden" asp-for="TermId" />
+                                                            <input type="hidden" asp-for="ChapterId" />
+                                                        </td>
+                                                    </tr>
+                                                    @for (var i = 0; i < Model.Topics.Count(); i++)
+                                                    {
+                                                        <tr class="tb-data">
+                                                            <td>@Model.Topics[i].TopicName</td>
                                                             <td>
-                                                                <input type="hidden" asp-for="YearId" />
+                                                                <div class="form-group">
+                                                                    <input type="date" class="form-control text-center start-date" oninput="check(this.id)" asp-for="@Model.Topics[i].StartDate" placeholder="Enter Start Date" min="@Convert.ToDateTime(@Model.MinDate).ToString("yyyy-MM-dd")" max="@Convert.ToDateTime(Model.MaxDate).ToString("yyyy-MM-dd")">
+                                                                    <span asp-validation-for="@Model.Topics[i].StartDate" class="text-danger"></span>
+                                                                </div>
                                                             </td>
                                                             <td>
-                                                                <input type="hidden" asp-for="TermId" />
-                                                                <input type="hidden" asp-for="ChapterId" />
+                                                                <div class="form-group">
+                                                                    <input type="date" class="form-control text-center end-date" asp-for="@Model.Topics[i].EndDate" placeholder="Enter End Date" min="@Convert.ToDateTime(Model.MinDate).ToString("yyyy-MM-dd")" max="@Convert.ToDateTime(Model.MaxDate).ToString("yyyy-MM-dd")">
+                                                                    <span asp-validation-for="@Model.Topics[i].EndDate" class="text-danger"></span>
+                                                                </div>
                                                             </td>
-                                                        </tr>
-                                                        @for (var i = 0; i < Model.Topics.Count(); i++)
-                                                        {
-                                                            <tr class="tb-data">
-                                                                <td colspan="7"><button onclick="CollapseButton(this.id)" id="Button-Topic-@Model.Topics[i].TopicId" class="btn btn-primary text-white" type="button" data-toggle="collapse" data-target=".Topic-@Model.Topics[i].TopicId" aria-expanded="false" aria-controls="Topic-@Model.Topics[i].TopicId">@Model.Topics[i].TopicName</button></td>
-                                                                @*<td>@Model.Topics[i].TopicName</td>*@
-                                                                @*<td>
-                                                                    <table>
-                                                                        <thead>
-                                                                            <tr>
-                                                                                <th>Start Date</th>
-                                                                                <th>End Date</th>
-                                                                                <th>Teaching Method</th>
-                                                                                <th>Teaching Method Description</th>
-                                                                                <th>WB Start Page</th>
-                                                                                <th>WB End Page</th>
-                                                                                <th>Selection</th>
-                                                                            </tr>
-                                                                        </thead>
-                                                                        <tbody>*@
-                                                                            
-                                                                        @*</tbody>
-                                                                    </table>
-                                                                </td>*@
-                                                            </tr>
-                                                            @for (int j = 0; j < Model.Topics[i].TeachingMethods.Count(); j++)
+                                                            <td>
+                                                                <div class="form-group">
+                                                                    <input type="text" class="form-control" asp-for="@Model.Topics[i].TeachingMethodologyDesc" placeholder="Enter Teaching Method Description" />
+                                                                    <span asp-validation-for="@Model.Topics[i].TeachingMethodologyDesc" class="text-danger"></span>
+                                                                </div>
+                                                            </td>
+                                                            @if (Model.Topics[i].WBMinPage == null || Model.Topics[i].WBMaxPage == null)
                                                             {
-                                                                <tr class="collapse Topic-@Model.Topics[i].TeachingMethods[j].TopicId">
-                                                                    <td>
-                                                                        <div class="form-group">
-                                                                            <input type="date" class="form-control text-center start-date" oninput="check(this.id)" asp-for="@Model.Topics[i].TeachingMethods[j].StartDate" placeholder="Enter Start Date" min="@Convert.ToDateTime(@Model.Topics[i].ChapterStartDate).ToString("yyyy-MM-dd")" max="@Convert.ToDateTime(Model.Topics[i].ChapterEndDate).ToString("yyyy-MM-dd")">
-                                                                            <span asp-validation-for="@Model.Topics[i].TeachingMethods[j].StartDate" class="text-danger"></span>
-                                                                        </div>
-                                                                    </td>
-                                                                <input type="hidden" asp-for="Topic-@Model.Topics[i].TeachingMethods[j].TopicId">
-                                                                    <td>
-                                                                        <div class="form-group">
-                                                                            <input type="date" class="form-control text-center end-date" asp-for="@Model.Topics[i].TeachingMethods[j].EndDate" placeholder="Enter End Date" min="@Convert.ToDateTime(Model.Topics[i].ChapterStartDate).ToString("yyyy-MM-dd")" max="@Convert.ToDateTime(Model.Topics[i].ChapterEndDate).ToString("yyyy-MM-dd")">
-                                                                            <span asp-validation-for="@Model.Topics[i].TeachingMethods[j].EndDate" class="text-danger"></span>
-                                                                        </div>
-                                                                    </td>
-                                                                    <td>
-                                                                        <div class="form-group">
-                                                                            <select asp-for="@Model.Topics[i].TeachingMethods[j].TeachingMethodologyId" class="form-select" aria-label="Default select example">
-                                                                                <option selected>Choose Teaching Methodology Please</option>
-                                                                                @foreach (var TMethod in ViewBag.TMethods)
-                                                                                {
-                                                                                    <option value="@TMethod.TeachingMethodologyId">@TMethod.TMethodologyName</option>
-                                                                                }
-                                                                            </select>
-
-                                                                        </div>
-                                                                    </td>
-                                                                    <td>
-                                                                        <div class="form-group">
-                                                                            <input type="text" class="form-control" asp-for="@Model.Topics[i].TeachingMethods[j].TeachingMethodologyDesc" placeholder="Enter Teaching Method Description" />
-                                                                            <span asp-validation-for="@Model.Topics[i].TeachingMethods[j].TeachingMethodologyDesc" class="text-danger"></span>
-                                                                        </div>
-                                                                    </td>
-                                                                    @if (Model.Topics[i].TeachingMethods[j].WBMinPage == null || Model.Topics[i].TeachingMethods[j].WBMaxPage == null)
-                                                                    {
-                                                                        <td>
-                                                                            <div class="form-group">
-                                                                                <input type="number" disabled min="@Model.Topics[i].TeachingMethods[j].WBMinPage" max="@Model.Topics[i].TeachingMethods[j].WBMaxPage" class="form-control text-center" asp-for="@Model.Topics[i].TeachingMethods[j].WorkBookStartPage" placeholder="Enter Start Page" />
-                                                                                <span asp-validation-for="@Model.Topics[i].TeachingMethods[j].WorkBookStartPage" class="text-danger"></span>
-                                                                            </div>
-                                                                        </td>
-                                                                        <td>
-                                                                            <div class="form-group">
-                                                                                <input type="number" disabled min="@Model.Topics[i].TeachingMethods[j].WBMinPage" max="@Model.Topics[i].TeachingMethods[j].WBMaxPage" class="form-control text-center" asp-for="@Model.Topics[i].TeachingMethods[j].WorkBookEndPage" placeholder="Enter Start Page" />
-                                                                                <span asp-validation-for="@Model.Topics[i].TeachingMethods[j].WorkBookEndPage" class="text-danger"></span>
-                                                                            </div>
-                                                                        </td>
-                                                                    }
-                                                                    else
-                                                                    {
-                                                                        <td>
-                                                                            <div class="form-group">
-                                                                                <input type="number" min="@Model.Topics[i].TeachingMethods[j].WBMinPage" max="@Model.Topics[i].TeachingMethods[j].WBMaxPage" class="form-control text-center" asp-for="@Model.Topics[i].TeachingMethods[j].WorkBookStartPage" placeholder="Enter Start Page" />
-                                                                                <span asp-validation-for="@Model.Topics[i].TeachingMethods[j].WorkBookStartPage" class="text-danger"></span>
-                                                                            </div>
-                                                                        </td>
-                                                                        <td>
-                                                                            <div class="form-group">
-                                                                                <input type="number" min="@Model.Topics[i].TeachingMethods[j].WBMinPage" max="@Model.Topics[i].TeachingMethods[j].WBMaxPage" class="form-control text-center" asp-for="@Model.Topics[i].TeachingMethods[j].WorkBookEndPage" placeholder="Enter Start Page" />
-                                                                                <span asp-validation-for="@Model.Topics[i].TeachingMethods[j].WorkBookEndPage" class="text-danger"></span>
-                                                                            </div>
-                                                                        </td>
-                                                                    }
-                                                                    <td>
-                                                                        <div class="form-check">
-                                                                            <label class="form-check-label">
-                                                                                <input type="hidden" asp-for="@Model.Topics[i].TopicId" />
-                                                                                @if ((bool)Model.Topics[i].TeachingMethods[j].preAllocation)
-                                                                                {
-                                                                                    <input type="checkbox" class="form-check-input" checked asp-for="@Model.Topics[i].TeachingMethods[j].IsSelected" />
-                                                                                }
-                                                                                else
-                                                                                {
-                                                                                    <input type="checkbox" class="form-check-input" asp-for="@Model.Topics[i].TeachingMethods[j].IsSelected" />
-                                                                                }
-                                                                                Select
-                                                                            </label>
-                                                                        </div>
-                                                                    </td>
-                                                                </tr>
+                                                                <td>
+                                                                    <div class="form-group">
+                                                                        <input type="number" disabled min="@Model.Topics[i].WBMinPage" max="@Model.Topics[i].WBMaxPage" class="form-control text-center" asp-for="@Model.Topics[i].WorkBookStartPage" placeholder="Enter Start Page" />
+                                                                        <span asp-validation-for="@Model.Topics[i].WorkBookStartPage" class="text-danger"></span>
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    <div class="form-group">
+                                                                        <input type="number" disabled min="@Model.Topics[i].WBMinPage" max="@Model.Topics[i].WBMaxPage" class="form-control text-center" asp-for="@Model.Topics[i].WorkBookEndPage" placeholder="Enter Start Page" />
+                                                                        <span asp-validation-for="@Model.Topics[i].WorkBookEndPage" class="text-danger"></span>
+                                                                    </div>
+                                                                </td>
                                                             }
-                                                        }
-                                                    </tbody>
-                                                </table>
-                                            }
-                                            else
-                                            {
-                                                <h3>Please Allocate Chapter(s) to The month First!</h3>
-                                            }
-                                        </div>
+                                                            else
+                                                            {
+                                                                <td>
+                                                                    <div class="form-group">
+                                                                        <input type="number" min="@Model.Topics[i].WBMinPage" max="@Model.Topics[i].WBMaxPage" class="form-control text-center" asp-for="@Model.Topics[i].WorkBookStartPage" placeholder="Enter Start Page" />
+                                                                        <span asp-validation-for="@Model.Topics[i].WorkBookStartPage" class="text-danger"></span>
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    <div class="form-group">
+                                                                        <input type="number" min="@Model.Topics[i].WBMinPage" max="@Model.Topics[i].WBMaxPage" class="form-control text-center" asp-for="@Model.Topics[i].WorkBookEndPage" placeholder="Enter Start Page" />
+                                                                        <span asp-validation-for="@Model.Topics[i].WorkBookEndPage" class="text-danger"></span>
+                                                                    </div>
+                                                                </td>
+                                                            }
+                                                            <td>
+                                                                        <input type="hidden" asp-for="@Model.Topics[i].TopicId" />
+                                                                <div class="form-check">
+                                                                    <label class="form-check-label">
+                                                                        <input type="checkbox" class="form-check-input" asp-for="@Model.Topics[i].Check" />
+                                                                        Select
+                                                                    </label>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        }
+                                        else
+                                        {
+                                            <h3>Please Allocate Chapter(s) to The month First!</h3>
+                                        }
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    @if (Model.Topics.Count() > 0)
-                    {
-                        <div class="col-2 offset-10">
-                            <button type="submit" asp-for="TopicAllocation(@Model.Topics)" class="btn btn-primary mr-2">Allocate</button>
-                        </div>
-                    }
                 </div>
-            </form>
-        }
+                @if (Model.Topics.Count() > 0)
+                {
+                    <div class="col-2 offset-10">
+                        <button type="submit" asp-for="TopicAllocation(@Model.Topics)" class="btn btn-primary mr-2">Allocate</button>
+                    </div>
+                }
+            </div>
+        </form>
     </div>
 </div>
 
@@ -280,8 +160,6 @@
     </script>
 }*@
 @section scripts{
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://code.jquery.com/ui/1.13.0/jquery-ui.min.js"></script>
     <script>
         $(document).ready(function () {
             $('#TopicsTable').DataTable({
@@ -291,35 +169,5 @@
                 },
             });
         });
-        var areSaturdaysOff = @Html.Raw(Json.Serialize(Model.AreSaturdaysOff));
-        $(function (areSaturdaysOff) {
-            if (areSaturdaysOff == true) {
-                $(".datepicker").each(function () {
-                    var minDate = new Date($(this).attr("min"));
-                    var maxDate = new Date($(this).attr("max"));
-                    $(this).datepicker({
-                        defaultDate: new Date(),
-                        dateFormat: "dd-mm-yy",
-                        beforeShowDay: function (date) {
-                            return [date >= minDate && date <= maxDate && date.getDay() !== 0 && date.getDay() !== 6];
-                        }
-                    });
-                });
-            }
-            else {
-                $(".datepicker").each(function () {
-                    var minDate = new Date($(this).attr("min"));
-                    var maxDate = new Date($(this).attr("max"));
-                    $(this).datepicker({
-                        defaultDate: new Date(),
-                        dateFormat: "dd-mm-yy",
-                        beforeShowDay: function (date) {
-                            return [date >= minDate && date <= maxDate && date.getDay() !== 0];
-                        }
-                    });
-                });
-            }
-        });
     </script>
-    <script src="~/js/custom.js"></script>
 }

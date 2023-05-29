@@ -29,18 +29,6 @@ namespace myWebApp.Controllers
         [HttpGet]
         public async Task< IActionResult >Index()
         {
-            //var roles = from a in _db.Employees
-            //            join b in _db.Roles on a.RoleId equals b.RoleId into empRole
-            //            from role in empRole.DefaultIfEmpty()
-            //            where (role.RollName == 'Assistant Teacher' || role.RollName == 'Grade Manager' || role.RollName == 'Class Teacher') 
-            ////var roles = await _db.Employees.Where(x => x.IsActive == true).ToListAsync();
-            //foreach (var per in roles)
-            //{
-            //    per.SchoolSectionId = 1;
-            //}
-            //_db.UpdateRange(roles);
-            //await _repository.SaveChanges();
-            var books = await _db.Books.Where(x => x.GradeId == null).ToListAsync();
             ClaimsPrincipal claim = HttpContext.User;
             if (claim.Identity.IsAuthenticated) RedirectToAction("Index", "Director");
             return View();
@@ -52,7 +40,6 @@ namespace myWebApp.Controllers
             var Employee = await _db.Employees.Where(x => x.Email == login.Email).FirstOrDefaultAsync();
             var Parent = await _db.Parents.Where(x => x.Email == login.Email).FirstOrDefaultAsync();
             var Student = await _db.Students.Where(x => x.Email == login.Email).FirstOrDefaultAsync();
-
             ViewBag.LoginStatus = true;
             if (ModelState.IsValid)
             {
@@ -81,8 +68,7 @@ namespace myWebApp.Controllers
                         ClaimsIdentity claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                         AuthenticationProperties authenticationProperties = new AuthenticationProperties()
                         {
-                            AllowRefresh = true,
-                            IsPersistent = true
+                            AllowRefresh = true
                         };
                         await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authenticationProperties);
                         return RedirectToAction("Index", "Director");

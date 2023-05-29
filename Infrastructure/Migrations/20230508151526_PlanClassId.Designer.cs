@@ -4,6 +4,7 @@ using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(SchoolDbContext))]
-    partial class SchoolDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230508151526_PlanClassId")]
+    partial class PlanClassId
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -29,9 +31,6 @@ namespace Infrastructure.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AcademicPlanningsId"), 1L, 1);
-
-                    b.Property<int?>("BookId")
-                        .HasColumnType("int");
 
                     b.Property<int?>("ClassId")
                         .HasColumnType("int");
@@ -76,19 +75,12 @@ namespace Infrastructure.Migrations
                     b.Property<DateTime?>("StartDate")
                         .HasColumnType("date");
 
-                    b.Property<int?>("SubjectId")
-                        .HasColumnType("int");
-
                     b.HasKey("AcademicPlanningsId")
                         .HasName("PK_AcademicPlanning");
-
-                    b.HasIndex("BookId");
 
                     b.HasIndex("ClassId");
 
                     b.HasIndex("EmployeeId");
-
-                    b.HasIndex("SubjectId");
 
                     b.ToTable("AcademicPlanning", (string)null);
                 });
@@ -3737,12 +3729,6 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Entities.Models.AcademicPlannings", b =>
                 {
-                    b.HasOne("Entities.Models.Book", "Book")
-                        .WithMany("AcademicPlannings")
-                        .HasForeignKey("BookId")
-                        .OnDelete(DeleteBehavior.SetNull)
-                        .HasConstraintName("FK_AcademicPlannings_BookId");
-
                     b.HasOne("Entities.Models.Section", "Class")
                         .WithMany("AcademicPlannings")
                         .HasForeignKey("ClassId")
@@ -3755,19 +3741,9 @@ namespace Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.SetNull)
                         .HasConstraintName("FK_AcademicPlannings_EmployeeId");
 
-                    b.HasOne("Entities.Models.Subject", "Subject")
-                        .WithMany("Plans")
-                        .HasForeignKey("SubjectId")
-                        .OnDelete(DeleteBehavior.SetNull)
-                        .HasConstraintName("FK_AcademicPlannings_SubjectId");
-
-                    b.Navigation("Book");
-
                     b.Navigation("Class");
 
                     b.Navigation("Employee");
-
-                    b.Navigation("Subject");
                 });
 
             modelBuilder.Entity("Entities.Models.ACPlanApproval", b =>
@@ -4669,8 +4645,6 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Entities.Models.Book", b =>
                 {
-                    b.Navigation("AcademicPlannings");
-
                     b.Navigation("BookAllocations");
 
                     b.Navigation("ChapterAllocations");
@@ -4879,8 +4853,6 @@ namespace Infrastructure.Migrations
                     b.Navigation("Books");
 
                     b.Navigation("Diaries");
-
-                    b.Navigation("Plans");
 
                     b.Navigation("SubjectAllocations");
 

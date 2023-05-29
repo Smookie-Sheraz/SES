@@ -33,6 +33,7 @@ namespace Entities.Models
         public ICollection<Student> Students { get; set; } = null!;
         public ICollection<STPlanApproval> STPlans { get; set; } = null!;
         public ICollection<StudentAttendance> StudentAttendances { get; set; } = null!;
+        public ICollection<AcademicPlannings> AcademicPlannings { get; set; } = null!;
         public ICollection<Test> Tests { get; set; } = null!;
         public ICollection<Diary> Diaries { get; set; } = null!;
         //public Book Book { get; set; }

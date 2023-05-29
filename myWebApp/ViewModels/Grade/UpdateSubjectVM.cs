@@ -8,6 +8,6 @@ namespace Entities.ViewModels
         public string? SubjectCode { get; set; }
         public string? SubjectName { get; set; }
         [Display(Name = "Status")]
-        public int IsActive { get; set; }
+        public bool IsActive { get; set; }
     }
 }

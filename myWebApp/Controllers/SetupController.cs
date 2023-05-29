@@ -13,6 +13,7 @@ using myWebApp.ViewModels.Setups.School;
 using myWebApp.ViewModels.Setups.Campus;
 using myWebApp.ViewModels.Setups.SchoolSection;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace myWebApp.Controllers
 {
@@ -109,7 +110,8 @@ namespace myWebApp.Controllers
             {
                 return NotFound();
             }
-            await _repository.Delete(temp);
+            temp.IsActive = false;
+            await _repository.UpdateAsync(temp);
             if (await _repository.SaveChanges())
             {
                 return RedirectToAction("School");
@@ -218,7 +220,8 @@ namespace myWebApp.Controllers
             {
                 return NotFound();
             }
-            await _repository.Delete(temp);
+            temp.IsActive = false;
+            await _repository.UpdateAsync(temp);
             if (await _repository.SaveChanges())
             {
                 return RedirectToAction("Campus");
@@ -232,30 +235,133 @@ namespace myWebApp.Controllers
         [HttpGet]
         public async Task<IActionResult> SchoolSection()
         {
+            var userId = Convert.ToInt16(User.FindFirst(ClaimTypes.Sid)?.Value);
             ViewBag.ACs = await (from a in _db.Employees
                           from b in _db.Roles
                           where b.RoleId == a.RoleId && b.RollName == "Assistant Coordinator"
                           select a).ToListAsync();
             SchoolSectionVM sSection = new SchoolSectionVM();
-            sSection.SchoolSections = await (from s in _db.SchoolSections
-                           join c in _db.Campuses on s.CampusId equals c.CampusId into SchoolCampus
-                           from Campus in SchoolCampus.DefaultIfEmpty()
-                           join d in _db.Employees on s.AssistantCoordinatorId equals d.EmployeeId into AssCordinator
-                           from AC in AssCordinator.DefaultIfEmpty()
-                           where s.IsActive == true
-                           select new SchoolSectionVM
-                           {
-                               SectionName = s.SectionName,
-                               SchoolSectionId = s.SchoolSectionId,
-                               PhoneNo = s.PhoneNo,
-                               Email = AC.Email,
-                               CampusName = Campus.CampusName,
-                               address = s.address,
-                               Abbrevation = s.Abbrevation,
-                               SectionHead = AC.FName + " " + AC.LName,
-                               SchoolId = s.SchoolId,
-                               ACId = (int)s.AssistantCoordinatorId
-                           }).ToListAsync(); 
+            if(User.IsInRole("Assistant Coordinator"))
+            {
+                sSection.SchoolSections = await (from s in _db.SchoolSections
+                                                 join c in _db.Campuses on s.CampusId equals c.CampusId into SchoolCampus
+                                                 from Campus in SchoolCampus.DefaultIfEmpty()
+                                                 join d in _db.Employees on s.AssistantCoordinatorId equals d.EmployeeId into AssCordinator
+                                                 from AC in AssCordinator.DefaultIfEmpty()
+                                                 where s.IsActive == true && s.AssistantCoordinatorId == userId
+                                                 select new SchoolSectionVM
+                                                 {
+                                                     SectionName = s.SectionName,
+                                                     SchoolSectionId = s.SchoolSectionId,
+                                                     PhoneNo = s.PhoneNo,
+                                                     Email = AC.Email,
+                                                     CampusName = Campus.CampusName,
+                                                     address = s.address,
+                                                     Abbrevation = s.Abbrevation,
+                                                     SectionHead = AC.FName + " " + AC.LName,
+                                                     SchoolId = s.SchoolId,
+                                                     ACId = (int)s.AssistantCoordinatorId
+                                                 }).Distinct().ToListAsync();
+            }
+            else if (User.IsInRole("Grade Manager"))
+            {
+                sSection.SchoolSections = await (from s in _db.SchoolSections
+                                                 join c in _db.Campuses on s.CampusId equals c.CampusId into SchoolCampus
+                                                 from Campus in SchoolCampus.DefaultIfEmpty()
+                                                 join d in _db.Employees on s.AssistantCoordinatorId equals d.EmployeeId into AssCordinator
+                                                 from AC in AssCordinator.DefaultIfEmpty()
+                                                 join e in _db.Grades on s.SchoolSectionId equals e.SchoolSectionId into SectionGrades
+                                                 from SGs in SectionGrades.DefaultIfEmpty()
+                                                 where s.IsActive == true && SGs.GradeManagerId == userId
+                                                 select new SchoolSectionVM
+                                                 {
+                                                     SectionName = s.SectionName,
+                                                     SchoolSectionId = s.SchoolSectionId,
+                                                     PhoneNo = s.PhoneNo,
+                                                     Email = AC.Email,
+                                                     CampusName = Campus.CampusName,
+                                                     address = s.address,
+                                                     Abbrevation = s.Abbrevation,
+                                                     SectionHead = AC.FName + " " + AC.LName,
+                                                     SchoolId = s.SchoolId,
+                                                     ACId = (int)s.AssistantCoordinatorId
+                                                 }).Distinct().ToListAsync();
+            }
+            else if (User.IsInRole("Class Teacher"))
+            {
+                sSection.SchoolSections = await (from s in _db.SchoolSections
+                                                 join c in _db.Campuses on s.CampusId equals c.CampusId into SchoolCampus
+                                                 from Campus in SchoolCampus.DefaultIfEmpty()
+                                                 join d in _db.Employees on s.AssistantCoordinatorId equals d.EmployeeId into AssCordinator
+                                                 from AC in AssCordinator.DefaultIfEmpty()
+                                                 join e in _db.Grades on s.SchoolSectionId equals e.SchoolSectionId into SectionGrades
+                                                 from SGs in SectionGrades.DefaultIfEmpty()
+                                                 join f in _db.Sections on SGs.GradeId equals f.GradeId into SectionClasses
+                                                 from SCs in SectionClasses.DefaultIfEmpty()
+                                                 where s.IsActive == true && SCs.ClassTeacherId == userId
+                                                 select new SchoolSectionVM
+                                                 {
+                                                     SectionName = s.SectionName,
+                                                     SchoolSectionId = s.SchoolSectionId,
+                                                     PhoneNo = s.PhoneNo,
+                                                     Email = AC.Email,
+                                                     CampusName = Campus.CampusName,
+                                                     address = s.address,
+                                                     Abbrevation = s.Abbrevation,
+                                                     SectionHead = AC.FName + " " + AC.LName,
+                                                     SchoolId = s.SchoolId,
+                                                     ACId = (int)s.AssistantCoordinatorId
+                                                 }).Distinct().ToListAsync();
+            }
+            else if (User.IsInRole("Subject Teacher"))
+            {
+                sSection.SchoolSections = await (from s in _db.SchoolSections
+                                                 join c in _db.Campuses on s.CampusId equals c.CampusId into SchoolCampus
+                                                 from Campus in SchoolCampus.DefaultIfEmpty()
+                                                 join d in _db.Employees on s.AssistantCoordinatorId equals d.EmployeeId into AssCordinator
+                                                 from AC in AssCordinator.DefaultIfEmpty()
+                                                 join e in _db.Grades on s.SchoolSectionId equals e.SchoolSectionId into SectionGrades
+                                                 from SGs in SectionGrades.DefaultIfEmpty()
+                                                 join f in _db.Sections on SGs.GradeId equals f.GradeId into SectionClasses
+                                                 from SCs in SectionClasses.DefaultIfEmpty()
+                                                 join f in _db.SubjectTeacherAllocations on SCs.SectionId equals f.SectionId into SecAlloClasses
+                                                 from CACs in SecAlloClasses.DefaultIfEmpty()
+                                                 where s.IsActive == true && CACs.EmployeeId == userId
+                                                 select new SchoolSectionVM
+                                                 {
+                                                     SectionName = s.SectionName,
+                                                     SchoolSectionId = s.SchoolSectionId,
+                                                     PhoneNo = s.PhoneNo,
+                                                     Email = AC.Email,
+                                                     CampusName = Campus.CampusName,
+                                                     address = s.address,
+                                                     Abbrevation = s.Abbrevation,
+                                                     SectionHead = AC.FName + " " + AC.LName,
+                                                     SchoolId = s.SchoolId,
+                                                     ACId = (int)s.AssistantCoordinatorId
+                                                 }).Distinct().ToListAsync();
+            }
+            else if (User.IsInRole("Director Academics") || User.IsInRole("Deputy Coordinator"))
+            {
+                sSection.SchoolSections = await (from s in _db.SchoolSections
+                                                 join c in _db.Campuses on s.CampusId equals c.CampusId into SchoolCampus
+                                                 from Campus in SchoolCampus.DefaultIfEmpty()
+                                                 join d in _db.Employees on s.AssistantCoordinatorId equals d.EmployeeId into AssCordinator
+                                                 from AC in AssCordinator.DefaultIfEmpty()
+                                                 select new SchoolSectionVM
+                                                 {
+                                                     SectionName = s.SectionName,
+                                                     SchoolSectionId = s.SchoolSectionId,
+                                                     PhoneNo = s.PhoneNo,
+                                                     Email = AC.Email,
+                                                     CampusName = Campus.CampusName,
+                                                     address = s.address,
+                                                     Abbrevation = s.Abbrevation,
+                                                     SectionHead = AC.FName + " " + AC.LName,
+                                                     SchoolId = s.SchoolId,
+                                                     ACId = (int)s.AssistantCoordinatorId
+                                                 }).Distinct().ToListAsync();
+            }
             ViewBag.Campuses = await _db.Campuses.ToListAsync();
             ViewBag.Schools = await _db.Schools.ToListAsync();
             return View(sSection);
@@ -460,7 +566,8 @@ namespace myWebApp.Controllers
             {
                 return NotFound();
             }
-            await _repository.Delete(temp);
+            temp.IsActive = false;
+            await _repository.UpdateAsync(temp);
             if (await _repository.SaveChanges())
             {
                 return RedirectToAction("Department");
@@ -718,7 +825,8 @@ namespace myWebApp.Controllers
             {
                 return NotFound();
             }
-            await _repository.Delete(temp);
+            temp.IsActive = false;
+            await _repository.UpdateAsync(temp);
             if (await _repository.SaveChanges())
             {
                 return RedirectToAction("SubDepartment");
@@ -805,7 +913,8 @@ namespace myWebApp.Controllers
             {
                 return NotFound();
             }
-            await _repository.Delete(temp);
+            temp.IsActive = false;
+            await _repository.UpdateAsync(temp);
             if (await _repository.SaveChanges())
             {
                 return RedirectToAction("Designation");
@@ -926,7 +1035,8 @@ namespace myWebApp.Controllers
             {
                 return NotFound();
             }
-            await _repository.Delete(temp);
+            temp.IsActive = false;
+            await _repository.UpdateAsync(temp);
             if (await _repository.SaveChanges())
             {
                 return RedirectToAction("Head");
@@ -1006,7 +1116,8 @@ namespace myWebApp.Controllers
             {
                 return NotFound();
             }
-            await _repository.Delete(temp);
+            temp.IsActive = false;
+            await _repository.UpdateAsync(temp);
             if (await _repository.SaveChanges())
             {
                 return RedirectToAction("Gender");
@@ -1015,561 +1126,5 @@ namespace myWebApp.Controllers
         }
 
         #endregion
-
-        
-
-                //#region Location-Setup
-        //        public async Task<IActionResult> Location()
-        //        {
-        //            var result = await _repository.GetLocations();
-        //            return View(result);
-        //        }
-        //        [HttpGet]
-        //        public IActionResult AddLocation()
-        //        {
-        //            return View();
-        //        }
-        //        [HttpPost]
-        //        public async Task<IActionResult> AddLocation(AddLocation location)
-        //        {
-        //            if (ModelState.IsValid)
-        //            {
-        //                var newLocation = new Location
-        //                {
-        //                    LocationCode = location.Code,
-        //                    Description = location.Description,
-        //                    ShortDescripiton = location.ShortDescription,
-        //                    IsActive = location.IsActive
-        //                };
-        //                await _repository.AddAsync(newLocation);
-        //                if (await _repository.SaveChanges())
-        //                {
-        //                    return RedirectToAction("Location");
-        //                }
-        //                ModelState.AddModelError("", "Error While Saving to Database");
-        //            }
-        //            return View(location);
-        //        }
-        //        [HttpGet]
-        //        public async Task<IActionResult> UpdateLocation(int id)
-        //        {
-        //            var temp = await _repository.GetLocationById(id);
-        //            if (temp == null)
-        //            {
-        //                return NotFound();
-        //            }
-        //            var Location = new UpdateLocation
-        //            {
-        //                Id = temp.LocationId,
-        //                Code = temp.LocationCode,
-        //                Description = temp.Description,
-        //                ShortDescription = temp.ShortDescripiton,
-        //                IsActive = temp.IsActive
-        //            };
-        //            return View(Location);
-        //        }
-        //        [HttpPost]
-        //        public async Task<IActionResult> UpdateLocation(UpdateLocation location)
-        //        {
-        //            var temp = await _repository.GetLocationById(location.Id);
-        //            if (temp == null)
-        //            {
-        //                return NotFound();
-        //            }
-        //            temp.LocationCode = location.Code;
-        //            temp.Description = location.Description;
-        //            temp.ShortDescripiton = location.ShortDescription;
-        //            temp.IsActive = location.IsActive;
-        //            await _repository.UpdateAsync(temp);
-        //            if (await _repository.SaveChanges())
-        //            {
-        //                return RedirectToAction("Location");
-        //            }
-        //            ModelState.AddModelError("", "Error While Saving to Database");
-        //            return View(location);
-        //        }
-
-        //        [HttpGet]
-        //        public async Task<IActionResult> DeleteLocation(int id)
-        //        {
-        //            var temp = await _repository.GetLocationById(id);
-        //            if (temp == null)
-        //            {
-        //                return NotFound();
-        //            }
-        //            await _repository.Delete(temp);
-        //            if (await _repository.SaveChanges())
-        //            {
-        //                return RedirectToAction("Location");
-        //            }
-        //            return RedirectToAction("Location");
-        //        }
-        //        #endregion
-
-
-
-
-        //        #region Grade-Setup
-
-        //        public async Task<IActionResult> Grade()
-        //        {
-        //            var result = await _repository.GetGrades();
-        //            return View(result);
-        //        }
-
-        //        [HttpGet]
-        //        public async Task<IActionResult> AddGrade()
-        //        {
-        //            ViewBag.Campuses = await _repository.GetCampuses();
-        //            return View();
-        //        }
-        //        [HttpPost]
-        //        public async Task<IActionResult> AddGrade(Setup Grade)
-        //        {
-        //            if (ModelState.IsValid)
-        //            {
-        //                var newGrade = new Grade
-        //                {
-        //                    Code = Grade.Code,
-        //                    Description = Grade.Description,
-        //                    ShortDescripiton = Grade.ShortDescription,
-        //                    IsActive = Grade.IsActive,
-        //                    CampusID = Grade.CampusId
-        //                };
-        //                await _repository.AddAsync(newGrade);
-        //                if (await _repository.SaveChanges())
-        //                {
-        //                    return RedirectToAction("Grade");
-        //                }
-        //                ModelState.AddModelError("", "Error While Saving to Database");
-        //            }
-        //            return View(Grade);
-        //        }
-
-        //        [HttpGet]
-        //        public async Task<IActionResult> UpdateGrade(int id)
-        //        {
-        //            var temp = await _repository.GetGradeById(id);
-        //            if (temp == null)
-        //            {
-        //                return NotFound();
-        //            }
-        //            var grade = new UpdateSetup
-        //            {
-        //                Id = temp.GradeId,
-        //                Code = temp.Code,
-        //                Description = temp.Description,
-        //                ShortDescription = temp.ShortDescripiton,
-        //                CampusId = temp.CampusID,
-        //                IsActive = temp.IsActive
-        //            };
-        //            return View(grade);
-        //        }
-        //        [HttpPost]
-        //        public async Task<IActionResult> UpdateGrade(UpdateSetup Grade)
-        //        {
-        //            var temp = await _repository.GetGradeById(Grade.Id);
-        //            if (temp == null)
-        //            {
-        //                return NotFound();
-        //            }
-        //            temp.Code = Grade.Code;
-        //            temp.Description = Grade.Description;
-        //            temp.ShortDescripiton = Grade.ShortDescription;
-        //            temp.IsActive = Grade.IsActive;
-        //            temp.CampusID = Grade.CampusId;
-        //            await _repository.UpdateAsync(temp);
-        //            if (await _repository.SaveChanges())
-        //            {
-        //                return RedirectToAction("Grade");
-        //            }
-        //            ModelState.AddModelError("", "Error While Saving to Database");
-        //            return View(Grade);
-        //        }
-        //        [HttpGet]
-        //        public async Task<IActionResult> DeleteGrade(int id)
-        //        {
-        //            var temp = await _repository.GetGradeById(id);
-        //            if (temp == null)
-        //            {
-        //                return NotFound();
-        //            }
-        //            await _repository.Delete(temp);
-        //            if (await _repository.SaveChanges())
-        //            {
-        //                return RedirectToAction("Grade");
-        //            }
-        //            return RedirectToAction("Grade");
-        //        }
-        //        #endregion
-
-        //        #region EmployeeType-Setup
-
-        //        public async Task<IActionResult> EmployeeType()
-        //        {
-        //            var result = await _repository.GetEmployeeTypes();
-        //            return View(result);
-        //        }
-        //        [HttpGet]
-        //        public async Task<IActionResult> AddEmployeeType()
-        //        {
-        //            ViewBag.Campuses = await _repository.GetCampuses();
-        //            return View();
-        //        }
-        //        [HttpPost]
-        //        public async Task<IActionResult> AddEmployeeType(Setup EmployeeType)
-        //        {
-        //            if (ModelState.IsValid)
-        //            {
-        //                var newEmployeeType = new EmployeeType
-        //                {
-        //                    Code = EmployeeType.Code,
-        //                    Description = EmployeeType.Description,
-        //                    ShortDescripiton = EmployeeType.ShortDescription,
-        //                    IsActive = EmployeeType.IsActive,
-        //                    CampusID = EmployeeType.CampusId
-        //                };
-        //                await _repository.AddAsync(newEmployeeType);
-        //                if (await _repository.SaveChanges())
-        //                {
-        //                    return RedirectToAction("EmployeeType");
-        //                }
-        //                ModelState.AddModelError("", "Error While Saving to Database");
-        //            }
-        //            return View(EmployeeType);
-        //        }
-
-        //        [HttpGet]
-        //        public async Task<IActionResult> UpdateEmployeeType(int id)
-        //        {
-        //            var temp = await _repository.GetEmployeeTypeById(id);
-        //            if (temp == null)
-        //            {
-        //                return NotFound();
-        //            }
-        //            var grade = new UpdateSetup
-        //            {
-        //                Id = temp.EmployeeTypeId,
-        //                Code = temp.Code,
-        //                Description = temp.Description,
-        //                ShortDescription = temp.ShortDescripiton,
-        //                CampusId = temp.CampusID,
-        //                IsActive = temp.IsActive
-        //            };
-        //            return View(grade);
-        //        }
-        //        [HttpPost]
-        //        public async Task<IActionResult> UpdateEmployeeType(UpdateSetup EmployeeType)
-        //        {
-        //            var temp = await _repository.GetEmployeeTypeById(EmployeeType.Id);
-        //            if (temp == null)
-        //            {
-        //                return NotFound();
-        //            }
-        //            temp.Code = EmployeeType.Code;
-        //            temp.Description = EmployeeType.Description;
-        //            temp.ShortDescripiton = EmployeeType.ShortDescription;
-        //            temp.IsActive = EmployeeType.IsActive;
-        //            temp.CampusID = EmployeeType.CampusId;
-        //            await _repository.UpdateAsync(temp);
-        //            if (await _repository.SaveChanges())
-        //            {
-        //                return RedirectToAction("EmployeeType");
-        //            }
-        //            ModelState.AddModelError("", "Error While Saving to Database");
-        //            return View(EmployeeType);
-        //        }
-        //        [HttpGet]
-        //        public async Task<IActionResult> DeleteEmployeeType(int id)
-        //        {
-        //            var temp = await _repository.GetEmployeeTypeById(id);
-        //            if (temp == null)
-        //            {
-        //                return NotFound();
-        //            }
-        //            await _repository.Delete(temp);
-        //            if (await _repository.SaveChanges())
-        //            {
-        //                return RedirectToAction("Section");
-        //            }
-        //            return RedirectToAction("Section");
-        //        }
-        //        #endregion
-
-        //        #region Shift-Setup
-        //        public async Task<IActionResult> Shift()
-        //        {
-        //            var result = await _repository.GetShifts();
-        //            return View(result);
-        //        }
-        //        [HttpGet]
-        //        public async Task<IActionResult> AddShift()
-        //        {
-        //            ViewBag.Campuses = await _repository.GetCampuses();
-        //            return View();
-        //        }
-        //        [HttpPost]
-        //        public async Task<IActionResult> AddShift(Setup Shift)
-        //        {
-        //            if (ModelState.IsValid)
-        //            {
-        //                var newShift = new Shift
-        //                {
-        //                    Code = Shift.Code,
-        //                    Description = Shift.Description,
-        //                    ShortDescripiton = Shift.ShortDescription,
-        //                    IsActive = Shift.IsActive,
-        //                    CampusID = Shift.CampusId
-        //                };
-        //                await _repository.AddAsync(newShift);
-        //                if (await _repository.SaveChanges())
-        //                {
-        //                    return RedirectToAction("Shift");
-        //                }
-        //                ModelState.AddModelError("", "Error While Saving to Database");
-        //            }
-        //            return View(Shift);
-        //        }
-
-        //        [HttpGet]
-        //        public async Task<IActionResult> UpdateShift(int id)
-        //        {
-        //            var temp = await _repository.GetShiftById(id);
-        //            if (temp == null)
-        //            {
-        //                return NotFound();
-        //            }
-        //            var model = new UpdateSetup
-        //            {
-        //                Id = temp.ShiftId,
-        //                Code = temp.Code,
-        //                Description = temp.Description,
-        //                ShortDescription = temp.ShortDescripiton,
-        //                IsActive = temp.IsActive,
-        //                CampusId = temp.CampusID
-        //            };
-        //            return View(model);
-        //        }
-        //        [HttpPost]
-        //        public async Task<IActionResult> UpdateShift(UpdateSetup shift)
-        //        {
-        //            var temp = await _repository.GetShiftById(shift.Id);
-        //            if (temp == null)
-        //            {
-        //                return NotFound();
-        //            }
-        //            temp.Code = shift.Code;
-        //            temp.Description = shift.Description;
-        //            temp.ShortDescripiton = shift.ShortDescription;
-        //            temp.IsActive = shift.IsActive;
-        //            temp.CampusID = shift.CampusId;
-        //            await _repository.UpdateAsync(temp);
-        //            if (await _repository.SaveChanges())
-        //            {
-        //                return RedirectToAction("Shift");
-        //            }
-        //            ModelState.AddModelError("", "Error While Saving to Database");
-        //            return View(shift);
-        //        }
-        //        [HttpGet]
-        //        public async Task<IActionResult> DeleteShift(int id)
-        //        {
-        //            var temp = await _repository.GetShiftById(id);
-        //            if (temp == null)
-        //            {
-        //                return NotFound();
-        //            }
-        //            await _repository.Delete(temp);
-        //            if (await _repository.SaveChanges())
-        //            {
-        //                return RedirectToAction("Shift");
-        //            }
-        //            return RedirectToAction("Shift");
-        //        }
-        //        #endregion
-
-        //        #region Section-Setup
-        //        public async Task<IActionResult> Section()
-        //        {
-        //            var result = await _repository.GetSections();
-        //            return View(result);
-        //        }
-        //        [HttpGet]
-        //        public async Task<IActionResult> AddSection()
-        //        {
-        //            ViewBag.Campuses = await _repository.GetCampuses();
-        //            return View();
-        //        }
-        //        [HttpPost]
-        //        public async Task<IActionResult> AddSection(Setup Section)
-        //        {
-        //            if (ModelState.IsValid)
-        //            {
-        //                var newSection = new Section
-        //                {
-        //                    Code = Section.Code,
-        //                    Description = Section.Description,
-        //                    ShortDescripiton = Section.ShortDescription,
-        //                    IsActive = Section.IsActive,
-        //                    CampusID = Section.CampusId
-        //                };
-        //                await _repository.AddAsync(newSection);
-        //                if (await _repository.SaveChanges())
-        //                {
-        //                    return RedirectToAction("Section");
-        //                }
-        //                ModelState.AddModelError("", "Error While Saving to Database");
-        //            }
-        //            return View(Section);
-        //        }
-
-        //        [HttpGet]
-        //        public async Task<IActionResult> UpdateSection(int id)
-        //        {
-        //            var temp = await _repository.GetSectionById(id);
-        //            if (temp == null)
-        //            {
-        //                return NotFound();
-        //            }
-        //            var model = new UpdateSetup
-        //            {
-        //                Id = temp.SectionId,
-        //                Code = temp.Code,
-        //                Description = temp.Description,
-        //                ShortDescription = temp.ShortDescripiton,
-        //                IsActive = temp.IsActive,
-        //                CampusId = temp.CampusID
-        //            };
-        //            return View(model);
-        //        }
-        //        [HttpPost]
-        //        public async Task<IActionResult> UpdateSection(UpdateSetup Section)
-        //        {
-        //            var temp = await _repository.GetSectionById(Section.Id);
-        //            if (temp == null)
-        //            {
-        //                return NotFound();
-        //            }
-        //            temp.Code = Section.Code;
-        //            temp.Description = Section.Description;
-        //            temp.ShortDescripiton = Section.ShortDescription;
-        //            temp.IsActive = Section.IsActive;
-        //            temp.CampusID = Section.CampusId;
-        //            await _repository.UpdateAsync(temp);
-        //            if (await _repository.SaveChanges())
-        //            {
-        //                return RedirectToAction("Section");
-        //            }
-        //            ModelState.AddModelError("", "Error While Saving to Database");
-        //            return View(Section);
-        //        }
-        //        [HttpGet]
-        //        public async Task<IActionResult> DeleteSection(int id)
-        //        {
-        //            var temp = await _repository.GetSectionById(id);
-        //            if (temp == null)
-        //            {
-        //                return NotFound();
-        //            }
-        //            await _repository.Delete(temp);
-        //            if (await _repository.SaveChanges())
-        //            {
-        //                return RedirectToAction("Section");
-        //            }
-        //            return RedirectToAction("Section");
-        //        }
-        //        #endregion
-
-        //        #region Project-Setup
-        //        public async Task<IActionResult> Project()
-        //        {
-        //            var result = await _repository.GetProjects();
-        //            return View(result);
-        //        }
-
-        //        [HttpGet]
-        //        public async Task<IActionResult> AddProject()
-        //        {
-        //            ViewBag.Campuses = await _repository.GetCampuses();
-        //            return View();
-        //        }
-        //        [HttpPost]
-        //        public async Task<IActionResult> AddProject(Setup Project)
-        //        {
-        //            if (ModelState.IsValid)
-        //            {
-        //                var newProject = new Project
-        //                {
-        //                    Code = Project.Code,
-        //                    Description = Project.Description,
-        //                    ShortDescripiton = Project.ShortDescription,
-        //                    IsActive = Project.IsActive,
-        //                    CampusID = Project.CampusId
-        //                };
-        //                await _repository.AddAsync(newProject);
-        //                if (await _repository.SaveChanges())
-        //                {
-        //                    return RedirectToAction("Project");
-        //                }
-        //                ModelState.AddModelError("", "Error While Saving to Database");
-        //            }
-        //            return View(Project);
-        //        }
-        //        [HttpGet]
-        //        public async Task<IActionResult> UpdateProject(int id)
-        //        {
-        //            var temp = await _repository.GetSectionById(id);
-        //            if (temp == null)
-        //            {
-        //                return NotFound();
-        //            }
-        //            var model = new UpdateSetup
-        //            {
-        //                Id = temp.SectionId,
-        //                Code = temp.Code,
-        //                Description = temp.Description,
-        //                ShortDescription = temp.ShortDescripiton,
-        //                IsActive = temp.IsActive,
-        //                CampusId = temp.CampusID
-        //            };
-        //            return View(model);
-        //        }
-        //        [HttpPost]
-        //        public async Task<IActionResult> UpdateProject(UpdateSetup Project)
-        //        {
-        //            var temp = await _repository.GetSectionById(Project.Id);
-        //            if (temp == null)
-        //            {
-        //                return NotFound();
-        //            }
-        //            temp.Code = Project.Code;
-        //            temp.Description = Project.Description;
-        //            temp.ShortDescripiton = Project.ShortDescription;
-        //            temp.IsActive = Project.IsActive;
-        //            temp.CampusID = Project.CampusId;
-        //            await _repository.UpdateAsync(temp);
-        //            if (await _repository.SaveChanges())
-        //            {
-        //                return RedirectToAction("Project");
-        //            }
-        //            ModelState.AddModelError("", "Error While Saving to Database");
-        //            return View(Project);
-        //        }
-        //        [HttpGet]
-        //        public async Task<IActionResult> DeleteProject(int id)
-        //        {
-        //            var temp = await _repository.GetProjectById(id);
-        //            if (temp == null)
-        //            {
-        //                return NotFound();
-        //            }
-        //            await _repository.Delete(temp);
-        //            if (await _repository.SaveChanges())
-        //            {
-        //                return RedirectToAction("Project");
-        //            }
-        //            return RedirectToAction("Project");
-        //        }
-        //        #endregion
     }
 }

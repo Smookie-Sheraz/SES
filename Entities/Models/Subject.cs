@@ -27,5 +27,6 @@ namespace Entities.Models
         public ICollection<SubjectAllocation> SubjectAllocations { get; set; } = null!;
         public ICollection<Diary> Diaries { get; set; } = null!;
         public ICollection<Test> Tests { get; set; } = null!;
+        public ICollection<AcademicPlannings> Plans { get; set; } = null!;
     }
 }

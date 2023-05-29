@@ -32,6 +32,26 @@ namespace Infrastructure.Configurations
             builder.Property(p => p.IsDeleted)
                 .HasColumnType("bit")
                 .HasDefaultValue(false);
+            builder.HasOne(p => p.Employee)
+                .WithMany(p => p.AcademicPlannings)
+                .HasForeignKey(FK => FK.EmployeeId)
+                .HasConstraintName("FK_AcademicPlannings_EmployeeId")
+                .OnDelete(DeleteBehavior.SetNull);
+            builder.HasOne(p => p.Class)
+                .WithMany(p => p.AcademicPlannings)
+                .HasForeignKey(FK => FK.ClassId)
+                .HasConstraintName("FK_AcademicPlannings_ClassId")
+                .OnDelete(DeleteBehavior.SetNull);
+            builder.HasOne(p => p.Subject)
+                .WithMany(p => p.Plans)
+                .HasForeignKey(FK => FK.SubjectId)
+                .HasConstraintName("FK_AcademicPlannings_SubjectId")
+                .OnDelete(DeleteBehavior.SetNull);
+            builder.HasOne(p => p.Book)
+                .WithMany(p => p.AcademicPlannings)
+                .HasForeignKey(FK => FK.BookId)
+                .HasConstraintName("FK_AcademicPlannings_BookId")
+                .OnDelete(DeleteBehavior.SetNull);
         }
     }
 }

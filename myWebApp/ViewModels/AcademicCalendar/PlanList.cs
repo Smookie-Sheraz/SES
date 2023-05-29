@@ -10,6 +10,7 @@
         public string? TopicName { get; set; }
         public string? SubTopicName { get; set; }
         public string? TeachingMethodologyName { get; set; }
+        public string? TeachingMethodologyDesc { get; set; }
         public string? WbStartPage{ get; set; }
         public string? WbEndPage{ get; set; }
     }

@@ -87,7 +87,8 @@ namespace myWebApp.Controllers
             {
                 return NotFound();
             }
-            await _repository.Delete(temp);
+            temp.IsActive = false;
+            await _repository.UpdateAsync(temp);
             if (await _repository.SaveChanges())
             {
                 return RedirectToAction("TeachingMethodology");

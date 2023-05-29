@@ -1,0 +1,78 @@
+﻿@model myWebApp.ViewModels.AcademicCalendar.TopicAllocationTestVM
+<div class="main-panel">
+    <div class="content-wrapper">
+        <form method="get"
+              asp-controller="AcademicCalendar" asp-action="TopicAllocation">
+            <div class="row">
+                <input type="hidden" asp-for="YearId" />
+                <input type="hidden" asp-for="TermId" />
+                <div class="col-md-3 text-center">
+                    <div class="form-group">
+                        <label>Plans</label>
+                        <select asp-for="PlanId" class="form-select" onchange="GetUnits(this.id)" aria-label="Default select example">
+                            <option selected value="@null">Select Plan Please</option>
+                            @foreach (var Plan in ViewBag.Plans)
+                            {
+                                <option value="@Plan.PlanId">@Plan.PlanName -- @Plan.ClassName -- @Plan.BookName</option>
+                            }
+                        </select>
+                        <span asp-validation-for="PlanId" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-3 text-center">
+                    <div class="form-group">
+                        <label asp-for="UnitId">Units</label>
+                        <select asp-for="UnitId" class="form-select" onchange="GetChapters(this.id, document.getElementById('PlanId').value)" aria-label="Default select example">
+                            <option selected value="@null">Select Book First!</option>
+                            @*@if (Model.UnitId != null)
+                            {
+                                @foreach (var unit in ViewBag.Units)
+                                {
+                                    <option value="@unit.UnitId">@unit.UnitName</option>
+                                }
+                            }*@
+                        </select>
+                        <span asp-validation-for="UnitId" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-3 text-center">
+                    <div class="form-group">
+                        <label asp-for="ChapterId">Chapters</label>
+                        <select asp-for="ChapterId" class="form-select" aria-label="Default select example">
+                            <option selected value="@null">Select Unit First!</option>
+                            @*@if (Model.ChapterId != null)
+                            {
+                                @foreach (var unit in ViewBag.Chapters)
+                                {
+                                    <option value="@unit.ChapterId">@unit.ChapterName</option>
+                                }
+                            }*@
+                        </select>
+                        <span asp-validation-for="ChapterId" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-3 text-center">
+                    <div class="form-group">
+                        <label asp-for="TeachingMethodologyId">Teaching Method</label>
+                        <select asp-for="TeachingMethodologyId" class="form-select" aria-label="Default select example">
+                            <option selected value="@null">Choose Teaching Methodology Please</option>
+                            @foreach (var TMethod in ViewBag.TMethods)
+                            {
+                                <option value="@TMethod.TeachingMethodologyId">@TMethod.TMethodologyName</option>
+                            }
+                        </select>
+                        <span asp-validation-for="TeachingMethodologyId" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-2 text-center">
+                    <button class="btn btn-primary mt-4" type="submit">Find Topics</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+@section scripts{
+    <script src="~/lib/jquery-validate/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/js/custom.js"></script>
+}

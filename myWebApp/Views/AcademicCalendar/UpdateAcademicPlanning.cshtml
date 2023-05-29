@@ -15,11 +15,55 @@
                               asp-controller="AcademicCalendar" asp-action="UpdateAcademicPlanning">
                             <div class="row">
                                 <input type="hidden" asp-for="AcademicPlanningsId" />
-                                <div class="col-4">
+                                <div class="col-4 text-center">
                                     <div class="form-group">
-                                        <label asp-for="PlanName">Plan Name</label>
-                                        <input type="text" class="form-control" asp-for="PlanName" placeholder="Enter Campus Name" />
-                                        <span asp-validation-for="PlanName" class="text-danger"></span>
+                                        <label asp-for="ClassId">Classes</label>
+                                        <select asp-for="ClassId" class="form-select" onchange="GetSubjects(this.id)" aria-label="Default select example">
+                                            <option selected value="@null">Select Class Please</option>
+                                            @foreach (var Class in ViewBag.Classes)
+                                            {
+                                                <option value="@Class.SectionId">@Class.SectionName</option>
+                                            }
+                                        </select>
+                                        <span asp-validation-for="ClassId" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-4 text-center">
+                                    <div class="form-group">
+                                        <label asp-for="SubjectId">Subjects</label>
+                                        <select asp-for="SubjectId" class="form-select" onchange="GetBooks(this.id)" aria-label="Default select example">
+                                            @if(Model.SubjectId == null)
+                                            {
+                                                <option selected>Select Class First!</option>
+                                            }
+                                            else
+                                            {
+                                                @foreach (var Class in ViewBag.Subjects)
+                                                {
+                                                    <option value="@Class.SubjectId">@Class.SubjectName</option>
+                                                }
+                                            }
+                                        </select>
+                                        <span asp-validation-for="SubjectId" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-4 text-center">
+                                    <div class="form-group">
+                                        <label asp-for="BookId">Books</label>
+                                        <select asp-for="BookId" class="form-select" aria-label="Default select example">
+                                            @if (Model.SubjectId == null)
+                                            {
+                                                <option selected>Select Subject First!</option>
+                                            }
+                                            else
+                                            {
+                                                @foreach (var Class in ViewBag.Books)
+                                                {
+                                                    <option value="@Class.BookId">@Class.BookName</option>
+                                                }
+                                            }
+                                        </select>
+                                        <span asp-validation-for="BookId" class="text-danger"></span>
                                     </div>
                                 </div>
                                 @if (User.IsInRole("Director Academics"))
@@ -36,6 +80,13 @@
                                         </div>
                                     </div>
                                 }
+                                <div class="col-4 text-center">
+                                    <div class="form-group">
+                                        <label asp-for="PlanName">Plan Name</label>
+                                        <input type="text" class="form-control" asp-for="PlanName" placeholder="Enter Plan Name">
+                                        <span asp-validation-for="PlanName" class="text-danger"></span>
+                                    </div>
+                                </div>
                                 <div class="col-4">
                                     <a class="btn btn-light" asp-controller="AcademicCalendar" asp-action="AcademicPlannings">Cancel</a>
                                     <button type="submit" class="btn btn-primary mr-2">Update</button>
@@ -48,3 +99,6 @@
         </div>
     </div>
 </div>
+@section scripts{
+    <script src="~/js/custom.js"></script>
+}

@@ -125,7 +125,7 @@ namespace Entities.Controllers
                               };
             var GradeBooks = from b in _db.Books
                              from c in _db.Subjects
-                             where b.GradeId == dbClassName.First().GradeId && c.SubjectId == b.SubjectId
+                             where b.GradeId == dbClassName.First().GradeId && c.SubjectId == b.SubjectId && b.IsActive == true && b.IsWorkBook == false
                              select new BookList
                              {
                                  BookId = b.BookId,
@@ -324,7 +324,7 @@ namespace Entities.Controllers
         public async Task<IActionResult> Roles()
         {
             RolesVM roleVM = new RolesVM();
-            var roles = await _db.Roles.ToListAsync();
+            var roles = await _db.Roles.Where(x => x.IsActive == true).ToListAsync();
             roleVM.roles = roles.Select(x => new RolesList { RoleId = x.RoleId, RoleName = x.RollName, IsActive = (bool)x.IsActive}).Where(x => x.IsActive == true).ToList();
             foreach (var role in roleVM.roles)
             {

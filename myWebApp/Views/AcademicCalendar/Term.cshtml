@@ -100,7 +100,7 @@
                                                                 {
                                                                     <a class="fa fa-book mr-3" title="Plan Units" asp-route-Id="@term.TermId" asp-route-YearId="@Model.YearId" asp-controller="AcademicCalendar" asp-action="UnitAllocation" role="button"></a>
                                                                     <a class="fa fa-file mr-3" title="Plan Chapter" asp-route-Id="@term.TermId" asp-route-YearId="@Model.YearId" asp-controller="AcademicCalendar" asp-action="ChapterAllocation" role="button"></a>
-                                                                    <a class="fa fa-align-justify mr-3" title="Plan Topics" asp-route-Id="@term.TermId" asp-route-YearId="@Model.YearId" asp-controller="AcademicCalendar" asp-action="TopicAllocation" role="button"></a>
+                                                                    <a class="fa fa-align-justify mr-3" title="Plan Topics" asp-route-Id="@term.TermId" asp-route-YearId="@Model.YearId" asp-controller="AcademicCalendar" asp-action="SearchTopics" role="button"></a>
                                                                     <a class="fa fa-align-left mr-3" title="Plan Sub-Topics" asp-route-Id="@term.TermId" asp-route-YearId="@Model.YearId" asp-controller="AcademicCalendar" asp-action="SubTopicAllocation" role="button"></a>
                                                                 }
                                                                 @if (User.HasClaim("Permission", "Term.Update"))

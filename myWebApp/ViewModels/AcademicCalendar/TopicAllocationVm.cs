@@ -18,6 +18,6 @@ namespace myWebApp.ViewModels.AcademicCalendar
         public bool AreSaturdaysOff { get; set; }
         public DateTime? MinDate { get; set; }
         public DateTime? MaxDate { get; set; }
-        public List<TopicList> Topics { get; set; }
+        public List<TopicList>? Topics { get; set; }
     }
 }

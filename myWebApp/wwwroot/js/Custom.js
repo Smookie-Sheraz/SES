@@ -28,24 +28,25 @@
 //    });
 //};
 
-//function GetSubjects(id) {
-//    $.get("/AcademicCalendar/GetSubjects", { GradeId: parseInt($(`#${id}`).val(), 10) }, function (data) {
-//        $("#SubjectId").empty();
-//        $("#BookId").empty();
-//        $("#SubjectId").append("<Option value='0'>" + "---Select Subject Please---" + "</Option>");
-//        $.each(data, function (index, row) {
-//            console.log(row);
-//            $("#SubjectId").append("<Option value='" + row.subjectId + "'>" + row.subjectName + "</Option>")
-//        });
-//    });
-//};
+
 
 //Allocations Dynamic Data
 
+function GetSubjects(id) {
+    $.get("/AcademicCalendar/GetSubjects", { ClasssId: parseInt($(`#${id}`).val(), 10) }, function (data) {
+        $("#SubjectId").empty();
+        //debugger;
+        $("#SubjectId").append("<Option selected value>" + "---Select Subject Please---" + "</Option>");
+        $.each(data, function (index, row) {
+            $("#SubjectId").append("<Option value='" + row.subjectId + "'>" + row.subjectName + "</Option>")
+        });
+    });
+};
+
 function GetBooks(id) {
-    $.get("/academiccalendar/GetBooks", { SectionId: parseInt($(`#${id}`).val(), 10)}, function (data) {
+    $.get("/academiccalendar/GetBooks", { SubjectId: parseInt($(`#${id}`).val(), 10), SubjectId: parseInt($(`#${id}`).val(), 10)}, function (data) {
         $("#BookId").empty();
-        $("#BookId").append("<option value='0'>" + "---Select Book Please---" + "</option>");
+        $("#BookId").append("<option selected value>" + "---Select Book Please---" + "</option>");
         $.each(data, function (index, row) {
             $("#BookId").append("<option value='" + row.bookId + "'>" + row.bookName + "</option>")
         });
@@ -53,9 +54,9 @@ function GetBooks(id) {
 };
 
 function GetUnits(id) {
-    $.get("/academiccalendar/GetUnits", { BookId: parseInt($(`#${id}`).val(), 10) }, function (data) {
+    $.get("/academiccalendar/GetUnits", { PlanId: parseInt($(`#${id}`).val(), 10) }, function (data) {
         $("#UnitId").empty();
-        $("#UnitId").append("<option value='0'>" + "---Select Unit Please---" + "</option>");
+        $("#UnitId").append("<option selected value>" + "---Select Unit Please---" + "</option>");
         $.each(data, function (index, row) {
             $("#UnitId").append("<option value='" + row.unitId + "'>" + row.unitName + "</option>")
         });
@@ -63,20 +64,20 @@ function GetUnits(id) {
 };
 
 
-function GetChapters(id) {
-    $.get("/academiccalendar/GetChapters", { UnitId: parseInt($(`#${id}`).val(), 10) }, function (data) {
+function GetChapters(id, planId) {
+    $.get("/academiccalendar/GetChapters", { UnitId: parseInt($(`#${id}`).val(), 10), PlanId: parseInt(planId, 10) }, function (data) {
         $("#ChapterId").empty();
-        $("#ChapterId").append("<option value='0'>" + "---Select Chapter Please---" + "</option>");
+        $("#ChapterId").append("<option selected value>" + "---Select Chapter Please---" + "</option>");
         $.each(data, function (index, row) {
             $("#ChapterId").append("<option value='" + row.chapterId + "'>" + row.chapterName + "</option>")
         });
     });
 };
 
-function GetTopics(id) {
-    $.get("/academiccalendar/GetTopics", { ChapterId: parseInt($(`#${id}`).val(), 10) }, function (data) {
+function GetTopics(id, planId, unitId) {
+    $.get("/academiccalendar/GetTopics", { ChapterId: parseInt($(`#${id}`).val(), 10), PlanId: parseInt(planId, 10), UnitId: parseInt(unitId, 10) }, function (data) {
         $("#TopicId").empty();
-        $("#TopicId").append("<option value='0'>" + "---Select Topic Please---" + "</option>");
+        $("#TopicId").append("<option selected value>" + "---Select Topic Please---" + "</option>");
         $.each(data, function (index, row) {
             $("#TopicId").append("<option value='" + row.topicId + "'>" + row.topicName + "</option>")
         });
@@ -87,7 +88,7 @@ function SubjectChanged(id) {
     console.log("I'm Selected!");
     $.get("/AcademicCalendar/GetBooks", { SubjectId: parseInt($(`#${id}`).val(), 10), GradeId: $("#GradeId").val() }, function (data) {
         $("#BookId").empty();
-        $("#BookId").append("<Option value='0'>" + "---Select Book Please---" + "</Option>");
+        $("#BookId").append("<Option value='@null'>" + "---Select Book Please---" + "</Option>");
         $.each(data, function (index, row) {
             //console.log(data);
             //console.log(index);
@@ -105,7 +106,7 @@ function Gradchange(id) {
     $("#BookId").val('0');
     $.get("/AcademicCalendar/GetSubjects", { GradeId: parseInt($(`#${id}`).val(), 10) }, function (data) {
         $("#SubjectId").empty();
-        $("#SubjectId").append("<Option value='0'>" + "---Select Subject Please---" + "</Option>");
+        $("#SubjectId").append("<Option value='@null'>" + "---Select Subject Please---" + "</Option>");
         $.each(data, function (index, row) {
             //console.log(data);
             //console.log(index);
@@ -123,7 +124,7 @@ function SchoolSectionChange(id) {
     $("#BookId").val('0');
     $.get("/AcademicCalendar/GetGrades", { SchoolSectionId: parseInt($(`#${id}`).val(), 10) }, function (data) {
         $("#GradeId").empty();
-        $("#GradeId").append("<Option value='0'>" + "---Select Grade Please---" + "</Option>");
+        $("#GradeId").append("<Option value='@null'>" + "---Select Grade Please---" + "</Option>");
         $.each(data, function (index, row) {
             //console.log(data);
             //console.log(index);
@@ -141,7 +142,7 @@ function GetClassBooks(id) {
     //debugger;
     $.get("/AcademicCalendar/GetClassBooks", { CLassId: parseInt($(`#${id}`).val(), 10) }, function (data) {
         $("#BookId").empty();
-        $("#BookId").append("<Option value='0'>" + "---Select Class Please---" + "</Option>");
+        $("#BookId").append("<Option value='@null'>" + "---Select Class Please---" + "</Option>");
         $.each(data, function (index, row) {
             //console.log(data);
             //console.log(index);

@@ -16,6 +16,7 @@ using NuGet.Protocol.Plugins;
 using Microsoft.AspNetCore.Mvc.Razor.Infrastructure;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+using Infrastructure.Migrations;
 
 namespace myWebApp.Controllers
 {
@@ -69,21 +70,16 @@ namespace myWebApp.Controllers
         [HttpGet]
         public async Task<IActionResult> UpdateSubject(int id)
         {
-            var temp = await _repository.GetSubjectById(id);
-            int active = 0;
+            var temp = await _db.Subjects.Where(x => x.IsActive == true && x.SubjectId == id).FirstOrDefaultAsync();
             if (temp == null)
             {
                 return NotFound();
-            }
-            if (temp.IsActive == true)
-            {
-                active = 1;
             }
             var Department = new UpdateSubjectVM
             {
                 SubjectId = temp.SubjectId,
                 SubjectName = temp.SubjectName,
-                IsActive = active
+                IsActive = (bool)temp.IsActive
             };
             return View(Department);
         }
@@ -91,27 +87,25 @@ namespace myWebApp.Controllers
         [HttpPost]
         public async Task<IActionResult> UpdateSubject(UpdateSubjectVM subject)
         {
-            bool active = false;
             var temp = await _repository.GetSubjectById(subject.SubjectId);
             if (temp == null)
             {
                 return NotFound();
             }
-            if (subject.IsActive == 1)
+            if (temp.IsActive == true && subject.IsActive == false)
             {
-                active = true;
-            }
-            else
-            {
-                var books = await _repository.GetBooks();
-                foreach (var book in books)
+                var books = await _db.Books.Where(x => x.SubjectId == subject.SubjectId).ToListAsync();
+                if (books.Any())
                 {
-                    book.IsActive = false;
+                    foreach (var book in books)
+                    {
+                        book.IsActive = false;
+                    }
+                    _db.UpdateRange(books);
                 }
-                active = false;
             }
             temp.SubjectName = subject.SubjectName;
-            temp.IsActive = active;
+            temp.IsActive = subject.IsActive;
             await _repository.UpdateAsync(temp);
             if (await _repository.SaveChanges())
             {
@@ -129,7 +123,17 @@ namespace myWebApp.Controllers
             {
                 return NotFound();
             }
-            await _repository.Delete(temp);
+            temp.IsActive = false;
+            var books = await _db.Books.Where(x => x.SubjectId == id).ToListAsync();
+            if (books.Any())
+            {
+                foreach (var book in books)
+                {
+                    book.IsActive = false;
+                }
+                _db.UpdateRange(books);
+            }
+            await _repository.UpdateAsync(temp);
             if (await _repository.SaveChanges())
             {
                 return RedirectToAction("Subject");
@@ -144,150 +148,152 @@ namespace myWebApp.Controllers
         {
             BookVM bookVM = new BookVM();
             int userId = Convert.ToInt16(User.FindFirst(ClaimTypes.Sid)?.Value);
-            if (User.IsInRole("Subject Teacher"))
+            if (User.IsInRole("Subject Teacher") || User.IsInRole("Assistant Teacher"))
             {
-                var books = from b in _db.Books
-                            join c in _db.Subjects on b.SubjectId equals c.SubjectId into BookSubject
-                            from subject in BookSubject.DefaultIfEmpty()
-                                //join d in _db.Sections on b.GradeId equals d.GradeId into BookSection
-                                //from section in BookSection.DefaultIfEmpty()
-                            join e in _db.Grades on b.GradeId equals e.GradeId into BookGrade
-                            from grade in BookGrade.DefaultIfEmpty()
-                            join f in _db.ResourceNoteBooks on b.ResourceNoteBookId equals f.ResourceNoteBookId into BookNotebook
-                            from NoteBook in BookNotebook.DefaultIfEmpty()
-                            join g in _db.SubjectTeacherAllocations on b.BookId equals g.BookId into SubjectTBooks
-                            from subBook in SubjectTBooks.DefaultIfEmpty()
-                            where subBook.EmployeeId == userId && b.IsActive == true
-                            select new
-                            {
-                                BookId = b.BookId,
-                                BookName = b.BookName,
-                                SubjectName = subject.SubjectName,
-                                Grade = grade.GradeName,
-                                Publisher = b.Publisher,
-                                PublishDate = b.PublishDate,
-                                IsActive = b.IsActive,
-                                ResourceBook = b.ResourceBook,
-                                ResourceNoteBook = NoteBook.NoteBookName,
-                                ResouceBookURL = b.ResourceBookPath,
-                                IsWorkBook = b.IsWorkBook
-                            };
-                bookVM.books = await books.Select(x => new BookViewList { IsWorkBook = x.IsWorkBook, GardeName = x.Grade, BookName = x.BookName, ResourceBookURL = x.ResouceBookURL, BookId = x.BookId, IsActive = x.IsActive, PublishDate = x.PublishDate, Publisher = x.Publisher, SubjectName = x.SubjectName, ResourceBook = x.ResourceBook, ResourceNoteBook = x.ResourceNoteBook }).ToListAsync();
+                var books = await (from b in _db.Books
+                                   join c in _db.Subjects on b.SubjectId equals c.SubjectId into BookSubject
+                                   from subject in BookSubject.DefaultIfEmpty()
+                                   join e in _db.Grades on b.GradeId equals e.GradeId into BookGrade
+                                   from grade in BookGrade.DefaultIfEmpty()
+                                   join f in _db.ResourceNoteBooks on b.ResourceNoteBookId equals f.ResourceNoteBookId into BookNotebook
+                                   from NoteBook in BookNotebook.DefaultIfEmpty()
+                                   join g in _db.SubjectTeacherAllocations on b.BookId equals g.BookId into SubjectTBooks
+                                   from subBook in SubjectTBooks.DefaultIfEmpty()
+                                   where subBook.EmployeeId == userId && b.IsActive == true
+                                   select new
+                                   {
+                                       BookId = b.BookId,
+                                       BookName = b.BookName,
+                                       SubjectName = subject.SubjectName,
+                                       Grade = grade.GradeName,
+                                       Publisher = b.Publisher,
+                                       PublishDate = b.PublishDate,
+                                       IsActive = b.IsActive,
+                                       ResourceBook = b.ResourceBook,
+                                       ResourceNoteBook = NoteBook.NoteBookName,
+                                       ResouceBookURL = b.ResourceBookPath,
+                                       IsWorkBook = b.IsWorkBook
+                                   }).Distinct().ToListAsync();
+                bookVM.books = books.Select(x => new BookViewList { IsWorkBook = x.IsWorkBook, GardeName = x.Grade, BookName = x.BookName, ResourceBookURL = x.ResouceBookURL, BookId = x.BookId, IsActive = x.IsActive, PublishDate = x.PublishDate, Publisher = x.Publisher, SubjectName = x.SubjectName, ResourceBook = x.ResourceBook, ResourceNoteBook = x.ResourceNoteBook }).ToList();
             }
             else if (User.IsInRole("Class Teacher"))
             {
-                var books = from b in _db.Books
-                            join c in _db.Subjects on b.SubjectId equals c.SubjectId into BookSubject
-                            from subject in BookSubject.DefaultIfEmpty()
-                                //join d in _db.Sections on b.GradeId equals d.GradeId into BookSection
-                                //from section in BookSection.DefaultIfEmpty()
-                            join e in _db.Grades on b.GradeId equals e.GradeId into BookGrade
-                            from grade in BookGrade.DefaultIfEmpty()
-                            join f in _db.ResourceNoteBooks on b.ResourceNoteBookId equals f.ResourceNoteBookId into BookNotebook
-                            from NoteBook in BookNotebook.DefaultIfEmpty()
-                            join h in _db.Sections on b.GradeId equals h.GradeId into BookSection
-                            from sec in BookSection.DefaultIfEmpty()
-                            where sec.ClassTeacherId == userId && b.IsActive == true
-                            select new
-                            {
-                                BookId = b.BookId,
-                                BookName = b.BookName,
-                                SubjectName = subject.SubjectName,
-                                Grade = grade.GradeName,
-                                Publisher = b.Publisher,
-                                PublishDate = b.PublishDate,
-                                IsActive = b.IsActive,
-                                ResourceBook = b.ResourceBook,
-                                ResourceNoteBook = NoteBook.NoteBookName,
-                                ResouceBookURL = b.ResourceBookPath,
-                                IsWorkBook = b.IsWorkBook
-                            };
-                bookVM.books = await books.Select(x => new BookViewList { IsWorkBook = x.IsWorkBook, GardeName = x.Grade, BookName = x.BookName, ResourceBookURL = x.ResouceBookURL, BookId = x.BookId, IsActive = x.IsActive, PublishDate = x.PublishDate, Publisher = x.Publisher, SubjectName = x.SubjectName, ResourceBook = x.ResourceBook, ResourceNoteBook = x.ResourceNoteBook }).ToListAsync();
+                var books = await (from b in _db.Books
+                                   join c in _db.Subjects on b.SubjectId equals c.SubjectId into BookSubject
+                                   from subject in BookSubject.DefaultIfEmpty()
+                                       //join d in _db.Sections on b.GradeId equals d.GradeId into BookSection
+                                       //from section in BookSection.DefaultIfEmpty()
+                                   join e in _db.Grades on b.GradeId equals e.GradeId into BookGrade
+                                   from grade in BookGrade.DefaultIfEmpty()
+                                   join f in _db.ResourceNoteBooks on b.ResourceNoteBookId equals f.ResourceNoteBookId into BookNotebook
+                                   from NoteBook in BookNotebook.DefaultIfEmpty()
+                                   join h in _db.Sections on b.GradeId equals h.GradeId into BookSection
+                                   from sec in BookSection.DefaultIfEmpty()
+                                   join i in _db.SubjectTeacherAllocations on b.BookId equals i.BookId into AllocatedBooks
+                                   from ABs in AllocatedBooks.DefaultIfEmpty()
+                                   where (ABs.EmployeeId == userId || sec.ClassTeacherId == userId) && b.IsActive == true
+                                   select new
+                                   {
+                                       BookId = b.BookId,
+                                       BookName = b.BookName,
+                                       SubjectName = subject.SubjectName,
+                                       Grade = grade.GradeName,
+                                       Publisher = b.Publisher,
+                                       PublishDate = b.PublishDate,
+                                       IsActive = b.IsActive,
+                                       ResourceBook = b.ResourceBook,
+                                       ResourceNoteBook = NoteBook.NoteBookName,
+                                       ResouceBookURL = b.ResourceBookPath,
+                                       IsWorkBook = b.IsWorkBook
+                                   }).Distinct().ToListAsync();
+                bookVM.books = books.Select(x => new BookViewList { IsWorkBook = x.IsWorkBook, GardeName = x.Grade, BookName = x.BookName, ResourceBookURL = x.ResouceBookURL, BookId = x.BookId, IsActive = x.IsActive, PublishDate = x.PublishDate, Publisher = x.Publisher, SubjectName = x.SubjectName, ResourceBook = x.ResourceBook, ResourceNoteBook = x.ResourceNoteBook }).ToList();
             }
             else if (User.IsInRole("Grade Manager"))
             {
-                var books = from b in _db.Books
-                            join c in _db.Subjects on b.SubjectId equals c.SubjectId into BookSubject
-                            from subject in BookSubject.DefaultIfEmpty()
-                                //join d in _db.Sections on b.GradeId equals d.GradeId into BookSection
-                                //from section in BookSection.DefaultIfEmpty()
-                            join e in _db.Grades on b.GradeId equals e.GradeId into BookGrade
-                            from grade in BookGrade.DefaultIfEmpty()
-                            join f in _db.ResourceNoteBooks on b.ResourceNoteBookId equals f.ResourceNoteBookId into BookNotebook
-                            from NoteBook in BookNotebook.DefaultIfEmpty()
-                            where grade.GradeManagerId == userId && b.IsActive == true
-                            select new
-                            {
-                                BookId = b.BookId,
-                                BookName = b.BookName,
-                                SubjectName = subject.SubjectName,
-                                Grade = grade.GradeName,
-                                Publisher = b.Publisher,
-                                PublishDate = b.PublishDate,
-                                IsActive = b.IsActive,
-                                ResourceBook = b.ResourceBook,
-                                ResourceNoteBook = NoteBook.NoteBookName,
-                                ResouceBookURL = b.ResourceBookPath,
-                                IsWorkBook = b.IsWorkBook
-                            };
-                bookVM.books = await books.Select(x => new BookViewList { IsWorkBook = x.IsWorkBook, GardeName = x.Grade, BookName = x.BookName, ResourceBookURL = x.ResouceBookURL, BookId = x.BookId, IsActive = x.IsActive, PublishDate = x.PublishDate, Publisher = x.Publisher, SubjectName = x.SubjectName, ResourceBook = x.ResourceBook, ResourceNoteBook = x.ResourceNoteBook }).ToListAsync();
+                var books = await (from b in _db.Books
+                                   join c in _db.Subjects on b.SubjectId equals c.SubjectId into BookSubject
+                                   from subject in BookSubject.DefaultIfEmpty()
+                                       //join d in _db.Sections on b.GradeId equals d.GradeId into BookSection
+                                       //from section in BookSection.DefaultIfEmpty()
+                                   join e in _db.Grades on b.GradeId equals e.GradeId into BookGrade
+                                   from grade in BookGrade.DefaultIfEmpty()
+                                   join f in _db.ResourceNoteBooks on b.ResourceNoteBookId equals f.ResourceNoteBookId into BookNotebook
+                                   from NoteBook in BookNotebook.DefaultIfEmpty()
+                                   join i in _db.SubjectTeacherAllocations on b.BookId equals i.BookId into AllocatedBooks
+                                   from ABs in AllocatedBooks.DefaultIfEmpty()
+                                   where (ABs.EmployeeId == userId || grade.GradeManagerId == userId) && b.IsActive == true
+                                   select new
+                                   {
+                                       BookId = b.BookId,
+                                       BookName = b.BookName,
+                                       SubjectName = subject.SubjectName,
+                                       Grade = grade.GradeName,
+                                       Publisher = b.Publisher,
+                                       PublishDate = b.PublishDate,
+                                       IsActive = b.IsActive,
+                                       ResourceBook = b.ResourceBook,
+                                       ResourceNoteBook = NoteBook.NoteBookName,
+                                       ResouceBookURL = b.ResourceBookPath,
+                                       IsWorkBook = b.IsWorkBook
+                                   }).Distinct().ToListAsync();
+                bookVM.books = books.Select(x => new BookViewList { IsWorkBook = x.IsWorkBook, GardeName = x.Grade, BookName = x.BookName, ResourceBookURL = x.ResouceBookURL, BookId = x.BookId, IsActive = x.IsActive, PublishDate = x.PublishDate, Publisher = x.Publisher, SubjectName = x.SubjectName, ResourceBook = x.ResourceBook, ResourceNoteBook = x.ResourceNoteBook }).ToList();
             }
             else if (User.IsInRole("Assistant Coordinator"))
             {
-                var books = from b in _db.Books
-                            join c in _db.Subjects on b.SubjectId equals c.SubjectId into BookSubject
-                            from subject in BookSubject.DefaultIfEmpty()
-                                //join d in _db.Sections on b.GradeId equals d.GradeId into BookSection
-                                //from section in BookSection.DefaultIfEmpty()
-                            join e in _db.Grades on b.GradeId equals e.GradeId into BookGrade
-                            from grade in BookGrade.DefaultIfEmpty()
-                            join f in _db.ResourceNoteBooks on b.ResourceNoteBookId equals f.ResourceNoteBookId into BookNotebook
-                            from NoteBook in BookNotebook.DefaultIfEmpty()
-                            join h in _db.SchoolSections on grade.SchoolSectionId equals h.SchoolSectionId into BookSection
-                            from bSec in BookSection.DefaultIfEmpty()
-                            where bSec.AssistantCoordinatorId == userId && b.IsActive == true
-                            select new
-                            {
-                                BookId = b.BookId,
-                                BookName = b.BookName,
-                                SubjectName = subject.SubjectName,
-                                Grade = grade.GradeName,
-                                Publisher = b.Publisher,
-                                PublishDate = b.PublishDate,
-                                IsActive = b.IsActive,
-                                ResourceBook = b.ResourceBook,
-                                ResourceNoteBook = NoteBook.NoteBookName,
-                                ResouceBookURL = b.ResourceBookPath,
-                                IsWorkBook = b.IsWorkBook
-                            };
-                bookVM.books = await books.Select(x => new BookViewList { IsWorkBook = x.IsWorkBook, GardeName = x.Grade, BookName = x.BookName, ResourceBookURL = x.ResouceBookURL, BookId = x.BookId, IsActive = x.IsActive, PublishDate = x.PublishDate, Publisher = x.Publisher, SubjectName = x.SubjectName, ResourceBook = x.ResourceBook, ResourceNoteBook = x.ResourceNoteBook }).ToListAsync();
+                var books = await (from b in _db.Books
+                                   join c in _db.Subjects on b.SubjectId equals c.SubjectId into BookSubject
+                                   from subject in BookSubject.DefaultIfEmpty()
+                                   join e in _db.Grades on b.GradeId equals e.GradeId into BookGrade
+                                   from grade in BookGrade.DefaultIfEmpty()
+                                   join f in _db.ResourceNoteBooks on b.ResourceNoteBookId equals f.ResourceNoteBookId into BookNotebook
+                                   from NoteBook in BookNotebook.DefaultIfEmpty()
+                                   join h in _db.SchoolSections on grade.SchoolSectionId equals h.SchoolSectionId into BookSection
+                                   from bSec in BookSection.DefaultIfEmpty()
+                                   join i in _db.SubjectTeacherAllocations on b.BookId equals i.BookId into AllocatedBooks
+                                   from ABs in AllocatedBooks.DefaultIfEmpty()
+                                   where (ABs.EmployeeId == userId || bSec.AssistantCoordinatorId == userId) && b.IsActive == true
+                                   select new
+                                   {
+                                       BookId = b.BookId,
+                                       BookName = b.BookName,
+                                       SubjectName = subject.SubjectName,
+                                       Grade = grade.GradeName,
+                                       Publisher = b.Publisher,
+                                       PublishDate = b.PublishDate,
+                                       IsActive = b.IsActive,
+                                       ResourceBook = b.ResourceBook,
+                                       ResourceNoteBook = NoteBook.NoteBookName,
+                                       ResouceBookURL = b.ResourceBookPath,
+                                       IsWorkBook = b.IsWorkBook
+                                   }).Distinct().ToListAsync();
+                bookVM.books = books.Select(x => new BookViewList { IsWorkBook = x.IsWorkBook, GardeName = x.Grade, BookName = x.BookName, ResourceBookURL = x.ResouceBookURL, BookId = x.BookId, IsActive = x.IsActive, PublishDate = x.PublishDate, Publisher = x.Publisher, SubjectName = x.SubjectName, ResourceBook = x.ResourceBook, ResourceNoteBook = x.ResourceNoteBook }).ToList();
             }
             else
             {
-                var books = from b in _db.Books
-                            join c in _db.Subjects on b.SubjectId equals c.SubjectId into BookSubject
-                            from subject in BookSubject.DefaultIfEmpty()
-                                //join d in _db.Sections on b.GradeId equals d.GradeId into BookSection
-                                //from section in BookSection.DefaultIfEmpty()
-                            join e in _db.Grades on b.GradeId equals e.GradeId into BookGrade
-                            from grade in BookGrade.DefaultIfEmpty()
-                            join f in _db.ResourceNoteBooks on b.ResourceNoteBookId equals f.ResourceNoteBookId into BookNotebook
-                            from NoteBook in BookNotebook.DefaultIfEmpty()
-                            select new
-                            {
-                                BookId = b.BookId,
-                                BookName = b.BookName,
-                                SubjectName = subject.SubjectName,
-                                Grade = grade.GradeName,
-                                Publisher = b.Publisher,
-                                PublishDate = b.PublishDate,
-                                IsActive = b.IsActive,
-                                ResourceBook = b.ResourceBook,
-                                ResourceNoteBook = NoteBook.NoteBookName,
-                                ResouceBookURL = b.ResourceBookPath,
-                                IsWorkBook = b.IsWorkBook
-                            };
-                bookVM.books = await books.Select(x => new BookViewList { IsWorkBook = x.IsWorkBook, GardeName = x.Grade, BookName = x.BookName, ResourceBookURL = x.ResouceBookURL, BookId = x.BookId, IsActive = x.IsActive, PublishDate = x.PublishDate, Publisher = x.Publisher, SubjectName = x.SubjectName, ResourceBook = x.ResourceBook, ResourceNoteBook = x.ResourceNoteBook }).ToListAsync();
+                var books = await (from b in _db.Books
+                                   join c in _db.Subjects on b.SubjectId equals c.SubjectId into BookSubject
+                                   from subject in BookSubject.DefaultIfEmpty()
+                                       //join d in _db.Sections on b.GradeId equals d.GradeId into BookSection
+                                       //from section in BookSection.DefaultIfEmpty()
+                                   join e in _db.Grades on b.GradeId equals e.GradeId into BookGrade
+                                   from grade in BookGrade.DefaultIfEmpty()
+                                   join f in _db.ResourceNoteBooks on b.ResourceNoteBookId equals f.ResourceNoteBookId into BookNotebook
+                                   from NoteBook in BookNotebook.DefaultIfEmpty()
+                                   select new
+                                   {
+                                       BookId = b.BookId,
+                                       BookName = b.BookName,
+                                       SubjectName = subject.SubjectName,
+                                       Grade = grade.GradeName,
+                                       Publisher = b.Publisher,
+                                       PublishDate = b.PublishDate,
+                                       IsActive = b.IsActive,
+                                       ResourceBook = b.ResourceBook,
+                                       ResourceNoteBook = NoteBook.NoteBookName,
+                                       ResouceBookURL = b.ResourceBookPath,
+                                       IsWorkBook = b.IsWorkBook
+                                   }).Distinct().ToListAsync();
+                bookVM.books = books.Select(x => new BookViewList { IsWorkBook = x.IsWorkBook, GardeName = x.Grade, BookName = x.BookName, ResourceBookURL = x.ResouceBookURL, BookId = x.BookId, IsActive = x.IsActive, PublishDate = x.PublishDate, Publisher = x.Publisher, SubjectName = x.SubjectName, ResourceBook = x.ResourceBook, ResourceNoteBook = x.ResourceNoteBook }).ToList();
             }
             return View(bookVM);
         }
@@ -295,10 +301,9 @@ namespace myWebApp.Controllers
         [HttpGet]
         public async Task<IActionResult> AddBook()
         {
-
-            ViewBag.Subjects = await _repository.GetSubjects();
-            ViewBag.Grades = await _db.Grades.ToListAsync();
-            ViewBag.NoteBooks = await _db.ResourceNoteBooks.ToListAsync();
+            ViewBag.Subjects = await _db.Subjects.Where(x => x.IsActive == true).ToListAsync();
+            ViewBag.Grades = await _db.Grades.Where(x => x.IsActive == true).ToListAsync();
+            ViewBag.NoteBooks = await _db.ResourceNoteBooks.Where(x => x.IsActive == true).ToListAsync();
             return View();
         }
         [Authorize(Policy = "Book.Create")]
@@ -334,9 +339,9 @@ namespace myWebApp.Controllers
         [HttpGet]
         public async Task<IActionResult> UpdateBook(int id)
         {
-            ViewBag.Subjects = await _repository.GetSubjects();
-            ViewBag.Grades = await _repository.GetGrades();
-            ViewBag.NoteBooks = await _db.ResourceNoteBooks.ToListAsync();
+            ViewBag.Subjects = await _db.Subjects.Where(x => x.IsActive == true).ToListAsync();
+            ViewBag.Grades = await _db.Grades.Where(x => x.IsActive == true).ToListAsync();
+            ViewBag.NoteBooks = await _db.ResourceNoteBooks.Where(x => x.IsActive == true).ToListAsync();
             var temp = await _repository.GetBookById(id);
             if (temp == null)
             {
@@ -414,7 +419,8 @@ namespace myWebApp.Controllers
             {
                 return NotFound();
             }
-            await _repository.Delete(temp);
+            temp.IsActive = false;
+            await _repository.UpdateAsync(temp);
             if (await _repository.SaveChanges())
             {
                 return RedirectToAction("Book");
@@ -546,7 +552,8 @@ namespace myWebApp.Controllers
             {
                 return NotFound();
             }
-            await _repository.Delete(temp);
+            temp.IsActive = false;
+            await _repository.UpdateAsync(temp);
             if (await _repository.SaveChanges())
             {
                 return RedirectToAction("Unit", new { Id = BookId });
@@ -654,7 +661,8 @@ namespace myWebApp.Controllers
             {
                 return NotFound();
             }
-            await _repository.Delete(temp);
+            temp.IsActive = false;
+            await _repository.UpdateAsync(temp);
             if (await _repository.SaveChanges())
             {
                 return RedirectToAction("Chapter", new { Id = UnitId });
@@ -909,7 +917,8 @@ namespace myWebApp.Controllers
             {
                 return NotFound();
             }
-            await _repository.Delete(temp);
+            temp.IsActive = false;
+            await _repository.UpdateAsync(temp);
             if (await _repository.SaveChanges())
             {
                 return RedirectToAction("Topic", new { Id = temp.ChapterId });
@@ -1015,7 +1024,8 @@ namespace myWebApp.Controllers
             {
                 return NotFound();
             }
-            await _repository.Delete(temp);
+            temp.IsActive = false;
+            await _repository.UpdateAsync(temp);
             if (await _repository.SaveChanges())
             {
                 return RedirectToAction("SubTopic", new { Id = TopicId });
@@ -1027,45 +1037,99 @@ namespace myWebApp.Controllers
         #region Grade
         [Authorize(Policy = "Grade.Read")]
         [HttpGet]
-        public IActionResult Grade()
+        public async Task<IActionResult> Grade()
         {
             var userId = Convert.ToInt16(User.FindFirst(ClaimTypes.Sid)?.Value);
             //var user = _db.Employees.Where(x => x.EmployeeId == userId).FirstOrDefault();
-            if (User.IsInRole("Grade Manager"))
+            if (User.IsInRole("Assistant Coordinator"))
             {
-                ViewBag.Grades = from a in _db.Grades
-                                 join b in _db.SchoolSections on a.SchoolSectionId equals b.SchoolSectionId into GradeSchoolSection
-                                 from schoolSection in GradeSchoolSection.DefaultIfEmpty()
-                                 join c in _db.Employees on a.GradeManagerId equals c.EmployeeId into GradeManager
-                                 from GM in GradeManager.DefaultIfEmpty()
-                                 where schoolSection.SchoolSectionId == a.SchoolSectionId
-                                 select new
-                                 {
-                                     GradeId = a.GradeId,
-                                     GradeName = a.GradeName,
-                                     SchoolSection = schoolSection.SectionName,
-                                     IsActive = a.IsActive,
-                                     GradeManager = GM.FName + " " + GM.LName,
-                                     ShowDeleteUpdate = a.GradeManagerId == userId ? true : false
-                                 };
+                ViewBag.Grades = await (from a in _db.Grades
+                                        join b in _db.SchoolSections on a.SchoolSectionId equals b.SchoolSectionId into GradeSchoolSection
+                                        from schoolSection in GradeSchoolSection.DefaultIfEmpty()
+                                        join c in _db.Employees on a.GradeManagerId equals c.EmployeeId into GradeManager
+                                        from GM in GradeManager.DefaultIfEmpty()
+                                        where schoolSection.AssistantCoordinatorId == userId && a.IsActive == true
+                                        select new
+                                        {
+                                            GradeId = a.GradeId,
+                                            GradeName = a.GradeName,
+                                            SchoolSection = schoolSection.SectionName,
+                                            IsActive = a.IsActive,
+                                            GradeManager = GM.FName + " " + GM.LName
+                                        }).Distinct().ToListAsync();
             }
-            else if (!User.IsInRole("Subject Teacher"))
+            else if (User.IsInRole("Grade Manager"))
             {
-                ViewBag.Grades = from a in _db.Grades
-                                 join b in _db.SchoolSections on a.SchoolSectionId equals b.SchoolSectionId into GradeSchoolSection
-                                 from schoolSection in GradeSchoolSection.DefaultIfEmpty()
-                                 join c in _db.Employees on a.GradeManagerId equals c.EmployeeId into GradeManager
-                                 from GM in GradeManager.DefaultIfEmpty()
-                                 where schoolSection.SchoolSectionId == a.SchoolSectionId
-                                 select new
-                                 {
-                                     GradeId = a.GradeId,
-                                     GradeName = a.GradeName,
-                                     SchoolSection = schoolSection.SectionName,
-                                     IsActive = a.IsActive,
-                                     GradeManager = GM.FName + " " + GM.LName,
-                                     ShowDeleteUpdate = true
-                                 };
+                ViewBag.Grades = await (from a in _db.Grades
+                                        join b in _db.SchoolSections on a.SchoolSectionId equals b.SchoolSectionId into GradeSchoolSection
+                                        from schoolSection in GradeSchoolSection.DefaultIfEmpty()
+                                        join c in _db.Employees on a.GradeManagerId equals c.EmployeeId into GradeManager
+                                        from GM in GradeManager.DefaultIfEmpty()
+                                        where a.GradeManagerId == userId && a.IsActive == true
+                                        select new
+                                        {
+                                            GradeId = a.GradeId,
+                                            GradeName = a.GradeName,
+                                            SchoolSection = schoolSection.SectionName,
+                                            IsActive = a.IsActive,
+                                            GradeManager = GM.FName + " " + GM.LName
+                                        }).Distinct().ToListAsync();
+            }
+            else if (User.IsInRole("Class Teacher"))
+            {
+                ViewBag.Grades = await (from a in _db.Grades
+                                        join b in _db.SchoolSections on a.SchoolSectionId equals b.SchoolSectionId into GradeSchoolSection
+                                        from schoolSection in GradeSchoolSection.DefaultIfEmpty()
+                                        join c in _db.Employees on a.GradeManagerId equals c.EmployeeId into GradeManager
+                                        from GM in GradeManager.DefaultIfEmpty()
+                                        join d in _db.Sections on a.GradeId equals d.GradeId into GClasses
+                                        from GCs in GClasses.DefaultIfEmpty()
+                                        where GCs.ClassTeacherId == userId && a.IsActive == true
+                                        select new
+                                        {
+                                            GradeId = a.GradeId,
+                                            GradeName = a.GradeName,
+                                            SchoolSection = schoolSection.SectionName,
+                                            IsActive = a.IsActive,
+                                            GradeManager = GM.FName + " " + GM.LName
+                                        }).Distinct().ToListAsync();
+            }
+            if (User.IsInRole("Subject Teacher"))
+            {
+                ViewBag.Grades = await (from a in _db.Grades
+                                        join b in _db.SchoolSections on a.SchoolSectionId equals b.SchoolSectionId into GradeSchoolSection
+                                        from schoolSection in GradeSchoolSection.DefaultIfEmpty()
+                                        join c in _db.Employees on a.GradeManagerId equals c.EmployeeId into GradeManager
+                                        from GM in GradeManager.DefaultIfEmpty()
+                                        join d in _db.Sections on a.GradeId equals d.GradeId into GClasses
+                                        from GCs in GClasses.DefaultIfEmpty()
+                                        join e in _db.SubjectTeacherAllocations on GCs.SectionId equals e.SectionId into AllocatedClasses
+                                        from AClasses in AllocatedClasses.DefaultIfEmpty()
+                                        where AClasses.EmployeeId == userId && a.IsActive == true
+                                        select new
+                                        {
+                                            GradeId = a.GradeId,
+                                            GradeName = a.GradeName,
+                                            SchoolSection = schoolSection.SectionName,
+                                            IsActive = a.IsActive,
+                                            GradeManager = GM.FName + " " + GM.LName
+                                        }).Distinct().ToListAsync();
+            }
+            else if (User.IsInRole("Director Academics") || User.IsInRole("Deputy Coordinator"))
+            {
+                ViewBag.Grades = await (from a in _db.Grades
+                                        join b in _db.SchoolSections on a.SchoolSectionId equals b.SchoolSectionId into GradeSchoolSection
+                                        from schoolSection in GradeSchoolSection.DefaultIfEmpty()
+                                        join c in _db.Employees on a.GradeManagerId equals c.EmployeeId into GradeManager
+                                        from GM in GradeManager.DefaultIfEmpty()
+                                        select new
+                                        {
+                                            GradeId = a.GradeId,
+                                            GradeName = a.GradeName,
+                                            SchoolSection = schoolSection.SectionName,
+                                            IsActive = a.IsActive,
+                                            GradeManager = GM.FName + " " + GM.LName
+                                        }).Distinct().ToListAsync();
             }
             return View();
         }
@@ -1176,6 +1240,15 @@ namespace myWebApp.Controllers
             {
                 return NotFound();
             }
+            var classes = await _db.Sections.Where(x => x.GradeId == id).ToListAsync();
+            if (classes.Any())
+            {
+                foreach (var cls in classes)
+                {
+                    cls.IsActive = false;
+                }
+                _db.UpdateRange(classes);
+            }
             temp.IsActive = false;
             await _repository.UpdateAsync(temp);
             if (await _repository.SaveChanges())
@@ -1192,41 +1265,93 @@ namespace myWebApp.Controllers
         public async Task<IActionResult> Section()
         {
             int userId = Convert.ToInt16(User.FindFirst(ClaimTypes.Sid)?.Value);
-            if (User.IsInRole("Grade Manager"))
+            if (User.IsInRole("Assistant Coordinator"))
             {
-                ViewBag.Sections = (await (from a in _db.Grades
-                                           from b in _db.Sections
-                                           join c in _db.Employees on b.ClassTeacherId equals c.EmployeeId into ClassTeacher
-                                           from CT in ClassTeacher.DefaultIfEmpty()
-                                           where b.GradeId == a.GradeId && b.IsActive == true
+                ViewBag.Sections = (await (from a in _db.Sections
+                                           join b in _db.Grades on a.GradeId equals b.GradeId into ClassGrades
+                                           from CGs in ClassGrades.DefaultIfEmpty()
+                                           join c in _db.Employees on a.ClassTeacherId equals c.EmployeeId into ClassTeachers
+                                           from CTs in ClassTeachers.DefaultIfEmpty()
+                                           join d in _db.SchoolSections on CGs.SchoolSectionId equals d.SchoolSectionId into ClassSchoolSec
+                                           from SSec in ClassSchoolSec.DefaultIfEmpty()
+                                           where SSec.AssistantCoordinatorId == userId && a.IsActive == true
                                            select new
                                            {
-                                               SectionName = b.SectionName,
-                                               SectionId = b.SectionId,
-                                               IsActive = b.IsActive,
-                                               GradeName = a.GradeName,
-                                               ShowDeleteUpdate = a.GradeManagerId == userId ? true : false,
-                                               ClassTeacher = CT.FName + " " + CT.LName
-
-                                           }).ToListAsync());
+                                               SectionName = a.SectionName,
+                                               SectionId = a.SectionId,
+                                               IsActive = a.IsActive,
+                                               GradeName = CGs.GradeName,
+                                               ClassTeacher = CTs.FName + " " + CTs.LName
+                                           }).Distinct().ToListAsync());
             }
-            else if (!User.IsInRole("Subject Teacher"))
+            else if (User.IsInRole("Grade Manager"))
             {
-                ViewBag.Sections = (await (from a in _db.Grades
-                                           from b in _db.Sections
-                                           join c in _db.Employees on b.ClassTeacherId equals c.EmployeeId into ClassTeacher
-                                           from CT in ClassTeacher.DefaultIfEmpty()
-                                           where b.GradeId == a.GradeId
+                ViewBag.Sections = (await (from a in _db.Sections
+                                           join b in _db.Grades on a.GradeId equals b.GradeId into ClassGrades
+                                           from CGs in ClassGrades.DefaultIfEmpty()
+                                           join c in _db.Employees on a.ClassTeacherId equals c.EmployeeId into ClassTeachers
+                                           from CTs in ClassTeachers.DefaultIfEmpty()
+                                           where CGs.GradeManagerId == userId && a.IsActive == true
                                            select new
                                            {
-                                               SectionName = b.SectionName,
-                                               SectionId = b.SectionId,
-                                               IsActive = b.IsActive,
-                                               GradeName = a.GradeName,
-                                               ShowDeleteUpdate = true,
-                                               ClassTeacher = CT.FName + " " + CT.LName
-
-                                           }).ToListAsync());
+                                               SectionName = a.SectionName,
+                                               SectionId = a.SectionId,
+                                               IsActive = a.IsActive,
+                                               GradeName = CGs.GradeName,
+                                               ClassTeacher = CTs.FName + " " + CTs.LName
+                                           }).Distinct().ToListAsync());
+            }
+            else if (User.IsInRole("Class Teacher"))
+            {
+                ViewBag.Sections = (await (from a in _db.Sections
+                                           join b in _db.Grades on a.GradeId equals b.GradeId into ClassGrades
+                                           from CGs in ClassGrades.DefaultIfEmpty()
+                                           join c in _db.Employees on a.ClassTeacherId equals c.EmployeeId into ClassTeachers
+                                           from CTs in ClassTeachers.DefaultIfEmpty()
+                                           where a.ClassTeacherId == userId && a.IsActive == true
+                                           select new
+                                           {
+                                               SectionName = a.SectionName,
+                                               SectionId = a.SectionId,
+                                               IsActive = a.IsActive,
+                                               GradeName = CGs.GradeName,
+                                               ClassTeacher = CTs.FName + " " + CTs.LName
+                                           }).Distinct().ToListAsync());
+            }
+            else if (User.IsInRole("Subject Teacher"))
+            {
+                ViewBag.Sections = (await (from a in _db.Sections
+                                           join b in _db.Grades on a.GradeId equals b.GradeId into ClassGrades
+                                           from CGs in ClassGrades.DefaultIfEmpty()
+                                           join c in _db.Employees on a.ClassTeacherId equals c.EmployeeId into ClassTeachers
+                                           from CTs in ClassTeachers.DefaultIfEmpty()
+                                           join d in _db.SubjectTeacherAllocations on a.SectionId equals d.SectionId into AllocatedClasses
+                                           from AClasses in AllocatedClasses.DefaultIfEmpty()
+                                           where AClasses.EmployeeId == userId && a.IsActive == true
+                                           select new
+                                           {
+                                               SectionName = a.SectionName,
+                                               SectionId = a.SectionId,
+                                               IsActive = a.IsActive,
+                                               GradeName = CGs.GradeName,
+                                               ClassTeacher = CTs.FName + " " + CTs.LName
+                                           }).Distinct().ToListAsync());
+            }
+            else if (User.IsInRole("Director Academics") || User.IsInRole("Deputy Coordinator"))
+            {
+                ViewBag.Sections = (await (from a in _db.Sections
+                                           join b in _db.Grades on a.GradeId equals b.GradeId into ClassGrades
+                                           from CGs in ClassGrades.DefaultIfEmpty()
+                                           join c in _db.Employees on a.ClassTeacherId equals c.EmployeeId into ClassTeachers
+                                           from CTs in ClassTeachers.DefaultIfEmpty()
+                                           select new
+                                           {
+                                               SectionName = a.SectionName,
+                                               SectionId = a.SectionId,
+                                               IsActive = a.IsActive,
+                                               GradeName = CGs.GradeName,
+                                               ClassTeacher = CTs.FName + " " + CTs.LName
+                                           }).Distinct().ToListAsync());
             }
             return View();
         }
@@ -1439,10 +1564,10 @@ namespace myWebApp.Controllers
                 i++;
                 bookIds[i] = bid.BookId;
             }
-            BookAllocation[] allocations = new BookAllocation[bookIds.Length];
+            Entities.Models.BookAllocation[] allocations = new Entities.Models.BookAllocation[bookIds.Length];
             for (int book = 0; book < allocations.Length; book++)
             {
-                var newBook = new BookAllocation
+                var newBook = new Entities.Models.BookAllocation
                 {
                     SectionId = data.SectionId,
                     BookId = bookIds[book]
@@ -1530,7 +1655,8 @@ namespace myWebApp.Controllers
             {
                 return NotFound();
             }
-            await _repository.Delete(temp);
+            temp.IsActive = false;
+            await _repository.UpdateAsync(temp);
             if (await _repository.SaveChanges())
             {
                 return RedirectToAction("ResourceNoteBook");
@@ -1622,7 +1748,7 @@ namespace myWebApp.Controllers
                             from b in _db.Grades
                             from c in _db.Employees
                             from d in _db.Roles
-                            where b.SchoolSectionId == a.SchoolSectionId && b.GradeId == GradeId && c.SchoolSectionId == a.SchoolSectionId && d.RoleId == c.RoleId && d.RollName == "Class Teacher"
+                            where b.SchoolSectionId == a.SchoolSectionId && b.GradeId == GradeId && c.SchoolSectionId == a.SchoolSectionId && d.RoleId == c.RoleId && (d.RollName == "Class Teacher" || d.RollName == "Grade Manager")
                             select c).Distinct().ToList();
             return Json(subjects);
         }

@@ -120,7 +120,7 @@ namespace myWebApp.Controllers
                                      from b in _db.Sections
                                      where a.EmployeeId == empId && a.SectionId == b.SectionId
                                      select b).ToListAsync();
-            var temp = await _db.Diaries.Where(x => x.DiaryId == DiaryId).FirstOrDefaultAsync();
+            var temp = await _db.Diaries.Where(x => x.DiaryId == DiaryId && x.IsActive == true).FirstOrDefaultAsync();
             if (temp == null)
             {
                 return NotFound();

@@ -50,9 +50,11 @@ namespace myWebApp.Controllers
                                        from designation in EmpDesignation.DefaultIfEmpty()
                                        join i in _db.Roles on a.RoleId equals i.RoleId into empRole
                                        from role in empRole.DefaultIfEmpty()
-                                       join j in _db.Sections on empId equals j.ClassTeacherId into CTClass
+                                       join j in _db.Grades on section.SchoolSectionId equals j.SchoolSectionId into EmpGrades
+                                       from EGs in EmpGrades.DefaultIfEmpty()
+                                       join k in _db.Sections on EGs.GradeId equals k.GradeId into CTClass
                                        from Class in CTClass.DefaultIfEmpty()
-                                       where (role.RollName == "Assistant Teacher" || role.RollName == "Subject Teacher" || role.RollName == "Class Teacher") && Class.ClassTeacherId == empId
+                                       where (role.RollName == "Assistant Teacher" || role.RollName == "Subject Teacher") && Class.ClassTeacherId == empId && a.IsActive == true
                                        //where b.GenderId == a.GenderId && c.SchoolId == a.SchoolId && d.CampusId == a.CampusId && e.SchoolSectionId == a.SchoolSectionId && f.DepartmentId == a.DepartmentId && g.SubDepartmentId == a.SubDepartmentId && h.DesignationId == a.DesignationId
                                        select new UpdateEmployeeVM
                                        {
@@ -89,7 +91,7 @@ namespace myWebApp.Controllers
                                            Period = a.Period,
                                            UserImageUrl = a.UserImageUrl,
                                            IsActive = (bool)a.IsActive
-                                       }).ToListAsync();
+                                       }).Distinct().ToListAsync();
                 }
                 else if (User.IsInRole("Grade Manager"))
                 {
@@ -110,9 +112,9 @@ namespace myWebApp.Controllers
                                        from designation in EmpDesignation.DefaultIfEmpty()
                                        join i in _db.Roles on a.RoleId equals i.RoleId into empRole
                                        from role in empRole.DefaultIfEmpty()
-                                       join k in _db.Grades on empId equals k.GradeManagerId into GMGrade
+                                       join k in _db.Grades on section.SchoolSectionId equals k.SchoolSectionId into GMGrade
                                        from GM in GMGrade.DefaultIfEmpty()
-                                       where (role.RollName == "Assistant Teacher" || role.RollName == "Subject Teacher" || role.RollName == "Class Teacher" || role.RollName == "Grade Manager") && GM.GradeManagerId == empId
+                                       where (role.RollName == "Assistant Teacher" || role.RollName == "Subject Teacher" || role.RollName == "Class Teacher") && GM.GradeManagerId == empId && a.IsActive == true
                                        //where b.GenderId == a.GenderId && c.SchoolId == a.SchoolId && d.CampusId == a.CampusId && e.SchoolSectionId == a.SchoolSectionId && f.DepartmentId == a.DepartmentId && g.SubDepartmentId == a.SubDepartmentId && h.DesignationId == a.DesignationId
                                        select new UpdateEmployeeVM
                                        {
@@ -149,7 +151,7 @@ namespace myWebApp.Controllers
                                            Period = a.Period,
                                            UserImageUrl = a.UserImageUrl,
                                            IsActive = (bool)a.IsActive
-                                       }).ToListAsync();
+                                       }).Distinct().ToListAsync();
                 }
                 else if (User.IsInRole("Assistant Coordinator"))
                 {
@@ -170,7 +172,7 @@ namespace myWebApp.Controllers
                                        from designation in EmpDesignation.DefaultIfEmpty()
                                        join i in _db.Roles on a.RoleId equals i.RoleId into empRole
                                        from role in empRole.DefaultIfEmpty()
-                                       where (role.RollName == "Assistant Teacher" || role.RollName == "Subject Teacher" || role.RollName == "Class Teacher" || role.RollName == "Grade Manager" || role.RollName == "Assistant Coordinator") && section.AssistantCoordinatorId == empId
+                                       where (role.RollName == "Assistant Teacher" || role.RollName == "Subject Teacher" || role.RollName == "Class Teacher" || role.RollName == "Grade Manager") && section.AssistantCoordinatorId == empId && a.IsActive == true
                                        //where b.GenderId == a.GenderId && c.SchoolId == a.SchoolId && d.CampusId == a.CampusId && e.SchoolSectionId == a.SchoolSectionId && f.DepartmentId == a.DepartmentId && g.SubDepartmentId == a.SubDepartmentId && h.DesignationId == a.DesignationId
                                        select new UpdateEmployeeVM
                                        {
@@ -207,9 +209,9 @@ namespace myWebApp.Controllers
                                            Period = a.Period,
                                            UserImageUrl = a.UserImageUrl,
                                            IsActive = (bool)a.IsActive
-                                       }).ToListAsync();
+                                       }).Distinct().ToListAsync();
                 }
-                else
+                else if(User.IsInRole("Deputy Coordinator") || User.IsInRole("Director Academics"))
                 {
                     employees = await (from a in _db.Employees
                                        join b in _db.Genders on a.GenderId equals b.GenderId into EmpGend
@@ -264,7 +266,7 @@ namespace myWebApp.Controllers
                                            Period = a.Period,
                                            UserImageUrl = a.UserImageUrl,
                                            IsActive = (bool)a.IsActive
-                                       }).ToListAsync();
+                                       }).Distinct().ToListAsync();
                 }
             }
             //employee.AddRange(employees.Select(x => new UpdateEmployeeVM { Role = x.Role, IsActive = x.IsActive, UserImageUrl = x.UserImageUrl, Address = x.Address, CampusName = x.CampusName, GenderName = x.GenderName, FName = x.FName, FatherName = x.FatherName, Email = x.Email, CNIC = x.CNIC, DOB = x.DOB, CNICExpiryDate = x.CNICExpiryDate, CNICIssueDate = x.CNICIssueDate, LName = x.LName, SchoolName = x.SchoolName, SpouseName = x.SpouseName, MaritalStatus = x.MaritalStatus, Mobile = x.Mobile, EmployeeId = x.EmployeeId, Period = x.Period, JoiningDate = x.JoiningDate, EmployeeType = x.EmployeeType, FieldOfSpecialization = x.FieldOfSpecialization, EndofProbationDate = x.EndofProbationDate, ConfirmationDate = x.ConfirmationDate, DepartmentName = x.DepartmentName, DesignationName = x.DesignationName, EndofPeriodDate = x.EndofPeriodDate, ProbationPeriod = x.ProbationPeriod, SchoolSectionName = x.SchoolSectionName, StartofPeriodDate = x.StartofPeriodDate, StartofProbationDate = x.StartofProbationDate, SubDepartmentName = x.SubDepartmentName }).ToList());
@@ -736,7 +738,8 @@ namespace myWebApp.Controllers
             {
                 return NotFound();
             }
-            await _repository.Delete(shoora);
+            shoora.IsActive = false;
+            await _repository.UpdateAsync(shoora);
             if (await _repository.SaveChanges())
             {
                 return RedirectToAction("Shoora");
